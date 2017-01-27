@@ -1,0 +1,32 @@
+// for: https://github.com/wwayne/react-tooltip
+=toolTipBorder($border-color: $brand_color, $borderWidth: 2, $tipSize: 6px)
+
+  // possible places classes: 
+  // place-top
+  // place-bottom
+  // place-left
+  // place-right
+  $places: top bottom left right
+
+  border: 0px solid $border-color !important
+
+  @each $place in $places
+    &.place-#{$place}
+      &:before
+        border-#{$place}: $tipSize solid $border-color !important
+
+      &:after
+        border-#{$place}: ($tipSize + $borderWidth) solid $brand_color !important
+
+
+.custom_tooltip
+  border-radius: 0px !important
+  background-color: $white !important
+  color: $text_color !important
+  +box-shadow(rgba($black, 0.117647) 0px 1px 6px, rgba($black, 0.117647) 0px 1px 4px)
+
+
+.__react_component_tooltip
+  padding: $grid-gutter-width / 2 !important
+  +toolTipBorder($border-color: $white, $borderWidth: 0, $tipSize: 0)
+  z-index: 9999999
