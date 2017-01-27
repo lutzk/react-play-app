@@ -7,3 +7,5 @@ yarn.lock
 do.sublime-project
 
 do.sublime-workspace
+
+yarn-error.log
