@@ -1,0 +1,62 @@
+extends:
+  eslint-config-airbnb
+
+parser:
+  babel-eslint
+
+settings:
+  ecmascript: 6
+
+ecmaFeatures:
+  jsx: true
+  modules: true
+  destructuring: true
+  classes: true
+  forOf: true
+  blockBindings: true
+  arrowFunctions: true
+
+env:
+  browser: true
+  node: true
+
+rules:
+  indent: 2
+  func-style: 0
+  func-names: 0
+  comma-dangle: 0
+  no-console: 0
+  max-len: 0
+  space-in-parens: 0
+  padded-blocks: 0
+  no-return-assign: 0
+  no-confusing-arrow: 0
+  no-underscore-dangle: 0
+  no-param-reassign: 0
+  linebreak-style: 0
+  global-require: 0
+  arrow-body-style: 0
+  import/no-extraneous-dependencies: 0
+  import/no-unresolved: 0
+  import/extensions: 0
+  react/no-danger: 0
+  react/no-children-prop: 0
+  react/forbid-prop-types: 0
+  react/jsx-curly-spacing: 0
+  react/jsx-closing-bracket-location: 0
+  react/jsx-filename-extension: 0
+  react/prefer-stateless-function: 0
+  jsx-a11y/html-has-lang: 0
+
+globals:
+  __DEVELOPMENT__: true
+  __CLIENT__: true
+  __SERVER__: true
+  __DISABLE_SSR__: true
+  __DEVTOOLS__: true
+  socket: true
+  webpackIsomorphicTools: true
+
+plugins:
+  - react
+  - import
