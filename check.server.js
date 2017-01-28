@@ -20,6 +20,7 @@
         found = false;
         file = null;
         if (require(serverFilePath)) {
+          console.log('found, load server bundle ...');
           require(serverFilePath);
           return clearInterval(checker);
         }
@@ -28,7 +29,7 @@
   }
 
   const waitInitial = setTimeout(() => {
-    console.log('waitInitial ...');
+    console.log('check for server bundle ...');
     checker = setInterval(check, 1111);
     clearTimeout(waitInitial);
   }, 2222);
