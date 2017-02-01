@@ -1,5 +1,6 @@
 node_modules
 static/dist
+static/server
 webpack-assets.json
 
 yarn.lock
@@ -9,3 +10,5 @@ do.sublime-project
 do.sublime-workspace
 
 yarn-error.log
+
+npm-debug.log
