@@ -1,8 +1,5 @@
 import getAssets from './serverAssets';
 
-/**
- * Define isomorphic constants.
- */
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
 global.__DISABLE_SSR__ = false; // <----- DISABLES SERVER SIDE RENDERING FOR ERROR DEBUGGING
@@ -23,9 +20,9 @@ const checkPip = () => {
 
 checkPip();
 
-const assets = getAssets();
-assets.then((a) => {
+const assetsPromise = getAssets();
+assetsPromise.then((assets) => {
   import('./server').then((server) => {
-    return server.default(a);
+    return server.default(assets);
   });
 });
