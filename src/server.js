@@ -80,7 +80,7 @@ const startServer = (assets) => {
           hydrateOnClient(assetsObj);
 
         } else if (redirectLocation) {
-          res.redirect(redirectLocation.pathname + redirectLocation.search);
+          res.redirect(`${redirectLocation.pathname}${redirectLocation.search}`);
 
         } else if (renderProps) {
           loadOnServer({ ...renderProps, store, helpers: { client } }).then(() => {
