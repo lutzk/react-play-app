@@ -74,12 +74,12 @@
     "strip-loader": "^0.1.2",
     "style-loader": "^0.13.1",
     "superagent": "^3.3.1",
+    "universal-webpack": "^0.3.1",
     "url-loader": "^0.5.7",
     "webpack": "beta",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-dev-server": "beta",
     "webpack-hot-middleware": "^2.15.0",
-    "webpack-isomorphic-tools": "^2.6.6",
     "webpack-node-externals": "^1.5.4",
     "webpack-vendor-chunk-plugin": "^1.0.0"
   }
