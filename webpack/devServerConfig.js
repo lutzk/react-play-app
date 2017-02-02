@@ -1,38 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const host = 'localhost';
+const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
-const context = path.resolve(__dirname, '..');
 const rootPath = process.cwd() + '/';
-const embedLimit = 10240;
-const assetsPath = path.resolve(__dirname, '../static/server/');
 const CleanPlugin = require('clean-webpack-plugin');
 const nodeExternals = require('webpack-node-externals')();
 const vendorChunkPlugin = require('webpack-vendor-chunk-plugin');
-const relativeAssetsPath = 'static/server/';
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-
-const babelrc = {
-  ignore: "/node_modules/",
-  babelrc: false,
-  presets: ["react", "es2015", "stage-0"],
-  plugins: [
-    "transform-runtime",
-    "syntax-dynamic-import",
-    "transform-decorators-legacy",
-    ["react-transform", {
-        transforms: [{
-            transform: "react-transform-catch-errors",
-            imports: ["react", "redbox-react"]
-          }
-        ]
-    }]
-  ]
-}
+const babelrc = require('./babelConfig').babelConfigServer;
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
-  context: context,
+  context: config.context,
   performance: {
     hints: false
   },
@@ -40,7 +17,7 @@ module.exports = {
     server: ['server.entry.js']
   },
   output: {
-    path: assetsPath,
+    path: config.serverPath,
     filename: '[name].dev.js',
     chunkFilename: '[name]-[chunkhash].js',
     libraryTarget: 'commonjs2'
@@ -100,7 +77,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -113,7 +90,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -126,7 +103,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/octet-stream'
             }
           }
@@ -143,7 +120,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'image/svg+xml'
             }
           }
@@ -156,7 +133,7 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: embedLimit
+              limit: config.embedLimit
             }
           }
         ]
@@ -164,8 +141,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanPlugin([relativeAssetsPath], {
-      'root': rootPath
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new CleanPlugin([config.relativeServerPath], {
+      'root': config.rootPath
     }),
     new CaseSensitivePathsPlugin(),
     new webpack.DefinePlugin({

@@ -1,45 +1,20 @@
-const fs = require('fs');
-const path = require('path');
-const host = 'localhost';
-const port = parseInt(process.env.PORT, 10) + 1 || 3011;
+const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
-const assetsPath = path.resolve(__dirname, '../static/dist');
+const babelrc = require('./babelConfig').babelConfigClient;
+const assetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
 const vendorChunkPlugin = require('webpack-vendor-chunk-plugin');
+const assetsJsonPluginConfig = require('./webpackCommons').assetsJsonPluginConfig;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-
-const isomorphicToolsConfig = require('./isomorphicToolsConfig')
-const isomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin');
-const isomorphicTools = new isomorphicToolsPlugin(isomorphicToolsConfig('client'));
-
-const babelrc = {
-  ignore: "/node_modules/",
-  babelrc: false,
-  presets: ["react", ["es2015", { modules: false }], "stage-0"],
-  plugins: [
-    "transform-runtime",
-    "syntax-dynamic-import",
-    "transform-decorators-legacy",
-    ["react-transform", {
-        transforms: [{
-            transform: "react-transform-catch-errors",
-            imports: ["react", "redbox-react"]
-          }
-        ]
-    }]
-  ]
-}
-
-const embedLimit = 10240;
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
-  context: path.resolve(__dirname, '..'),
+  context: config.context,
   performance: {
     hints: false
   },
   entry: {
     main: [
-      'webpack-hot-middleware/client?path=http://' + host + ':' + port + '/__webpack_hmr',
+      'webpack-hot-middleware/client?path=http://' + config.host + ':' + config.assetServerPort + '/__webpack_hmr',
       'theme/styles/main.sass',
       'client.js'
     ],
@@ -60,10 +35,10 @@ module.exports = {
     ]
   },
   output: {
-    path: assetsPath,
+    path: config.assetsPath,
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[chunkhash].js',
-    publicPath: 'http://' + host + ':' + port + '/dist/'
+    publicPath: config.publicPath
   },
   module: {
     rules: [
@@ -108,7 +83,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -120,7 +95,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -132,7 +107,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/octet-stream'
             }
           }
@@ -148,19 +123,19 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'image/svg+xml'
             }
           }
         ]
       },
       {
-        test: isomorphicTools.regular_expression('images'),
+        test: /\.(jpg|png|gif|svg|ico)$/,
         use: [
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit
+              limit: config.embedLimit
             }
           }
         ]
@@ -175,6 +150,7 @@ module.exports = {
     extensions: ['.json', '.js', '.jsx', '.css', '.scss', '.sass']
   },
   plugins: [
+    new assetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
     new CaseSensitivePathsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
@@ -191,7 +167,6 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('development')
       }
-    }),
-    isomorphicTools.development()
+    })
   ]
 };

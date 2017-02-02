@@ -1,15 +1,12 @@
 const Express = require('express');
 const webpack = require('webpack');
 
-const config = require('../src/config');
-const webpackConfig = require('./dev.config');
+const config = require('./webpackCommons').webpackCommons;
+const webpackConfig = require('./devClientConfig');
 const compiler = webpack(webpackConfig);
 
-const host = process.env.HOST || 'localhost';
-const port = parseInt(config.port, 10) + 1 || 3011;
-
 const serverOptions = {
-  contentBase: 'http://' + host + ':' + port,
+  contentBase: 'http://' + config.host + ':' + config.assetServerPort,
   quiet: true,
   noInfo: false,
   hot: true,
@@ -25,10 +22,10 @@ const app = new Express();
 app.use(require('webpack-dev-middleware')(compiler, serverOptions));
 app.use(require('webpack-hot-middleware')(compiler));
 
-app.listen(port, function onAppListening(err) {
+app.listen(config.assetServerPort, function onAppListening(err) {
   if (err) {
     console.error(err);
   } else {
-    console.info('==> Webpack development server listening on port %s', port);
+    console.info('==> Webpack asset dev server listening on port %s', config.assetServerPort);
   }
 });
