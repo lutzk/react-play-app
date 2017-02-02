@@ -83,7 +83,8 @@ const startServer = (assets) => {
           res.redirect(`${redirectLocation.pathname}${redirectLocation.search}`);
 
         } else if (renderProps) {
-          loadOnServer({ ...renderProps, store, helpers: { client } }).then(() => {
+          loadOnServer({ ...renderProps, store, helpers: { client } })
+          .then(() => {
             const component = (
               <Provider store={store} key="provider">
                 <ReduxAsyncConnect {...renderProps} />
