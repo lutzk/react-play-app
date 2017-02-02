@@ -13,6 +13,7 @@ import { ApiClient, Html, logJSON } from './helpers';
 import config from './appConfig';
 import getRoutes from './routes';
 import createStore from './redux/create';
+import devAssetsMiddleware from './devAssetsMiddleware';
 
 injectTapEventPlugin();
 
@@ -20,36 +21,30 @@ const app = new Express();
 const server = new http.Server(app);
 
 const doctype = '<!doctype html>\n';
-let devAssets = null;
+let getDevAssets = null;
 
 if (__DEVELOPMENT__) {
-  devAssets = require('./serverAssets').default;
+  getDevAssets = require('./serverAssets').default;
 }
 
 const startServer = (assets) => {
 
   let assetsObj = assets;
-  app.use(compression());
-  app.use(Express.static(path.join(process.cwd(), './static')));
-  app.use((req, res, next) => { // eslint-disbale-line
-    if (global.__DEVELOPMENT__) {
-      // in dev we refresh assets.json on every request
-      assetsObj = devAssets();
-      if (!assetsObj) {
-        res.status(500).send('no assets found for server render, make sure ./webpack-assets.json exists and refresh');
-        return;
-      }
-      assetsObj.then((a) => {
-        assetsObj = a;
-        return next();
-      });
-    } else { next(); }
-  })
+
+  app.use(compression())
+  .use(Express.static(path.join(process.cwd(), './static')))
+  .use(devAssetsMiddleware(getDevAssets))
   .use((req, res) => {
+
     const client = new ApiClient(req);
     const history = createMemoryHistory(req.originalUrl);
     const store = createStore(history, client);
     const routes = getRoutes(store);
+
+    // in dev
+    if (req.devAssets) {
+      assetsObj = req.devAssets;
+    }
 
     const hydrateOnClient = (_assets) => {
       return res.send(
@@ -87,7 +82,7 @@ const startServer = (assets) => {
           .then(() => {
             const component = (
               <Provider store={store} key="provider">
-                <ReduxAsyncConnect {...renderProps} />
+                <ReduxAsyncConnect { ...renderProps } />
               </Provider>
             );
             const html = `${doctype}${renderHtml(store, assetsObj, component)}`;
