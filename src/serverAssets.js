@@ -34,15 +34,15 @@ const checkAssetsJsonPresent = (path) => {
 
 const getAssets = () => {
   const assetsFilePath = './webpack-assets.json';
-  let chunks = null;
+  let assets = null;
   if (checkAssetsJsonPresent(assetsFilePath)) {
-    chunks = parseAssetsJson(assetsFilePath);
-    return Promise.resolve().then(() => { return chunks; });
+    assets = parseAssetsJson(assetsFilePath);
+    return Promise.resolve().then(() => { return assets; });
   }
 
   return waitForFile(assetsFilePath).then(() => {
-    chunks = parseAssetsJson(assetsFilePath);
-    return chunks;
+    assets = parseAssetsJson(assetsFilePath);
+    return assets;
   });
 };
 
