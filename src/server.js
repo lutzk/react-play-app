@@ -35,11 +35,6 @@ const startServer = (assets) => {
     const store = createStore(history, client);
     const routes = getRoutes(store);
 
-    // in dev
-    if (req.devAssets) {
-      assetsObj = req.devAssets;
-    }
-
     const hydrateOnClient = (_assets) => {
       return res.send(
         `${doctype}${ReactDOM.renderToString(
@@ -54,6 +49,15 @@ const startServer = (assets) => {
           assets={_assets}
           component={_component} />);
     };
+
+    // in dev
+    if (global.__DEVELOPMENT__ && req.devAssets) {
+      assetsObj = req.devAssets;
+      assetsObj.javascript = {
+        vendor: assetsObj.javascript.vendor,
+        main: assetsObj.javascript.main
+      };
+    }
 
     if (global.__DISABLE_SSR__) {
       hydrateOnClient(assetsObj);

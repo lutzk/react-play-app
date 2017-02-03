@@ -22,6 +22,10 @@ checkPip();
 
 const assetsPromise = getAssets();
 assetsPromise.then((assets) => {
+  assets.javascript = {
+    vendor: assets.javascript.vendor,
+    main: assets.javascript.main
+  };
   import('./server').then((server) => {
     return server.default(assets);
   });
