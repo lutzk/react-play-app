@@ -1,8 +1,7 @@
 const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigClient;
-const assetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
-const vendorChunkPlugin = require('webpack-vendor-chunk-plugin');
+const AssetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
 const assetsJsonPluginConfig = require('./webpackCommons').assetsJsonPluginConfig;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
@@ -13,12 +12,7 @@ module.exports = {
     hints: false
   },
   entry: {
-    main: [
-      'webpack-hot-middleware/client?path=http://' + config.host + ':' + config.assetServerPort + '/__webpack_hmr',
-      'theme/styles/main.sass',
-      'client.js'
-    ],
-    'vendor': [
+    vendor: [
       'react',
       'react-dom',
       'redux',
@@ -32,6 +26,11 @@ module.exports = {
       'superagent',
       'classnames',
       'lodash-es'
+    ],
+    main: [
+      'webpack-hot-middleware/client?path=http://' + config.host + ':' + config.assetServerPort + '/__webpack_hmr',
+      'theme/styles/main.sass',
+      'client.js'
     ]
   },
   output: {
@@ -43,7 +42,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/, exclude: /node_modules/,
+        test: /\.js$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
@@ -52,10 +52,12 @@ module.exports = {
           { loader: 'eslint-loader' }
         ]
       },
-      { 
+      {
         test: /\.css$/,
-        use: 'style-loader',
-        use: 'css-loader'
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' }
+        ]
       },
       {
         test: /\.(scss|sass)$/,
@@ -150,7 +152,7 @@ module.exports = {
     extensions: ['.json', '.js', '.jsx', '.css', '.scss', '.sass']
   },
   plugins: [
-    new assetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
+    new AssetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
     new CaseSensitivePathsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),

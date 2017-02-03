@@ -1,11 +1,9 @@
 const config = require('./webpackCommons').webpackCommons;
+const babelrc = require('./babelConfig').babelConfigServer;
 const webpack = require('webpack');
-const rootPath = process.cwd() + '/';
 const CleanPlugin = require('clean-webpack-plugin');
 const nodeExternals = require('webpack-node-externals')();
-const vendorChunkPlugin = require('webpack-vendor-chunk-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const babelrc = require('./babelConfig').babelConfigServer;
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
@@ -38,7 +36,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/, exclude: /node_modules/,
+        test: /\.js$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
@@ -47,7 +46,7 @@ module.exports = {
           { loader: 'eslint-loader' }
         ]
       },
-      { 
+      {
         test: /\.css$/,
         use: [{ loader: 'css-loader/locals' }]
       },
