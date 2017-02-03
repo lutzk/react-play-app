@@ -19,13 +19,7 @@ injectTapEventPlugin();
 
 const app = new Express();
 const server = new http.Server(app);
-
 const doctype = '<!doctype html>\n';
-let getDevAssets = null;
-
-if (__DEVELOPMENT__) {
-  getDevAssets = require('./serverAssets').default;
-}
 
 const startServer = (assets) => {
 
@@ -33,7 +27,7 @@ const startServer = (assets) => {
 
   app.use(compression())
   .use(Express.static(path.join(process.cwd(), './static')))
-  .use(devAssetsMiddleware(getDevAssets))
+  .use(devAssetsMiddleware())
   .use((req, res) => {
 
     const client = new ApiClient(req);
