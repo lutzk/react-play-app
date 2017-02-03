@@ -47,7 +47,12 @@ export default class Html extends Component {
             Object.keys(assets.javascript)
             .map((script, key) => {
               if (assets.javascript[script]) {
-                return <script key={key} src={assets.javascript[script]} charSet="UTF-8" />;
+                return (
+                  <script
+                    key={key}
+                    charSet="UTF-8"
+                    src={assets.javascript[script]} />
+                );
               }
               return null;
             }
