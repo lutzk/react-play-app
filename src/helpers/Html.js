@@ -29,7 +29,7 @@ export default class Html extends Component {
         <head>
 
           { /* styles (will be present only in production with webpack extract text plugin) */ }
-          { /* Object.keys(assets.styles).map((style, key) =>
+          { Object.keys(assets.styles).map((style, key) =>
             <link
               key={key}
               rel="stylesheet"
@@ -37,7 +37,7 @@ export default class Html extends Component {
               type="text/css"
               media="screen, projection"
               charSet="UTF-8" />
-          ) */ }
+          )}
         </head>
         <body>
           <div id="content" className="content" dangerouslySetInnerHTML={htmlContent} />

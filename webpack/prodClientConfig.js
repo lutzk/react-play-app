@@ -1,39 +1,15 @@
-const path = require('path');
+const strip = require('strip-loader');
+const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
+const babelrc = require('./babelConfig').babelConfigProdClient;
 const CleanPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const strip = require('strip-loader');
-const relativeAssetsPath = 'static/dist/assets/';
-const assetsPath = path.join(relativeAssetsPath);
-const rootPath = process.cwd() + '/';
-
+const AssetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
+const assetsJsonPluginConfig = require('./webpackCommons').assetsJsonPluginProdConfig;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const vendorChunkPlugin = require('webpack-vendor-chunk-plugin');
 
-const isomorphicToolsConfig = require('./isomorphicToolsConfig')
-const isomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin');
-const isomorphicTools = new isomorphicToolsPlugin(isomorphicToolsConfig());
-
-const embedLimit = 10240;
-const babelrc = {
-  ignore: "/node_modules/",
-  babelrc: false,
-  presets: ["react", ["es2015", { modules: false }], "stage-0"],
-  plugins: [
-    "transform-runtime",
-    "syntax-dynamic-import",
-    "transform-decorators-legacy",
-    ["react-transform", {
-        transforms: [{
-            transform: "react-transform-catch-errors",
-            imports: ["react", "redbox-react"]
-          }
-        ]
-    }]
-  ]
-}
 module.exports = {
-  context: path.resolve(__dirname, '..'),
+  context: config.context,
   entry: {
     main: [
       'theme/styles/main.sass',
@@ -56,7 +32,7 @@ module.exports = {
     ]
   },
   output: {
-    path: assetsPath,
+    path: config.assetsProdPath,
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[name]-[chunkhash].js',
     publicPath: '/dist/assets/'
@@ -81,7 +57,7 @@ module.exports = {
             'style-loader',
             'css-loader'
           ],
-          fallbackLoader: "style-loader"
+          fallbackLoader: 'style-loader'
         })
       },
       {
@@ -97,7 +73,7 @@ module.exports = {
               query: { outputStyle: 'compressed' }
             }
           ],
-          fallbackLoader: "style-loader"
+          fallbackLoader: 'style-loader'
         })
       },
       {
@@ -106,7 +82,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -118,7 +94,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/font-woff'
             }
           }
@@ -130,7 +106,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'application/octet-stream'
             }
           }
@@ -146,19 +122,20 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit,
+              limit: config.embedLimit,
               mimetype: 'image/svg+xml'
             }
           }
         ]
       },
       {
-        test: isomorphicTools.regular_expression('images'),
+        // test: isomorphicTools.regular_expression('images'),
+        test: /\.(jpg|png|gif|svg|ico)$/,
         use: [
           {
             loader: 'url-loader',
             options: {
-              limit: embedLimit
+              limit: config.embedLimit
             }
           }
         ]
@@ -174,6 +151,7 @@ module.exports = {
     extensions: ['.json', '.js', '.css', '.scss', '.sass']
   },
   plugins: [
+    new AssetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
@@ -191,8 +169,8 @@ module.exports = {
         if_return: true,
         join_vars: true,
       },
-      mangle: { 
-        props: { 
+      mangle: {
+        props: {
           regex: /_$/
         }
       },
@@ -200,8 +178,8 @@ module.exports = {
         comments: false
       },
     }),
-    new CleanPlugin([relativeAssetsPath], {
-      'root': rootPath
+    new CleanPlugin([config.relativeAssetsPath], {
+      root: config.rootPath
     }),
     new ExtractTextPlugin({
       filename: '[name]-[chunkhash].css',
@@ -224,8 +202,7 @@ module.exports = {
       name: 'vendor',
       filename: '[name]-[chunkhash].js',
       minChunks: Infinity
-    }),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    isomorphicTools
+    })
+    // new webpack.optimize.AggressiveMergingPlugin(),
   ]
 };
