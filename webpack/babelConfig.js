@@ -20,6 +20,7 @@ const babelConfigServerProd = {
   babelrc: false,
   presets: ['react', 'es2015', 'stage-0'],
   plugins: [
+    'transform-runtime',
     'syntax-dynamic-import',
     'transform-decorators-legacy'
   ]
@@ -47,6 +48,7 @@ const babelConfigProdClient = {
   babelrc: false,
   presets: ['react', ['es2015', { modules: false }], 'stage-0'],
   plugins: [
+    'transform-runtime',
     'syntax-dynamic-import',
     'transform-decorators-legacy'
   ]
