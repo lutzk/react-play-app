@@ -152,7 +152,7 @@ module.exports = {
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: true,
+        warnings: false,
         screw_ie8: true,
         conditionals: true,
         unused: true,
