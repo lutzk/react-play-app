@@ -12,21 +12,7 @@ module.exports = {
     hints: false
   },
   entry: {
-    vendor: [
-      'react',
-      'react-dom',
-      'redux',
-      'react-redux',
-      'react-router',
-      'react-router-redux',
-      'react-router-scroll',
-      'react-tap-event-plugin',
-      'redux-connect',
-      'redux-thunk',
-      'superagent',
-      'classnames',
-      'lodash-es'
-    ],
+    vendor: config.vendorList,
     main: [
       'webpack-hot-middleware/client?path=http://' + config.host + ':' + config.assetServerPort + '/__webpack_hmr',
       'theme/styles/main.sass',

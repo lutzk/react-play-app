@@ -20,7 +20,24 @@ const webpackCommons = {
   serverBuildPath: path.resolve(__dirname, '../bin/'),
   relativeServerBuildPath: 'bin/server.prod.js',
   relativeAssetsPath: 'static/dist/',
-  relativeServerPath: 'static/server/'
+  relativeServerPath: 'static/server/',
+  imageRegex: /\.(jpg|png|gif|svg|ico)$/,
+  resolveExtensions: ['.json', '.js', '.css', '.scss', '.sass'],
+  vendorList: [
+    'react',
+    'react-dom',
+    'redux',
+    'react-redux',
+    'react-router',
+    'react-router-redux',
+    'react-router-scroll',
+    'react-tap-event-plugin',
+    'redux-connect',
+    'redux-thunk',
+    'superagent',
+    'classnames',
+    'lodash-es'
+  ]
 };
 
 const assetsJsonPluginConfig = {
@@ -39,21 +56,8 @@ const assetsJsonPluginConfig = {
   }
 };
 
-const assetsJsonPluginProdConfig = {
-  webpack: {
-    output: {
-      path: webpackCommons.context,
-    },
-    context: webpackCommons.context,
-    devServer: {
-      publicPath: webpackCommons.publicProdPath,
-    }
-  },
-  plugin: {
-    silent: false,
-    chunk_info_filename: 'webpack-assets.json'
-  }
-};
+const assetsJsonPluginProdConfig = JSON.parse(JSON.stringify(assetsJsonPluginConfig));
+assetsJsonPluginProdConfig.webpack.devServer.publicPath = webpackCommons.publicProdPath;
 
 module.exports = {
   webpackCommons: webpackCommons,

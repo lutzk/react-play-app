@@ -1,21 +1,4 @@
-const babelConfigServer = {
-  ignore: '/node_modules/',
-  babelrc: false,
-  presets: ['react', 'es2015', 'stage-0'],
-  plugins: [
-    'transform-runtime',
-    'syntax-dynamic-import',
-    'transform-decorators-legacy',
-    ['react-transform', {
-      transforms: [{
-        transform: 'react-transform-catch-errors',
-        imports: ['react', 'redbox-react']
-      }]
-    }]
-  ]
-};
-
-const babelConfigServerProd = {
+const babelConfigBase = {
   ignore: '/node_modules/',
   babelrc: false,
   presets: ['react', 'es2015', 'stage-0'],
@@ -26,33 +9,28 @@ const babelConfigServerProd = {
   ]
 };
 
-const babelConfigClient = {
-  ignore: '/node_modules/',
-  babelrc: false,
-  presets: ['react', ['es2015', { modules: false }], 'stage-0'],
-  plugins: [
-    'transform-runtime',
-    'syntax-dynamic-import',
-    'transform-decorators-legacy',
-    ['react-transform', {
-      transforms: [{
-        transform: 'react-transform-catch-errors',
-        imports: ['react', 'redbox-react']
-      }]
+const esModules = ['es2015', { modules: false }];
+const devPlugins = [
+  'react-transform',
+  {
+    transforms: [{
+      transform: 'react-transform-catch-errors',
+      imports: ['react', 'redbox-react']
     }]
-  ]
-};
+  }
+];
 
-const babelConfigProdClient = {
-  ignore: '/node_modules/',
-  babelrc: false,
-  presets: ['react', ['es2015', { modules: false }], 'stage-0'],
-  plugins: [
-    'transform-runtime',
-    'syntax-dynamic-import',
-    'transform-decorators-legacy'
-  ]
-};
+const babelConfigClient = JSON.parse(JSON.stringify(babelConfigBase));
+const babelConfigProdClient = JSON.parse(JSON.stringify(babelConfigBase));
+
+const babelConfigServer = JSON.parse(JSON.stringify(babelConfigBase));
+const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
+
+babelConfigClient.plugins.push(devPlugins);
+babelConfigServer.plugins.push(devPlugins);
+
+babelConfigClient.presets[1] = esModules;
+babelConfigProdClient.presets[1] = esModules;
 
 module.exports = {
   babelConfigServer: babelConfigServer,

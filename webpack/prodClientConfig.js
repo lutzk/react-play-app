@@ -15,27 +15,13 @@ module.exports = {
       'theme/styles/main.sass',
       'client.js'
     ],
-    vendor: [
-      'react',
-      'react-dom',
-      'redux',
-      'react-redux',
-      'react-router',
-      'react-router-redux',
-      'react-router-scroll',
-      'react-tap-event-plugin',
-      'redux-connect',
-      'redux-thunk',
-      'superagent',
-      'classnames',
-      'lodash-es'
-    ]
+    vendor: config.vendorList
   },
   output: {
     path: config.assetsProdPath,
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[name]-[chunkhash].js',
-    publicPath: '/dist/assets/'
+    publicPath: config.publicProdPath
   },
   module: {
     rules: [
@@ -129,8 +115,7 @@ module.exports = {
         ]
       },
       {
-        // test: isomorphicTools.regular_expression('images'),
-        test: /\.(jpg|png|gif|svg|ico)$/,
+        test: config.imageRegex,
         use: [
           {
             loader: 'url-loader',
@@ -142,13 +127,12 @@ module.exports = {
       }
     ]
   },
-  // progress: true,
   resolve: {
     modules: [
       'src',
       'node_modules'
     ],
-    extensions: ['.json', '.js', '.css', '.scss', '.sass']
+    extensions: config.resolveExtensions
   },
   plugins: [
     new AssetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
@@ -158,7 +142,7 @@ module.exports = {
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-        warnings: true,
+        warnings: false,
         screw_ie8: true,
         conditionals: true,
         unused: true,
@@ -203,6 +187,5 @@ module.exports = {
       filename: '[name]-[chunkhash].js',
       minChunks: Infinity
     })
-    // new webpack.optimize.AggressiveMergingPlugin(),
   ]
 };
