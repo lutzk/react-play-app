@@ -12,3 +12,5 @@ do.sublime-workspace
 yarn-error.log
 
 npm-debug.log
+
+bin/*
