@@ -12,7 +12,7 @@ const webpackCommons = {
   context: context,
   rootPath: rootPath,
   publicPath: 'http://' + host + ':' + assetServerPort + '/dist/',
-  publicProdPath: 'http://' + host + ':' + serverPort + '/dist/assets/',
+  publicProdPath: '/dist/assets/',
   assetsPath: path.resolve(__dirname, '../static/dist'),
   assetsProdPath: path.resolve(__dirname, '../static/dist/assets/'),
   embedLimit: 10240,
