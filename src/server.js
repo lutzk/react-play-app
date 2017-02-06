@@ -26,6 +26,13 @@ const startServer = (assets) => {
   let assetsObj = assets;
 
   app.use(compression())
+  .use((req, res, next) => {
+    if (req.url === '/favicon.ico') {
+      res.writeHead(200, { 'Content-Type': 'image/x-icon' });
+      return res.end();
+    }
+    return next();
+  })
   .use(Express.static(path.join(process.cwd(), './static')))
   .use(devAssetsMiddleware())
   .use((req, res) => {
