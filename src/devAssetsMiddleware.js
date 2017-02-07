@@ -15,7 +15,8 @@ const devAssetsMiddleware = () => {
       .get(assetsJsonPath)
       .then((r, err) => { // eslint-disable-line
         if (r) {
-          devAssets = filenameInfo(r.body, 'http://localhost:3011/dist/');
+          const publicPath = r.body.publicPath || 'localhost:3011/dist/';
+          devAssets = filenameInfo(r.body, publicPath);
           if (!devAssets) {
             return res.status(500).send('no assets found for server render');
           }
