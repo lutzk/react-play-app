@@ -20,6 +20,7 @@ injectTapEventPlugin();
 const app = new Express();
 const server = new http.Server(app);
 const doctype = '<!doctype html>\n';
+const staticDir = path.join(process.cwd(), './static');
 
 const startServer = (assets) => {
 
@@ -33,7 +34,7 @@ const startServer = (assets) => {
     }
     return next();
   })
-  .use(Express.static(path.join(process.cwd(), './static')))
+  .use(Express.static(staticDir))
   .use(devAssetsMiddleware())
   .use((req, res) => {
 
