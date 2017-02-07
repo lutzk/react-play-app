@@ -1,8 +1,6 @@
 const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigClient;
-const AssetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
-const assetsJsonPluginConfig = require('./webpackCommons').assetsJsonPluginConfig;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
 module.exports = {
@@ -138,7 +136,6 @@ module.exports = {
     extensions: ['.json', '.js', '.jsx', '.css', '.scss', '.sass']
   },
   plugins: [
-    new AssetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
     new CaseSensitivePathsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
