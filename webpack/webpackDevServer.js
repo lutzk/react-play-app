@@ -1,8 +1,8 @@
 const Express = require('express');
 const webpack = require('webpack');
-
 const config = require('./webpackCommons').webpackCommons;
 const webpackConfig = require('./devClientConfig');
+
 const compiler = webpack(webpackConfig);
 
 const serverOptions = {
@@ -13,19 +13,27 @@ const serverOptions = {
   inline: true,
   lazy: false,
   publicPath: webpackConfig.output.publicPath,
-  headers: {'Access-Control-Allow-Origin': '*'},
-  stats: { colors: true }
+  headers: { 'Access-Control-Allow-Origin': '*' },
+  stats: { colors: true },
+  serverSideRender: true
 };
 
 const app = new Express();
 
-app.use(require('webpack-dev-middleware')(compiler, serverOptions));
-app.use(require('webpack-hot-middleware')(compiler));
-
-app.listen(config.assetServerPort, function onAppListening(err) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.info('==> Webpack asset dev server listening on port %s', config.assetServerPort);
-  }
-});
+app.use(require('webpack-dev-middleware')(compiler, serverOptions))
+  .use(require('webpack-hot-middleware')(compiler))
+  .get('/webpack-asset.json', (req, res, next) => {
+    const assetsByChunkName = res.locals.webpackStats.toJson();// .assetsByChunkName;
+    res.send(assetsByChunkName);
+    next();
+  })
+  .listen(
+    config.assetServerPort,
+    function onAppListening(err) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.info('==> Webpack asset dev server listening on port %s', config.assetServerPort);
+      }
+    }
+);
