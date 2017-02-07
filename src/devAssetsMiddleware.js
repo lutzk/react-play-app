@@ -11,21 +11,20 @@ const devAssetsMiddleware = () => {
 
     let devAssets = null;
     const assetsJsonPath = 'localhost:3011/webpack-asset.json';
-    const getAssets = (path) => {
-      return new Promise((resolve, reject) => {
-        const request = superagent.get(path);
-        request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
-      });
-    };
-
-    getAssets(assetsJsonPath)
-      .then((assets) => {
-        devAssets = filenameInfo(assets, 'http://localhost:3011/dist/');
-        if (!devAssets) {
-          return res.status(500).send('no assets found for server render, make sure ./webpack-assets.json exists and refresh');
+    superagent
+      .get(assetsJsonPath)
+      .then((r, err) => { // eslint-disable-line
+        if (r) {
+          devAssets = filenameInfo(r.body, 'http://localhost:3011/dist/');
+          if (!devAssets) {
+            return res.status(500).send('no assets found for server render');
+          }
+          res.locals.devAssets = formatAssets(devAssets);
+          return next();
         }
-        req.devAssets = formatAssets(devAssets);
-        return next();
+        if (err) {
+          console.error(err);
+        }
       });
   };
 };

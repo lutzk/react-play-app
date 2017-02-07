@@ -59,8 +59,8 @@ const startServer = (assets) => {
     };
 
     // in dev
-    if (global.__DEVELOPMENT__ && req.devAssets) {
-      assetsObj = req.devAssets;
+    if (global.__DEVELOPMENT__ && res.locals.devAssets) {
+      assetsObj = res.locals.devAssets;
     }
 
     if (global.__DISABLE_SSR__) {
