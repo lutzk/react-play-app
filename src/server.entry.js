@@ -1,4 +1,4 @@
-import getAssets from './serverAssets';
+import getAssets, { formatAssets } from './serverAssets';
 
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
@@ -22,11 +22,7 @@ checkPip();
 
 const assetsPromise = getAssets();
 assetsPromise.then((assets) => {
-  assets.javascript = {
-    vendor: assets.javascript.vendor,
-    main: assets.javascript.main
-  };
   import('./server').then((server) => {
-    return server.default(assets);
+    return server.default(formatAssets(assets));
   });
 });
