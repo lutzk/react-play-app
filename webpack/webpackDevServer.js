@@ -21,7 +21,8 @@ const serverOptions = {
 
 const app = new Express();
 
-app.use(require('webpack-dev-middleware')(compiler, serverOptions))
+app
+  .use(require('webpack-dev-middleware')(compiler, serverOptions))
   .use(require('webpack-hot-middleware')(compiler))
   .get('/webpack-assets', (req, res, next) => {
     const json = res.locals.webpackStats.toJson();
