@@ -22,9 +22,12 @@ const app = new Express();
 
 app.use(require('webpack-dev-middleware')(compiler, serverOptions))
   .use(require('webpack-hot-middleware')(compiler))
-  .get('/webpack-asset.json', (req, res, next) => {
-    const assetsByChunkName = res.locals.webpackStats.toJson();// .assetsByChunkName;
-    res.send(assetsByChunkName);
+  .get('/webpack-assets', (req, res, next) => {
+    const json = res.locals.webpackStats.toJson();
+    res.send({
+      publicPath: json.publicPath,
+      assetsByChunkName: json.assetsByChunkName
+    });
     next();
   })
   .listen(
