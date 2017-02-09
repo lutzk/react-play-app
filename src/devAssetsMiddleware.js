@@ -26,7 +26,8 @@ const devAssetsMiddleware = () => {
         if (err) {
           console.error(err);
         }
-      });
+      })
+      .catch(e => console.error(e));
   };
 };
 
