@@ -33,7 +33,7 @@ app.use(require('webpack-dev-middleware')(compiler, serverOptions))
   })
   .listen(
     config.assetServerPort,
-    function onAppListening(err) {
+    (err) => {
       if (err) {
         console.error(err);
       } else {
