@@ -10,12 +10,13 @@ const devAssetsMiddleware = () => {
     }
 
     let devAssets = null;
-    const assetsJsonPath = 'localhost:3011/webpack-asset.json';
+    const assetsJsonPath = 'http://localhost:3011/webpack-assets';// use config
+
     superagent
       .get(assetsJsonPath)
       .then((r, err) => { // eslint-disable-line
         if (r) {
-          const publicPath = r.body.publicPath || 'localhost:3011/dist/';
+          const publicPath = r.body.publicPath || 'http://localhost:3011/dist/';
           devAssets = filenameInfo(r.body, publicPath);
           if (!devAssets) {
             return res.status(500).send('no assets found for server render');
