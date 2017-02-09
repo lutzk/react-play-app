@@ -8,13 +8,14 @@ const compiler = webpack(webpackConfig);
 const serverOptions = {
   contentBase: 'http://' + config.host + ':' + config.assetServerPort,
   quiet: true,
+  quiet: false,
   noInfo: false,
   hot: true,
   inline: true,
   lazy: false,
   publicPath: webpackConfig.output.publicPath,
   headers: { 'Access-Control-Allow-Origin': '*' },
-  stats: { colors: true },
+  stats: { chunks: false, colors: true },
   serverSideRender: true
 };
 
