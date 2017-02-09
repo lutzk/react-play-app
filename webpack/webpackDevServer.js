@@ -6,8 +6,7 @@ const webpackConfig = require('./devClientConfig');
 const compiler = webpack(webpackConfig);
 
 const serverOptions = {
-  contentBase: 'http://' + config.host + ':' + config.assetServerPort,
-  quiet: true,
+  contentBase: `http://${config.host}:${config.assetServerPort}`,
   quiet: false,
   noInfo: false,
   hot: true,
