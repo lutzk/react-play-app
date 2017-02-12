@@ -1,0 +1,41 @@
+@import "../../theme/styles/theme"
+
+.wrapper
+  +clearfix
+  min-width: 1100px
+  background:
+    image: url('./husky.jpg')
+    repeat: no-repeat
+    position: center
+
+.main_conatiner
+  &.sideBarShow
+    padding-left: 230px
+
+.content_wrapper
+  margin-top: -$header_height
+  .row
+    position: relative
+    
+
+.Page
+  +clearfix
+  +margin-trailer(2)
+
+.main_conatiner
+  position: relative
+
+.content
+  background:
+    image: url('./husky.jpg')
+    repeat: repeat
+    position: center top
+    size: contain
+    color: $grey
+  color: red
+    
+.wrapper
+  height: 100%
+  min-height: 100%
+  &.with_footer
+    margin-bottom: -$footer_height
