@@ -47,7 +47,7 @@ const getAssets = () => {
 };
 
 export const formatAssets = (assetsObj) => {
-  if (assetsObj.javascript.vendor !== undefined && assetsObj.javascript.main !== undefined) {
+  if (assetsObj.javascript !== undefined && assetsObj.javascript.vendor !== undefined && assetsObj.javascript.main !== undefined) {
     assetsObj.javascript = {
       vendor: assetsObj.javascript.vendor,
       main: assetsObj.javascript.main
