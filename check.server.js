@@ -2,11 +2,12 @@
 
 (function () {
   require('./setEnv');
+  require('./checkPip');
   const serverFilePath = './static/server/server.dev.js';
   const fs = require('fs');
   let found = false;
   let checker = null;
-  let file = null;// eslint-disable-line
+  let file = null;
 
   const check = () => {
     try {
@@ -20,12 +21,10 @@
       if (found) {
         found = false;
         file = null;
-        if (require(serverFilePath)) {// eslint-disable-line
+        if (require(serverFilePath)) {
           console.log('found, load server bundle ...');
-          require('./checkPip');
-          require(serverFilePath);// eslint-disable-line
-          clearInterval(checker);
-          return;// eslint-disable-line
+          require(serverFilePath);
+          return clearInterval(checker);
         }
       }
     }
