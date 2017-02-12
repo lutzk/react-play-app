@@ -8,9 +8,12 @@ import {
 import PATHS from './pathsConfig';
 
 export default function () {
-
   const getHome = () => {
     return import('./containers/Home/Home').then((m) => { return m.default; });
+  };
+
+  const getInfo = () => {
+    return import('./containers/Info/Info').then((i) => { return i.default; });
   };
 
   const getNotFound = () => {
@@ -22,6 +25,7 @@ export default function () {
       <IndexRoute component={Login} />
       <Route path={PATHS.LOGIN} component={Login} />
       <Route path={PATHS.HOME} getComponent={getHome} />
+      <Route path={PATHS.INFO} getComponent={getInfo} />
       <Route path={PATHS.NOT_FOUND} getComponent={getNotFound} />
     </Route>
   );
