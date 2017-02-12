@@ -26,9 +26,13 @@ const devAssetsMiddleware = () => {
         }
         if (err) {
           console.error(err);
+          return res.status(500).send(err);
         }
       })
-      .catch(e => console.error(e));
+      .catch((e) => {
+        console.error(e);
+        return res.status(500).send(e);
+      });
   };
 };
 
