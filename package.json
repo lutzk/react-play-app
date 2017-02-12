@@ -1,6 +1,7 @@
 {
   "main": "bin/server.js",
   "scripts": {
+    "set-env": "node ./setEnv",
     "check-dev-server": "node ./check.server",
     "build-dev-server-watch": "webpack --colors --hide-modules --display-error-details --config webpack/devServerConfig.js --watch",
     "run-dev-server-watch": "npm-run-all --parallel check-dev-server build-dev-server-watch",

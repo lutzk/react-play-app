@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-(function(){
+(function () {
+  require('./setEnv');
   const serverFilePath = './static/server/server.dev.js';
   const fs = require('fs');
   let found = false;
   let checker = null;
-  let file = null;
-  
+  let file = null;// eslint-disable-line
+
   const check = () => {
     try {
       found = true;
@@ -19,14 +20,16 @@
       if (found) {
         found = false;
         file = null;
-        if (require(serverFilePath)) {
+        if (require(serverFilePath)) {// eslint-disable-line
           console.log('found, load server bundle ...');
-          require(serverFilePath);
-          return clearInterval(checker);
+          require('./checkPip');
+          require(serverFilePath);// eslint-disable-line
+          clearInterval(checker);
+          return;// eslint-disable-line
         }
       }
     }
-  }
+  };
 
   const waitInitial = setTimeout(() => {
     console.log('check for server bundle ...');

@@ -1,7 +1,9 @@
+require('../setEnv');
 const Express = require('express');
 const webpack = require('webpack');
 const config = require('./webpackCommons').webpackCommons;
 const webpackConfig = require('./devClientConfig');
+const appConfig = require('../src/config');
 
 const compiler = webpack(webpackConfig);
 
@@ -45,7 +47,7 @@ const app = new Express();
 app
   .use(require('webpack-dev-middleware')(compiler, serverOptions))
   .use(require('webpack-hot-middleware')(compiler))
-  .get('/webpack-assets', (req, res, next) => {
+  .get(appConfig.ssrAssetsRoute, (req, res, next) => {
     const json = res.locals.webpackStats.toJson(StatsToJsonConfig);
     res.send({
       publicPath: json.publicPath,
@@ -59,7 +61,7 @@ app
       if (err) {
         console.error(err);
       } else {
-        console.info('==> Webpack asset dev server listening on port %s', config.assetServerPort);
+        console.info('==> Webpack assets dev server listening on port %s', config.assetServerPort);
       }
     }
 );
