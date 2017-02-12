@@ -2,7 +2,7 @@
   "main": "bin/server.js",
   "scripts": {
     "check-dev-server": "node ./check.server",
-    "build-dev-server-watch": "webpack --display-used-exports --colors --display-error-details --config webpack/devServerConfig.js --watch",
+    "build-dev-server-watch": "webpack --colors --hide-modules --display-error-details --config webpack/devServerConfig.js --watch",
     "run-dev-server-watch": "npm-run-all --parallel check-dev-server build-dev-server-watch",
     "assets-watch-server": "node webpack/webpackDevServer.js",
     "build-prod-server": "webpack --colors --display-error-details --config webpack/prodServerConfig.js",
