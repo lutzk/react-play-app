@@ -9,7 +9,7 @@ const methods = ['get', 'post', 'put', 'patch', 'del'];
  *
  * Remove it at your own risk.
  */
- 
+
  // use superagent promise
  // not tested
 class _ApiClient1 {
