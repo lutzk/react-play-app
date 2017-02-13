@@ -1,6 +1,4 @@
-// require('babel-polyfill');
-
-const environment = {
+const env = {
   development: {
     isProduction: false
   },
@@ -11,12 +9,10 @@ const environment = {
 
 const appConfig = Object.assign(
   {
-    appName: 'advertiser-app',
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT || 3010,
-    apiBasePath: '/api/v1',
-    apiHost: process.env.API_HOST || '',
-    apiPort: process.env.API_PORT || 3040,
+    host: process.env.HOST,
+    port: process.env.PORT,
+    ssrAssetsRoute: process.env.SSR_ASSETS_ROUTE,
+    devAssetServerPort: process.env.DEV_ASSETS_SERVER_PORT || 3011,
     app: {
       title: 'app',
       meta: {
@@ -24,7 +20,7 @@ const appConfig = Object.assign(
       }
     }
   },
-  environment
+  env
 );
 
 export default appConfig;
