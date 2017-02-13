@@ -24,39 +24,41 @@ export default class Html extends Component {
     const windowData = { __html: `window.__data=${serialize(store.getState())};` };
     const htmlContent = { __html: content };
 
+    const css = Object.keys(assets.styles).map((style, key) => {
+      if (assets.styles[style]) {
+        return (
+          <link
+            key={key}
+            rel="stylesheet"
+            href={assets.styles[style]}
+            type="text/css"
+            media="screen, projection"
+            charSet="UTF-8" />);
+      }
+      return null;
+    });
+
+    const js = Object.keys(assets.javascript).map((script, key) => {
+      if (assets.javascript[script]) {
+        return (
+          <script
+            key={key}
+            charSet="UTF-8"
+            src={assets.javascript[script]} />
+        );
+      }
+      return null;
+    });
+
     return (
       <html>
         <head>
-
-          { /* styles (will be present only in production with webpack extract text plugin) */ }
-          { Object.keys(assets.styles).map((style, key) =>
-            <link
-              key={key}
-              rel="stylesheet"
-              href={assets.styles[style]}
-              type="text/css"
-              media="screen, projection"
-              charSet="UTF-8" />
-          )}
+          {css}
         </head>
         <body>
           <div id="content" className="content" dangerouslySetInnerHTML={htmlContent} />
           <script dangerouslySetInnerHTML={windowData} charSet="UTF-8" />
-          { // Object.keys(assets.javascript)
-            // .sort((k, v) => { if (k < v) { return 1; } return 0; })
-            Object.keys(assets.javascript)
-            .map((script, key) => {
-              if (assets.javascript[script]) {
-                return (
-                  <script
-                    key={key}
-                    charSet="UTF-8"
-                    src={assets.javascript[script]} />
-                );
-              }
-              return null;
-            }
-          )}
+          {js}
         </body>
       </html>
     );
