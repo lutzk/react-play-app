@@ -4,12 +4,11 @@ import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 import { useScroll } from 'react-router-scroll';
+import { AppContainer as HotReloader } from 'react-hot-loader';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ReduxAsyncConnect } from 'redux-connect';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { Router, browserHistory, applyRouterMiddleware, match } from 'react-router';
-import { AppContainer } from 'react-hot-loader';
-
 
 import getRoutes from './routes';
 import ApiClient from './helpers/ApiClient';
@@ -31,7 +30,7 @@ const renderRouter = props =>
 
 const render = (routes, renderProps) => {
   ReactDOM.render(
-    <AppContainer>
+    <HotReloader>
       <Provider store={store} key={`${Math.random()}`}>
         <Router
           render={ renderRouter }
@@ -40,7 +39,7 @@ const render = (routes, renderProps) => {
           { routes }
         </Router>
       </Provider>
-    </AppContainer>,
+    </HotReloader>,
     rootDomNode
   );
 };
