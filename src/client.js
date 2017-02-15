@@ -74,13 +74,8 @@ match(
   (error, redirectLocation, renderProps) => {
     render(routerRoutes, renderProps);
     renderDevStuff();
-    // console.log('match');
-    // console.log(module.hot);
-    if (module.hot) {
-      console.log('module.hot:1');
+    if (__DEVELOPMENT__ && module.hot) {
       module.hot.accept('./routes', () => {
-        console.log('module.hot:2');
-        // const getNextRoutes = require('./routes').default;
         render(getRoutes(store), renderProps);
       });
     }
