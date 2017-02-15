@@ -3,6 +3,9 @@ const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigClient;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
+const hmrSource = `webpack-hot-middleware/client?path=http://${config.host}:${config.assetServerPort}/__webpack_hmr&reload=true`;
+config.vendorList.unshift(hmrSource);
+
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
   context: config.context,
@@ -12,7 +15,8 @@ module.exports = {
   entry: {
     vendor: config.vendorList,
     main: [
-      'webpack-hot-middleware/client?path=http://' + config.host + ':' + config.assetServerPort + '/__webpack_hmr',
+      'react-hot-loader/patch',
+      hmrSource,
       'theme/styles/main.sass',
       'client.js'
     ]

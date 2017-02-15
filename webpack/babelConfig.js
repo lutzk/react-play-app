@@ -4,6 +4,7 @@ const babelConfigBase = {
   presets: ['react', 'es2015', 'stage-0'],
   plugins: [
     'transform-runtime',
+    'react-hot-loader/babel',
     'syntax-dynamic-import',
     'transform-decorators-legacy'
   ]
@@ -28,7 +29,7 @@ const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
 
 babelConfigClient.plugins.push(devPlugins);
 babelConfigServer.plugins.push(devPlugins);
-
+babelConfigServer.presets[1] = esModules;
 babelConfigClient.presets[1] = esModules;
 babelConfigProdClient.presets[1] = esModules;
 

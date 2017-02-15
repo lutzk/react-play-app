@@ -8,6 +8,8 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ReduxAsyncConnect } from 'redux-connect';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { Router, browserHistory, applyRouterMiddleware, match } from 'react-router';
+import { AppContainer } from 'react-hot-loader';
+
 
 import getRoutes from './routes';
 import ApiClient from './helpers/ApiClient';
@@ -29,14 +31,16 @@ const renderRouter = props =>
 
 const render = (routes, renderProps) => {
   ReactDOM.render(
-    <Provider store={store} key="provider">
-      <Router
-        render={ renderRouter }
-        history={ syncHistory }
-        { ...renderProps }>
-        { routes }
-      </Router>
-    </Provider>,
+    <AppContainer>
+      <Provider store={store} key={`${Math.random()}`}>
+        <Router
+          render={ renderRouter }
+          history={ syncHistory }
+          { ...renderProps }>
+          { routes }
+        </Router>
+      </Provider>
+    </AppContainer>,
     rootDomNode
   );
 };
@@ -71,5 +75,15 @@ match(
   (error, redirectLocation, renderProps) => {
     render(routerRoutes, renderProps);
     renderDevStuff();
+    // console.log('match');
+    // console.log(module.hot);
+    if (module.hot) {
+      console.log('module.hot:1');
+      module.hot.accept('./routes', () => {
+        console.log('module.hot:2');
+        // const getNextRoutes = require('./routes').default;
+        render(getRoutes(store), renderProps);
+      });
+    }
   }
 );
