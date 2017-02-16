@@ -1,7 +1,7 @@
 const babelConfigBase = {
   ignore: '/node_modules/',
   babelrc: false,
-  presets: ['react', 'es2015', 'stage-0'],
+  presets: ['react', ['es2015', { modules: false }], 'stage-0'],
   plugins: [
     'transform-runtime',
     'react-hot-loader/babel',
@@ -10,7 +10,6 @@ const babelConfigBase = {
   ]
 };
 
-const esModules = ['es2015', { modules: false }];
 const devPlugins = [
   'react-transform',
   {
@@ -29,9 +28,6 @@ const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
 
 babelConfigClient.plugins.push(devPlugins);
 babelConfigServer.plugins.push(devPlugins);
-babelConfigServer.presets[1] = esModules;
-babelConfigClient.presets[1] = esModules;
-babelConfigProdClient.presets[1] = esModules;
 
 module.exports = {
   babelConfigServer: babelConfigServer,
