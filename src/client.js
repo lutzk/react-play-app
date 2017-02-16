@@ -1,4 +1,5 @@
 import 'babel-polyfill';
+import Perf from 'react-addons-perf';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
@@ -46,7 +47,8 @@ const render = (routes, renderProps) => {
 
 const renderDevStuff = () => {
   if (__DEVELOPMENT__) {
-    window.React = React; // enable debugger
+    window.React = React;
+    window.perf = Perf;// enable debugger
 
     if (!rootDomNode || !rootDomNode.firstChild || !rootDomNode.firstChild.attributes || !rootDomNode.firstChild.attributes['data-react-checksum']) {
       console.error('Server-side React render was discarded. Make sure that your initial render does not contain any client-side code.');
