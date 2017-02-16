@@ -6,7 +6,7 @@ const nodeExternals = require('webpack-node-externals')();
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval',
   context: config.context,
   performance: {
     hints: false
