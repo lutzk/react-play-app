@@ -10,7 +10,7 @@ import { match, createMemoryHistory } from 'react-router';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
 
 import { ApiClient, Html, logJSON } from './helpers';
-import config from './appConfig';
+import appConfig from './appConfig';
 import getRoutes from './routes';
 import createStore from './redux/create';
 import devAssetsMiddleware from './devAssetsMiddleware';
@@ -101,12 +101,12 @@ const startServer = (assets) => {
       });
   });
 
-  if (config.port) {
-    server.listen(config.port, (err) => {
+  if (appConfig.port) {
+    server.listen(appConfig.port, (err) => {
       if (err) {
         logJSON(err, 'error');
       }
-      console.info('Open http://%s:%s in a browser.', config.host, config.port);
+      console.info('Open http://%s:%s in a browser.', appConfig.host, appConfig.port);
     });
   } else {
     console.error('ERROR: No PORT environment variable has been specified');
