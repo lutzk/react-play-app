@@ -16,9 +16,9 @@ import createStore from './redux/create';
 
 const client = new ApiClient();
 const store = createStore(browserHistory, client, window.__data);
-const syncHistory = syncHistoryWithStore(browserHistory, store);
+const history = syncHistoryWithStore(browserHistory, store);
 const rootDomNode = document.getElementById('content');
-const routerRoutes = getRoutes(store);
+const routes = getRoutes(store);
 const asyncConnectRender = applyRouterMiddleware(useScroll());
 
 const renderRouter = props =>
@@ -70,9 +70,9 @@ injectTapEventPlugin();
 FastClick.attach(document.body);
 
 match(
-  { history: syncHistory, routes: routerRoutes },
+  { history, routes },
   (error, redirectLocation, renderProps) => {
-    render(routerRoutes, renderProps);
+    render(routes, renderProps);
     renderDevStuff();
     if (__DEVELOPMENT__ && module.hot) {
       module.hot.accept('./routes', () => {
