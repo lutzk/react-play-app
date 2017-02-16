@@ -2,7 +2,6 @@
 
 (function () {
   require('./setEnv');
-  require('./checkPip');
   const serverFilePath = './static/server/server.dev.js';
   const fs = require('fs');
   let found = false;
