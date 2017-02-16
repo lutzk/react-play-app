@@ -9,7 +9,7 @@
     "build-prod-server": "webpack --colors --display-error-details --config webpack/prodServerConfig.js",
     "build-prod-assets": "webpack --colors --display-error-details --config webpack/prodClientConfig.js",
     "build-prod-all": "npm-run-all --parallel build-prod-server build-prod-assets",
-    "start-prod": "node ./bin/server.prod.js",
+    "start-prod": "node ./startProdServer",
     "lint": "eslint -c .eslintrc src"
   },
   "dependencies": {
@@ -55,6 +55,7 @@
     "npm-run-all": "1.8.0",
     "piping": "^1.0.0-rc.4",
     "react": "^15.4.1",
+    "react-addons-perf": "^15.4.2",
     "react-dom": "^15.4.1",
     "react-hot-loader": "beta",
     "react-redux": "^5.0.1",
