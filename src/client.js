@@ -72,7 +72,7 @@ const renderDevStuff = () => {
     const devToolsDest = document.createElement('div');
     window.document.body.insertBefore(devToolsDest, null);
     ReactDOM.render(
-      <Provider store={store} key="provider">
+      <Provider store={store} key="devToolsProvider">
         <DevTools />
       </Provider>,
       devToolsDest
