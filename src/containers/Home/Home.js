@@ -8,7 +8,12 @@ export default class Home extends Component {
 
     return (
       <div className="home">
-        <h1>home&nbsp;<Link to="/">login</Link>&nbsp;<Link to="/info">info</Link></h1>
+        <h1>home</h1>
+        <p>
+          <Link to="/">login</Link>
+          &nbsp;
+          <Link to="/info">info</Link>
+        </p>
       </div>);
   }
 }

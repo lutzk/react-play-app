@@ -7,7 +7,7 @@ export default class Info extends Component {
 
     return (
       <div>
-        <h1>info<Link to="/home">home</Link></h1>
+        <h1>info&nbsp;<Link to="/home">go home</Link></h1>
       </div>);
   }
 }
