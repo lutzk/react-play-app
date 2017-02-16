@@ -20,6 +20,9 @@ export default function () {
   const getNotFound = () => {
     return import('./containers/NotFound/NotFound').then((m) => { return m.default; });
   };
+  const getHome = () => import('./containers/Home/Home').then((m) => { return m.default; });
+  const getInfo = () => import('./containers/Info/Info').then((m) => { return m.default; });
+  const getNotFound = () => import('./containers/NotFound/NotFound').then((m) => { return m.default; });
 
   return (
     <Route path={PATHS.ROOT} component={App}>
