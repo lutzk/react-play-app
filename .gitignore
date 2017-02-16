@@ -13,4 +13,4 @@ yarn-error.log
 
 npm-debug.log
 
-bin/*
+bin/server.prod.js
