@@ -8,16 +8,17 @@ import {
 import PATHS from './pathsConfig';
 
 export default function () {
+
   const getHome = () => {
     return import('./containers/Home/Home').then((m) => { return m.default; });
   };
 
   const getInfo = () => {
-    return import('./containers/Info/Info').then((i) => { return i.default; });
+    return import('./containers/Info/Info').then((m) => { return m.default; });
   };
 
   const getNotFound = () => {
-    return import('./containers/NotFound/NotFound').then((n) => { return n.default; });
+    return import('./containers/NotFound/NotFound').then((m) => { return m.default; });
   };
 
   return (
