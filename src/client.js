@@ -29,20 +29,32 @@ const renderRouter = props =>
     filter={ item => !item.deferred }
     render={ asyncConnectRender } />;
 
-const render = (routes, renderProps) => {
-  ReactDOM.render(
-    <HotReloader>
-      <Provider store={store} key={`${Math.random()}`}>
-        <Router
-          render={ renderRouter }
-          history={ syncHistory }
-          { ...renderProps }>
-          { routes }
-        </Router>
-      </Provider>
-    </HotReloader>,
+const render = (_routes, renderProps) => {
+  const App = (
+    <Provider store={store} key="appProvider">
+      <Router
+        render={ renderRouter }
+        history={ history }
+        { ...renderProps }>
+        { _routes }
+      </Router>
+    </Provider>);
+
+  /* eslint-disable */
+  if (__DEVELOPMENT__) {
+    return ReactDOM.render(
+      <HotReloader>
+        {App}
+      </HotReloader>,
+      rootDomNode
+    );
+  }
+
+  return ReactDOM.render(
+    App,
     rootDomNode
   );
+  /* eslint-enable */
 };
 
 const renderDevStuff = () => {
