@@ -1,11 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import './Login.sass';
 
-@connect( state =>
-  ({ app: state.app })
-)
 export default class Login extends Component {
 
   static propTypes = {

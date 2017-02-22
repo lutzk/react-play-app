@@ -1,5 +1,7 @@
 extends:
-  eslint-config-airbnb
+  - airbnb-base
+  - plugin:react/recommended
+  - plugin:jsx-a11y/recommended
 
 parser:
   babel-eslint
@@ -36,16 +38,17 @@ rules:
   linebreak-style: 0
   global-require: 0
   arrow-body-style: 0
-  import/no-extraneous-dependencies: 0
-  import/no-unresolved: 0
+  class-methods-use-this: 0
+  #import/no-extraneous-dependencies: 0
+  #import/no-unresolved: 0
   import/extensions: 0
+  react/prefer-stateless-function: 1
   react/no-danger: 0
   react/no-children-prop: 0
   react/forbid-prop-types: 0
-  react/jsx-curly-spacing: 0
+  #react/jsx-curly-spacing: 0
   react/jsx-closing-bracket-location: 0
   react/jsx-filename-extension: 0
-  react/prefer-stateless-function: 0
   jsx-a11y/html-has-lang: 0
 
 globals:
@@ -54,9 +57,8 @@ globals:
   __SERVER__: true
   __DISABLE_SSR__: true
   __DEVTOOLS__: true
-  socket: true
-  webpackIsomorphicTools: true
 
 plugins:
   - react
   - import
+  - jsx-a11y
