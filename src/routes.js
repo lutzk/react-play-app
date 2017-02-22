@@ -5,19 +5,19 @@ import {
     Login
   } from './containers';
 
-import PATHS from './pathsConfig';
+import PATHS from './config/pathsConfig';
 
-export default function () {
+const getRoutes = () => {
 
-  /*
-  const _getComponent = (path) => {
+ /*
+ const _getComponent = () => {
 
     // with string concat:
     //   on navigating there:
     //     Uncaught Error: Cannot find module './containers/Home/Home'.
     // code:
-    // const _path = './containers/' + path;// eslint-disable-line
-    // return () => import(_path).then((m) => { return m.default; });// eslint-disable-line
+    const _path = './containers/Home/Home.js';// eslint-disable-line
+    return () => import('' + _path).then((m) => { return m.default; });// eslint-disable-line
 
     // on compilation:
     //   WARNING in ./src async ^.*$
@@ -28,7 +28,7 @@ export default function () {
   };
   */
 
-  // const _getHome = _getComponent('Home/Home');
+  // const getHome = _getComponent();
 
   const getHome = () => import('./containers/Home/Home').then((m) => { return m.default; });
   const getInfo = () => import('./containers/Info/Info').then((m) => { return m.default; });
@@ -43,4 +43,6 @@ export default function () {
       <Route path={PATHS.NOT_FOUND} getComponent={getNotFound} />
     </Route>
   );
-}
+};
+
+export default getRoutes;
