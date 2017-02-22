@@ -1,4 +1,4 @@
-import appConfig from '../appConfig';
+import appConfig from '../config/appConfig';
 
 const formatUrl = (path) => {
   const adjustedPath = path[0] !== '/' ? `/${path}` : path;
