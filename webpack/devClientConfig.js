@@ -7,7 +7,7 @@ const hmrSource = `webpack-hot-middleware/client?path=http://${config.host}:${co
 config.vendorList.unshift(hmrSource);
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval',
   context: config.context,
   performance: {
     hints: false
