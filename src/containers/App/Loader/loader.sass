@@ -1,0 +1,55 @@
+@import "../../../theme/styles/theme"
+
+%loading_general
+  width: 100%
+  left: 0
+  background-color: rgba($white, .66)
+  +box-shadow(0 3px 6px rgba($black, .55))
+
+.global_load
+  background-color: rgba($white, 0)
+  height: 4px
+  width: 0%
+  position: absolute
+  top: 0
+  right: 0
+  z-index: 101
+  +transition(width 1s .9s, background-color 1s .9s)
+
+  .bar
+    width: 0%
+    position: absolute
+    right: 0
+    top: 0
+    bottom: 0
+    background-color: rgba(red, .66)
+    +transition(width 1s)
+
+  &.loading
+    @extend %loading_general
+    +transition(width 2s, background-color 2s)
+
+    .bar
+      width: 90%
+      left: 0
+      +transition(width 10s)
+
+  &.loadEnded
+    @extend %loading_general
+
+    .bar
+      width: 100%
+      left: 0
+      +transition(width 1s)
+
+  &.loadError
+    background-color: rgba($white, 0)
+    width: 0%
+    left: 0
+    +transition(width 1s .6s, background-color 1s .6s)
+
+    .bar
+      width: 0%
+      left: 0
+      +transition(width 3s)
+

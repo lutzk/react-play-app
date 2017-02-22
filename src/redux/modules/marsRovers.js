@@ -1,12 +1,17 @@
-export const GET_MANIFEST = 'marsRovers/GET_MANIFEST';
-export const GET_MANIFEST_SUCCESS = 'marsRovers/GET_MANIFEST_SUCCESS';
-export const GET_MANIFEST_FAIL = 'marsRovers/GET_MANIFEST_FAIL';
+export const GET_MANIFEST = 'roverView/GET_MANIFEST';
+export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
+export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
+export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_COUNT';
 
 const initialState = {
   data: null,
   error: null,
   loaded: false,
   loading: false,
+  showMoreSols: false,
+  solShowCount: 14,
+  currentSolShowCount: 0,
+  maxSolsShown: false,
   defaultRover: 'Spirit'
 };
 
@@ -33,6 +38,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         loaded: true,
         loading: false,
+        error: null,
         data: action.result
       };
     case GET_MANIFEST_FAIL:
@@ -42,13 +48,22 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
         error: action.error
       };
+    case UPDATE_CURRENT_SOL_SHOW_COUNT:
+      return {
+        ...state,
+        currentSolShowCount: action.count,
+        showMoreSols: true,
+        maxSolsShown: action.count > state.data.photo_manifest.max_sol
+      };
     default:
       return state;
   }
 }
 
-export function getManifest(rover, offLine = false) {
+export const getManifest = (rover, offLine = false) => {
+
   const _rover = rover || initialState.defaultRover;
+
   if (offLine) {
     return {
       types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
@@ -60,5 +75,12 @@ export function getManifest(rover, offLine = false) {
     types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
     promise: client => client.get(`${apiBasePath}${apiManifestsPath}${_rover}?api_key=${apiKey}`)
   };
-}
+};
+
+export const updateCurrentSolShowCount = (count) => {
+  return {
+    type: UPDATE_CURRENT_SOL_SHOW_COUNT,
+    count
+  };
+};
 
