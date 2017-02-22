@@ -8,11 +8,12 @@ const initialState = {
   error: null,
   loaded: false,
   loading: false,
+  solsLenght: 0,
+  solShowCount: 777,
   showMoreSols: false,
-  solShowCount: 14,
-  currentSolShowCount: 0,
   maxSolsShown: false,
-  defaultRover: 'Spirit'
+  defaultRover: 'Spirit',
+  currentSolShowCount: 777
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -39,7 +40,8 @@ export default function reducer(state = initialState, action = {}) {
         loaded: true,
         loading: false,
         error: null,
-        data: action.result
+        data: action.result,
+        solsLenght: action.result.photo_manifest.photos.length
       };
     case GET_MANIFEST_FAIL:
       return {
@@ -51,9 +53,9 @@ export default function reducer(state = initialState, action = {}) {
     case UPDATE_CURRENT_SOL_SHOW_COUNT:
       return {
         ...state,
-        currentSolShowCount: action.count,
+        currentSolShowCount: action.count > state.solsLenght ? state.solsLenght : action.count,
         showMoreSols: true,
-        maxSolsShown: action.count > state.data.photo_manifest.max_sol
+        maxSolsShown: action.count > state.solsLenght
       };
     default:
       return state;
@@ -83,4 +85,3 @@ export const updateCurrentSolShowCount = (count) => {
     count
   };
 };
-

@@ -6,13 +6,14 @@ import { getManifest, getManifest as refreshManifest, updateCurrentSolShowCount 
 import './roverView.sass';
 
 const mapStateToProps = state => ({
-  marsRoverManifest: state.marsRovers.data,
-  manifestLoading: state.marsRovers.loading,
   manifestLoaded: state.marsRovers.loaded,
+  manifestLoading: state.marsRovers.loading,
+  marsRoverManifest: state.marsRovers.data,
   manifestLoadError: state.marsRovers.error,
   solShowCount: state.marsRovers.solShowCount,
-  currentSolShowCount: state.marsRovers.currentSolShowCount,
-  showMoreSols: state.marsRovers.showMoreSols
+  showMoreSols: state.marsRovers.showMoreSols,
+  maxSolsShown: state.marsRovers.maxSolsShown,
+  currentSolShowCount: state.marsRovers.currentSolShowCount
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -35,9 +36,6 @@ const mapDispatchToProps = (dispatch) => {
     }
 
     const _rover = getState().marsRovers.rover || rover;
-    // const promises = [];
-    // promises.push(dispatch(getManifest(_rover, true)));
-    // return Promise.all(promises);
     return dispatch(getManifest(_rover, true));
   }
 }],
@@ -46,19 +44,28 @@ mapDispatchToProps)
 export default class Info extends Component {
 
   static propTypes = {
-    marsRoverManifest: PropTypes.object,
-    manifestLoading: PropTypes.bool,
     manifestLoaded: PropTypes.bool,
-    manifestLoadError: PropTypes.any,
     refreshManifest: PropTypes.func,
+    manifestLoading: PropTypes.bool,
+    marsRoverManifest: PropTypes.object,
+    manifestLoadError: PropTypes.any,
+    maxSolsShown: PropTypes.bool,
+    showMoreSols: PropTypes.bool,
     solShowCount: PropTypes.number,
     currentSolShowCount: PropTypes.number,
-    showMoreSols: PropTypes.bool,
     updateCurrentSolShowCount: PropTypes.func
   }
 
+  constructor(props) {
+    super(props);
+
+    this.handleShowLessSols = ::this.handleShowLessSols;
+    this.handleShowMoreSols = ::this.handleShowMoreSols;
+    this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
+  }
+
   renderRoverMissionStats() {
-    const { marsRoverManifest } = this.props;// eslint-disable-line
+    const { marsRoverManifest } = this.props;
     if (!marsRoverManifest) return;
 
     const metaKeys = ['landing_date', 'launch_date', 'status', 'max_sol', 'max_date', 'total_photos'];
@@ -82,13 +89,18 @@ export default class Info extends Component {
   }
 
   renderSolsCards() {
-    const { solShowCount, currentSolShowCount, showMoreSols, marsRoverManifest } = this.props;// eslint-disable-line
-    if (!marsRoverManifest) return;
-    const solsLength = marsRoverManifest.photo_manifest.max_sol;
+
+    const { solShowCount, currentSolShowCount, showMoreSols, marsRoverManifest } = this.props;
+
+    if (!marsRoverManifest) {
+      return
+    };
+
+    const solsLength = marsRoverManifest.photo_manifest.length;
     let showCount = solShowCount;
 
     if (showMoreSols) {
-      showCount += currentSolShowCount;
+      showCount = currentSolShowCount;
       showCount = showCount > solsLength ? solsLength : showCount;
     }
 
@@ -116,12 +128,6 @@ export default class Info extends Component {
       </div>);
   }
 
-  constructor(props) {
-    super(props);
-    this.handleShowMoreSols = ::this.handleShowMoreSols;
-    this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
-  }
-
   handleRefreshManifestRequest(e) {
     const { refreshManifest, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
     const offline = !!e.target.dataset.offline;
@@ -130,51 +136,66 @@ export default class Info extends Component {
 
   handleShowMoreSols() {
     const { updateCurrentSolShowCount, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
+    console.log('ADD: ', currentSolShowCount, solShowCount, currentSolShowCount + solShowCount);
     updateCurrentSolShowCount(currentSolShowCount + solShowCount);
+  }
+
+  handleShowLessSols() {
+    const { updateCurrentSolShowCount, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
+    updateCurrentSolShowCount(currentSolShowCount - solShowCount);
   }
 
   render() {
 
     const {
-      manifestLoading,
+      maxSolsShown,
       manifestLoaded,
+      manifestLoading,
       manifestLoadError
     } = this.props;
 
-    const roverMissionStats = this.renderRoverMissionStats();
     const solsCards = this.renderSolsCards();
+    const roverMissionStats = this.renderRoverMissionStats();
 
     return (
       <div className="Page">
         <h1>
-          info
+          RoverView
           &nbsp;
-          <Link to="/home">go home</Link>
         </h1>
-        {manifestLoading &&
+        <p><Link to="/home">go home</Link></p>
+
+        <div>
+          <button onClick={this.handleRefreshManifestRequest}>refresh</button>
+          &nbsp;
+          <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
+          &nbsp;
+          {maxSolsShown ?
+              <button onClick={this.handleShowLessSols}>show less</button>
+            :
+              <button onClick={this.handleShowMoreSols}>show more</button>
+          }
+        </div>
+
+        {manifestLoading && !manifestLoadError &&
           <div><h1>loading ...</h1></div>
         }
+
         {manifestLoadError &&
           <div>
             {JSON.stringify(manifestLoadError, 0, 2)}
-            &nbsp;
-            <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-            &nbsp;
-            <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-            &nbsp;
-            <button onClick={this.handleShowMoreSols}>show more</button>
           </div>
         }
+
         {manifestLoaded && !manifestLoadError &&
           <div>
-            <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-            &nbsp;
-            <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-            &nbsp;
-            <button onClick={this.handleShowMoreSols}>show more</button>
             {roverMissionStats}
             {solsCards}
-            <button onClick={this.handleShowMoreSols}>show more</button>
+            {maxSolsShown ?
+                <button onClick={this.handleShowLessSols}>show less</button>
+              :
+                <button onClick={this.handleShowMoreSols}>show more</button>
+            }
           </div>
         }
       </div>);
