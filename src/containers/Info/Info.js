@@ -5,6 +5,23 @@ import { bindActionCreators } from 'redux';
 import { getManifest, getManifest as refreshManifest, updateCurrentSolShowCount } from '../../redux/modules/marsRovers';
 import './roverView.sass';
 
+const asyncInfo = {
+  key: 'Info',
+  promise: (options) => {
+    const {
+      store: { dispatch, getState },
+      params: { rover }
+    } = options;
+
+    if (getState().marsRovers.loaded) {
+      return Promise.resolve('Info');
+    }
+
+    const _rover = getState().marsRovers.rover || rover;
+    return dispatch(getManifest(_rover, true)).then(() => 'Info');
+  }
+};
+
 const mapStateToProps = state => ({
   manifestLoaded: state.marsRovers.loaded,
   manifestLoading: state.marsRovers.loading,
@@ -22,25 +39,11 @@ const mapDispatchToProps = (dispatch) => {
   );
 };
 
-@asyncConnect([{
-  key: 'Info',
-  promise: (options) => {
-    const {
-      store: { dispatch, getState },
-      params: { rover }
-    } = options;
-
-    if (getState().marsRovers.loaded) {
-      console.log('allredy loaded');
-      return Promise.resolve(true);
-    }
-
-    const _rover = getState().marsRovers.rover || rover;
-    return dispatch(getManifest(_rover, true));
-  }
-}],
-mapStateToProps,
-mapDispatchToProps)
+@asyncConnect(
+  [asyncInfo],
+  mapStateToProps,
+  mapDispatchToProps
+)
 export default class Info extends Component {
 
   static propTypes = {
