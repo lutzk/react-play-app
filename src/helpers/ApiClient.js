@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import formatUrl from './formatUrl';
+// import formatUrl from './formatUrl';
 
 const methods = ['get', 'post', 'put', 'patch', 'del'];
 
@@ -13,34 +13,37 @@ const methods = ['get', 'post', 'put', 'patch', 'del'];
  // use superagent promise
  // not tested
 class _ApiClient1 {
-  constructor(incomingReq) {
+  constructor(/* incomingReq */) {
     methods.forEach( method =>
-      this[method] = (path, { params, data } = {}) => {
+      this[method] = (path /* , {  params, data  } */ = {}) => { // eslint-disbale-line
         // new Promise((resolve, reject) => {
-        const request = superagent[method](formatUrl(path));
-
+        return superagent[method](path)
         // if (cookie && cookie.load('loginResult')) {
         //   request.set(config.authTokenKey, cookie.load('loginResult'));
         // }
 
-        if (params) {
-          request.query(params);
-        }
+        // if (params) {
+        //   request.query(params);
+        // }
 
-        if (global.__SERVER__ && incomingReq.get('cookie')) {
-          request.set('cookie', incomingReq.get('cookie'));
-        }
+        // if (global.__SERVER__ && incomingReq.get('cookie')) {
+        //   request.set('cookie', incomingReq.get('cookie'));
+        // }
 
-        if (data) {
-          request.send(data);
-        }
+        // if (data) {
+        //   request.send(data);
+        // }
 
-        return request.then((success, error) => {
+        .on('error', e => console.log('E:: ', e, JSON.stringify(e, 0, 2)))
+        .then((success, error) => {
           if (error) {
+
             return error;
           }
+
           return success.body;
-        }).catch(e => e);
+        })
+        .catch(e => e);
         // request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
       }
       // )// promisse ...
