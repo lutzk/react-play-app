@@ -93,8 +93,8 @@ export default class Info extends Component {
     const { solShowCount, currentSolShowCount, showMoreSols, marsRoverManifest } = this.props;
 
     if (!marsRoverManifest) {
-      return
-    };
+      return;
+    }
 
     const solsLength = marsRoverManifest.photo_manifest.length;
     let showCount = solShowCount;
