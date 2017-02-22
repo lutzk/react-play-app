@@ -5,7 +5,7 @@ import './Login.sass';
 export default class Login extends Component {
 
   static propTypes = {
-    app: PropTypes.object.isRequired
+    app: PropTypes.object
   };
 
   render() {
