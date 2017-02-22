@@ -1,7 +1,7 @@
 import superagent from 'superagent';
 import path from 'path';
-import { formatAssets } from './serverAssets';
-import appConfig from './appConfig';
+import { formatAssets } from '../serverAssets';
+import appConfig from '../../config/appConfig';
 
 // copied from universal-webpack/chunks plugin.js
 /* eslint-disable */

@@ -32,8 +32,8 @@ const checkAssetsJsonPresent = (path) => {
   return found;
 };
 
-const getAssets = () => {
-  const assetsFilePath = './webpack-assets.json';
+const getAssets = (path = false) => {
+  const assetsFilePath = path || './webpack-assets.json';
   let assets = null;
   if (checkAssetsJsonPresent(assetsFilePath)) {
     assets = parseAssetsJson(assetsFilePath);
