@@ -1,4 +1,4 @@
-import getAssets, { formatAssets } from './serverAssets';
+import getAssets, { formatAssets } from './server/serverAssets';
 
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
@@ -19,14 +19,15 @@ if (global.__DEVELOPMENT__) {
 }
 
 const startServer = () => {
+  // const serverPath = './server/server';
   if (global.__DEVELOPMENT__) {
-    return import('./server').then((server) => {
+    return import('./server/server').then((server) => {
       return server.default({});
     }).catch(e => console.log(e));
   }
 
   return getAssets().then((assets) => {
-    import('./server').then((server) => {
+    import('./server/server').then((server) => {
       return server.default(formatAssets(assets));
     });
   });
