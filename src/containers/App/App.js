@@ -1,25 +1,47 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
+import { asyncConnect } from 'redux-connect';
 import cn from 'classnames';
 import { Footer } from './Footer';
+import { Loader } from './Loader/Loader';
 
 import './App.sass';
 
-@connect(
-  state => ({
-    app: state.app
-  }),
-  {})
+let mounted = false;
+
+
+const mapStateToProps = state => ({
+  app: state.app,
+  loading: state.pageLoadBar.loading,
+  loadEnd: state.pageLoadBar.loadEnded,
+  loadError: state.pageLoadBar.error
+});
+
+@asyncConnect([{
+  key: 'App',
+  promise: () => Promise.resolve('App'),
+}],
+mapStateToProps)
 export default class App extends Component {
 
   static propTypes = {
     children: PropTypes.any.isRequired,
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
+    loading: PropTypes.bool,
+    loadEnded: PropTypes.bool,
+    loadError: PropTypes.bool
   };
 
   static contextTypes = {
     store: PropTypes.object.isRequired
   };
+
+  // constructor(props) {
+  //   super(props);
+  // }
+
+  componentDidMount() {
+    mounted = true;
+  }
 
   getContent() {
     const { location, children } = this.props;
@@ -27,6 +49,7 @@ export default class App extends Component {
     if (children) {
       return React.cloneElement(children, { key });
     }
+    // return React.cloneElement(<div className="loading" />, { key });
     return null;
   }
 
@@ -34,9 +57,16 @@ export default class App extends Component {
 
     const Content = this.getContent();
     const containerClass = cn('main_conatiner', 'container-fluid');
+    const loaderProps = {
+      mount: mounted,
+      loading: this.props.loading,
+      loadEnd: this.props.loadEnded,
+      loadError: this.props.loadError
+    };
 
     return (
       <div className="root">
+        <Loader { ...loaderProps } />
         <div className={containerClass}>
           {Content}
         </div>
