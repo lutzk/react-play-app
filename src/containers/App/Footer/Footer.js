@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import './footer.sass';
+import './Footer.sass';
 
 export default class Footer extends Component {
 

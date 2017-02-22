@@ -1,6 +1,6 @@
 import React, { Component /* , PropTypes */ } from 'react';
 import { Link } from 'react-router';
-import './home.sass';
+import './Home.sass';
 
 export default class Home extends Component {
 
