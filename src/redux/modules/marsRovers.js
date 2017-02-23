@@ -37,14 +37,20 @@ const getStats = (data) => {
   return stats;
 };
 
-const filterSols = (sols, state, currentSolShowCount = undefined, showMoreSols = false) => {
+const getNewSolShowCount = (newCount, solsLenght) => {
+  let _newCount = newCount > -1 ? newCount : 0;
+  _newCount = _newCount > solsLenght ? solsLenght : _newCount;
+  return _newCount;
+};
+
+const filterSols = (sols, state, newSolShowCount = undefined) => {
 
   const { initialSolCount, solsLength } = state;
   const _solsLength = solsLength || sols.length;
   let solShowCount = initialSolCount;
 
-  if (showMoreSols && currentSolShowCount) {
-    solShowCount = currentSolShowCount > _solsLength ? _solsLength : currentSolShowCount;
+  if (newSolShowCount > -1) {
+    solShowCount = newSolShowCount > _solsLength ? _solsLength : newSolShowCount;
   }
 
   return sols.filter((sol, index) => index < solShowCount);
@@ -77,13 +83,14 @@ export default function reducer(state = initialState, action = {}) {
         error: action.error
       };
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
-      const newSolShowCount = action.count > state.solsLenght ? state.solsLenght : action.count;
+      const newSolShowCount = getNewSolShowCount(action.newCount, state.solsLenght);
       return {
         ...state,
         currentSolShowCount: newSolShowCount,
         showMoreSols: true,
-        maxSolsShown: action.count > state.solsLenght,
-        missionSolsToRender: filterSols(state.missionSols, state, newSolShowCount, true)
+        maxSolsShown: action.newCount >= state.solsLenght,
+        minSolsShown: action.newCount <= 0,
+        missionSolsToRender: filterSols(state.missionSols, state, newSolShowCount)
       };
     default:
       return state;
@@ -107,9 +114,9 @@ export const getManifest = (rover, offLine = false) => {
   };
 };
 
-export const updateCurrentSolShowCount = (count) => {
+export const updateCurrentSolShowCount = (newCount) => {
   return {
     type: UPDATE_CURRENT_SOL_SHOW_COUNT,
-    count
+    newCount: newCount > -1 ? newCount : 0
   };
 };

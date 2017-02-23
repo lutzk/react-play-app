@@ -25,10 +25,10 @@ const asyncInfo = {
 const mapStateToProps = state => ({
   manifestLoaded: state.marsRovers.loaded,
   manifestLoading: state.marsRovers.loading,
-  // marsRoverManifest: state.marsRovers.data,
   manifestLoadError: state.marsRovers.error,
   initialSolCount: state.marsRovers.initialSolCount,
   showMoreSols: state.marsRovers.showMoreSols,
+  minSolsShown: state.marsRovers.minSolsShown,
   maxSolsShown: state.marsRovers.maxSolsShown,
   currentSolShowCount: state.marsRovers.currentSolShowCount,
   roverName: state.marsRovers.roverName,
@@ -53,9 +53,9 @@ export default class Info extends Component {
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
-    // marsRoverManifest: PropTypes.object,
     manifestLoadError: PropTypes.any,
     maxSolsShown: PropTypes.bool,
+    minSolsShown: PropTypes.bool,
     showMoreSols: PropTypes.bool,
     initialSolCount: PropTypes.number,
     currentSolShowCount: PropTypes.number,
@@ -77,14 +77,12 @@ export default class Info extends Component {
     const { missionStats, roverName } = this.props;
     if (!missionStats) return;
 
-    const metaKeys = ['landing_date', 'launch_date', 'status', 'max_sol', 'max_date', 'total_photos'];
-    const content = metaKeys.map((key, index) => {
+    const stats = Object.keys(missionStats).map((stat, index) => {
       return (
-        <div
-          key={index}
-          className="roverMissionStatsCard">
-          {key}:&nbsp;{missionStats[key]}
-        </div>);
+        <div key={index} className="roverMissionStatsCard">
+          {stat}:&nbsp;{missionStats[stat]}
+        </div>
+      );
     });
 
     return (// eslint-disable-line
@@ -93,7 +91,7 @@ export default class Info extends Component {
         <div className="roverAvatar">
           __roverAvatar__
         </div>
-        <div className="roverMissionStats">{content}</div>
+        <div className="roverMissionStats">{stats}</div>
       </div>);
   }
 
@@ -148,6 +146,7 @@ export default class Info extends Component {
   render() {
 
     const {
+      minSolsShown,
       maxSolsShown,
       manifestLoaded,
       manifestLoading,
@@ -170,7 +169,7 @@ export default class Info extends Component {
           &nbsp;
           <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
           &nbsp;
-          <button onClick={this.handleShowLessSols}>show less</button>
+          {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
           &nbsp;
           {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
         </div>
@@ -189,7 +188,7 @@ export default class Info extends Component {
           <div>
             {roverMissionStats}
             {solsCards}
-            <button onClick={this.handleShowLessSols}>show less</button>
+            {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
             &nbsp;
             {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
             }
