@@ -26,8 +26,8 @@ export default class App extends Component {
     children: PropTypes.any.isRequired,
     location: PropTypes.object.isRequired,
     loading: PropTypes.bool,
-    loadEnded: PropTypes.bool,
-    loadError: PropTypes.bool
+    loadError: PropTypes.bool,
+    loadEnded: PropTypes.bool
   };
 
   static contextTypes = {
