@@ -129,7 +129,7 @@ export const updateSolsShown = (newCount) => {
 
 export const showMoreSols = () => {
   return (dispatch, getState) => {
-    const roverState = getState().marsRovers;
+    const roverState = getState().roverView;
     const newValue = roverState.solsCount + roverState.initialSolCount;
     return dispatch(updateSolsShown(newValue));
   };
@@ -137,7 +137,7 @@ export const showMoreSols = () => {
 
 export const showLessSols = () => {
   return (dispatch, getState) => {
-    const roverState = getState().marsRovers;
+    const roverState = getState().roverView;
     const newValue = roverState.solsCount - roverState.initialSolCount;
     return dispatch(updateSolsShown(newValue));
   };
