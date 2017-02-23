@@ -14,7 +14,7 @@ const asyncInfo = {
     } = options;
 
     if (getState().marsRovers.loaded) {
-      return Promise.resolve('Info');
+      return 'Info';
     }
 
     const _rover = getState().marsRovers.rover || rover;
