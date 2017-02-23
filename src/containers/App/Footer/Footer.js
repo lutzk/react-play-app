@@ -1,26 +1,22 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import { Link } from 'react-router';
+import PATHS from '../../../config/pathsConfig.js';
 import './Footer.sass';
 
-export default class Footer extends Component {
+const Footer = (_props) => {
 
-  static propTypes = {
-    showFooter: PropTypes.bool.isRequired
-  };
+  const { showFooter } = _props;
 
-  render() {
+  if (!showFooter) return null;
 
-    const { showFooter } = this.props;
+  const footer = (
+    <div className="footer">
+      Footer&nbsp;
+      <Link to={`/${PATHS.HOME}`}>home</Link>
+    </div>);
 
-    if (showFooter) {
-      const footer = (
-        <div className="footer">
-          Foo&nbsp;
-          <Link to="/home">home</Link>
-        </div>
-      );
-      return (footer);
-    }
-    return null;
-  }
-}
+  return (footer);
+
+};
+
+export default Footer;

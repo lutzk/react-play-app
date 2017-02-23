@@ -1,25 +1,20 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import { Link } from 'react-router';
+import PATHS from '../../config/pathsConfig';
 import './Login.sass';
 
-export default class Login extends Component {
-
-  static propTypes = {
-    app: PropTypes.object
-  };
-
-  render() {
-
-    return (
-      <div className="login">
-        <div className="login_content">
-          <h1 className="login_headline">
-            <Link to="/bla">aaa</Link>
-            &nbsp;
-            <Link to="/home">home</Link>
-          </h1>
-        </div>
+const Login = () => {
+  return (
+    <div className="login">
+      <div className="login_content">
+        <h1 className="login_headline">
+          <Link to="/bla">aaa</Link>
+          &nbsp;
+          <Link to={`/${PATHS.HOME}`}>home</Link>
+        </h1>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default Login;
