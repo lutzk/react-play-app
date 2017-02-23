@@ -25,12 +25,15 @@ const asyncInfo = {
 const mapStateToProps = state => ({
   manifestLoaded: state.marsRovers.loaded,
   manifestLoading: state.marsRovers.loading,
-  marsRoverManifest: state.marsRovers.data,
+  // marsRoverManifest: state.marsRovers.data,
   manifestLoadError: state.marsRovers.error,
-  solShowCount: state.marsRovers.solShowCount,
+  initialSolCount: state.marsRovers.initialSolCount,
   showMoreSols: state.marsRovers.showMoreSols,
   maxSolsShown: state.marsRovers.maxSolsShown,
-  currentSolShowCount: state.marsRovers.currentSolShowCount
+  currentSolShowCount: state.marsRovers.currentSolShowCount,
+  roverName: state.marsRovers.roverName,
+  missionStats: state.marsRovers.missionStats,
+  missionSolsToRender: state.marsRovers.missionSolsToRender
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -50,13 +53,16 @@ export default class Info extends Component {
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
-    marsRoverManifest: PropTypes.object,
+    // marsRoverManifest: PropTypes.object,
     manifestLoadError: PropTypes.any,
     maxSolsShown: PropTypes.bool,
     showMoreSols: PropTypes.bool,
-    solShowCount: PropTypes.number,
+    initialSolCount: PropTypes.number,
     currentSolShowCount: PropTypes.number,
-    updateCurrentSolShowCount: PropTypes.func
+    updateCurrentSolShowCount: PropTypes.func,
+    roverName: PropTypes.string,
+    missionStats: PropTypes.object,
+    missionSolsToRender: PropTypes.array
   }
 
   constructor(props) {
@@ -68,8 +74,8 @@ export default class Info extends Component {
   }
 
   renderRoverMissionStats() {
-    const { marsRoverManifest } = this.props;
-    if (!marsRoverManifest) return;
+    const { missionStats, roverName } = this.props;
+    if (!missionStats) return;
 
     const metaKeys = ['landing_date', 'launch_date', 'status', 'max_sol', 'max_date', 'total_photos'];
     const content = metaKeys.map((key, index) => {
@@ -77,13 +83,13 @@ export default class Info extends Component {
         <div
           key={index}
           className="roverMissionStatsCard">
-          {key}:&nbsp;{marsRoverManifest.photo_manifest[key]}
+          {key}:&nbsp;{missionStats[key]}
         </div>);
     });
 
     return (// eslint-disable-line
       <div className="roverMissionStatsWrap">
-        <h3 className="roverName">{marsRoverManifest.photo_manifest.name}</h3>
+        <h3 className="roverName">{roverName}</h3>
         <div className="roverAvatar">
           __roverAvatar__
         </div>
@@ -93,32 +99,24 @@ export default class Info extends Component {
 
   renderSolsCards() {
 
-    const { solShowCount, currentSolShowCount, showMoreSols, marsRoverManifest } = this.props;
+    const { missionSolsToRender } = this.props;
 
-    if (!marsRoverManifest) {
+    if (!missionSolsToRender) {
       return;
     }
 
-    const solsLength = marsRoverManifest.photo_manifest.length;
-    let showCount = solShowCount;
-
-    if (showMoreSols) {
-      showCount = currentSolShowCount;
-      showCount = showCount > solsLength ? solsLength : showCount;
-    }
-
-    const content = marsRoverManifest.photo_manifest.photos.map((photo, index) => {
-      if (index > showCount) {
-        return false;
-      }
-
+    const sols = missionSolsToRender.map((sol, index) => {
       return (
         <div key={index} className="solCard">
-          <div><h4>sol:&nbsp;{photo.sol}</h4></div>
-          <div>total_photos:&nbsp;{photo.total_photos}</div>
+          <div>
+            <h4>sol:&nbsp;{sol.sol}</h4>
+          </div>
+          <div>
+            total_photos:&nbsp;{sol.total_photos}
+          </div>
           <div>
             cams:&nbsp;
-            {photo.cameras.map((cam, i) => {
+            {sol.cameras.map((cam, i) => {
               return (<span key={i}>{cam}&nbsp;</span>);
             })}
           </div>
@@ -127,24 +125,24 @@ export default class Info extends Component {
 
     return (// eslint-disable-line
       <div className="roverPhotoDataData">
-        {content}
+        {sols}
       </div>);
   }
 
   handleRefreshManifestRequest(e) {
-    const { refreshManifest, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
+    const { refreshManifest, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
     const offline = !!e.target.dataset.offline;
-    refreshManifest('Spirit', offline, solShowCount, currentSolShowCount);
+    refreshManifest('Spirit', offline, initialSolCount, currentSolShowCount);
   }
 
   handleShowMoreSols() {
-    const { updateCurrentSolShowCount, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
-    updateCurrentSolShowCount(currentSolShowCount + solShowCount);
+    const { updateCurrentSolShowCount, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
+    updateCurrentSolShowCount(currentSolShowCount + initialSolCount);
   }
 
   handleShowLessSols() {
-    const { updateCurrentSolShowCount, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
-    updateCurrentSolShowCount(currentSolShowCount - solShowCount);
+    const { updateCurrentSolShowCount, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
+    updateCurrentSolShowCount(currentSolShowCount - initialSolCount);
   }
 
   render() {
@@ -172,11 +170,9 @@ export default class Info extends Component {
           &nbsp;
           <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
           &nbsp;
-          {maxSolsShown ?
-              <button onClick={this.handleShowLessSols}>show less</button>
-            :
-              <button onClick={this.handleShowMoreSols}>show more</button>
-          }
+          <button onClick={this.handleShowLessSols}>show less</button>
+          &nbsp;
+          {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
         </div>
 
         {manifestLoading && !manifestLoadError &&
@@ -193,10 +189,9 @@ export default class Info extends Component {
           <div>
             {roverMissionStats}
             {solsCards}
-            {maxSolsShown ?
-                <button onClick={this.handleShowLessSols}>show less</button>
-              :
-                <button onClick={this.handleShowMoreSols}>show more</button>
+            <button onClick={this.handleShowLessSols}>show less</button>
+            &nbsp;
+            {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
             }
           </div>
         }

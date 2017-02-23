@@ -4,16 +4,19 @@ export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_COUNT';
 
 const initialState = {
-  data: null,
   error: null,
   loaded: false,
   loading: false,
+  roverName: null,
   solsLenght: 0,
-  solShowCount: 777,
+  missionSols: null,
+  missionStats: null,
+  initialSolCount: 15,
   showMoreSols: false,
   maxSolsShown: false,
   defaultRover: 'Spirit',
-  currentSolShowCount: 777
+  currentSolShowCount: 15,
+  missionSolsToRender: null,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -26,6 +29,26 @@ const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
 const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 const apiManifestsPath = 'manifests/';
 const apiKey = 'DEMO_KEY';
+
+const getStats = (data) => {
+  const stats = { ...data };
+  delete stats.name;
+  delete stats.photos;
+  return stats;
+};
+
+const filterSols = (sols, state, currentSolShowCount = undefined, showMoreSols = false) => {
+
+  const { initialSolCount, solsLength } = state;
+  const _solsLength = solsLength || sols.length;
+  let solShowCount = initialSolCount;
+
+  if (showMoreSols && currentSolShowCount) {
+    solShowCount = currentSolShowCount > _solsLength ? _solsLength : currentSolShowCount;
+  }
+
+  return sols.filter((sol, index) => index < solShowCount);
+};
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -40,7 +63,10 @@ export default function reducer(state = initialState, action = {}) {
         loaded: true,
         loading: false,
         error: null,
-        data: action.result,
+        roverName: action.result.photo_manifest.name,
+        missionSols: action.result.photo_manifest.photos,
+        missionStats: getStats(action.result.photo_manifest),
+        missionSolsToRender: filterSols(action.result.photo_manifest.photos, state),
         solsLenght: action.result.photo_manifest.photos.length
       };
     case GET_MANIFEST_FAIL:
@@ -50,12 +76,14 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
         error: action.error
       };
-    case UPDATE_CURRENT_SOL_SHOW_COUNT:
+    case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
+      const newSolShowCount = action.count > state.solsLenght ? state.solsLenght : action.count;
       return {
         ...state,
-        currentSolShowCount: action.count > state.solsLenght ? state.solsLenght : action.count,
+        currentSolShowCount: newSolShowCount,
         showMoreSols: true,
-        maxSolsShown: action.count > state.solsLenght
+        maxSolsShown: action.count > state.solsLenght,
+        missionSolsToRender: filterSols(state.missionSols, state, newSolShowCount, true)
       };
     default:
       return state;
