@@ -42,6 +42,10 @@ export default class App extends Component {
     mounted = true;
   }
 
+  componentWillUnMount() {
+    mounted = false;
+  }
+
   getContent() {
     const { location, children } = this.props;
     const key = location.pathname;
