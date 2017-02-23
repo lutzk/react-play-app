@@ -31,7 +31,7 @@ const getRoutes = () => {
   // const getHome = _getComponent();
 
   const getHome = () => import('./containers/Home/Home').then((m) => { return m.default; });
-  const getInfo = () => import('./containers/Info/Info').then((m) => { return m.default; });
+  const getRoverView = () => import('./containers/RoverView/RoverView').then((m) => { return m.default; });
   const getNotFound = () => import('./containers/NotFound/NotFound').then((m) => { return m.default; });
 
   return (
@@ -39,7 +39,7 @@ const getRoutes = () => {
       <IndexRoute component={Login} />
       <Route path={PATHS.LOGIN} component={Login} />
       <Route path={PATHS.HOME} getComponent={getHome} />
-      <Route path={PATHS.INFO} getComponent={getInfo} />
+      <Route path={`${PATHS.ROVER_VIEW}(/:rover)`} getComponent={getRoverView} />
       <Route path={PATHS.NOT_FOUND} getComponent={getNotFound} />
     </Route>
   );

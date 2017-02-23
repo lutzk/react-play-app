@@ -1,7 +1,7 @@
 const PATHS = {
   ROOT: '/',
   HOME: 'home',
-  INFO: 'info',
+  ROVER_VIEW: 'rover-view',
   LOGIN: 'login',
   NOT_FOUND: '*'
 };

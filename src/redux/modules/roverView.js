@@ -2,21 +2,23 @@ export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_COUNT';
+export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
+export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
 const initialState = {
   error: null,
   loaded: false,
   loading: false,
+  solsCount: 15,
   roverName: null,
   solsLenght: 0,
   missionSols: null,
   missionStats: null,
-  initialSolCount: 15,
-  showMoreSols: false,
+  moreSolsShown: false,
   maxSolsShown: false,
   defaultRover: 'Spirit',
-  currentSolShowCount: 15,
-  missionSolsToRender: null,
+  initialSolCount: 15,
+  solsToRender: null,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -63,35 +65,39 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         loading: true
       };
+
     case GET_MANIFEST_SUCCESS:
       return {
         ...state,
+        error: null,
         loaded: true,
         loading: false,
-        error: null,
         roverName: action.result.photo_manifest.name,
+        solsLenght: action.result.photo_manifest.photos.length,
         missionSols: action.result.photo_manifest.photos,
         missionStats: getStats(action.result.photo_manifest),
-        missionSolsToRender: filterSols(action.result.photo_manifest.photos, state),
-        solsLenght: action.result.photo_manifest.photos.length
+        solsToRender: filterSols(action.result.photo_manifest.photos, state)
       };
+
     case GET_MANIFEST_FAIL:
       return {
         ...state,
+        error: action.error,
         loaded: false,
-        loading: false,
-        error: action.error
+        loading: false
       };
+
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
       const newSolShowCount = getNewSolShowCount(action.newCount, state.solsLenght);
       return {
         ...state,
-        currentSolShowCount: newSolShowCount,
-        showMoreSols: true,
+        solsCount: newSolShowCount,
         maxSolsShown: action.newCount >= state.solsLenght,
         minSolsShown: action.newCount <= 0,
-        missionSolsToRender: filterSols(state.missionSols, state, newSolShowCount)
+        solsToRender: filterSols(state.missionSols, state, newSolShowCount),
+        moreSolsShown: true
       };
+
     default:
       return state;
   }
@@ -114,9 +120,25 @@ export const getManifest = (rover, offLine = false) => {
   };
 };
 
-export const updateCurrentSolShowCount = (newCount) => {
+export const updateSolsShown = (newCount) => {
   return {
     type: UPDATE_CURRENT_SOL_SHOW_COUNT,
     newCount: newCount > -1 ? newCount : 0
+  };
+};
+
+export const showMoreSols = () => {
+  return (dispatch, getState) => {
+    const roverState = getState().marsRovers;
+    const newValue = roverState.solsCount + roverState.initialSolCount;
+    return dispatch(updateSolsShown(newValue));
+  };
+};
+
+export const showLessSols = () => {
+  return (dispatch, getState) => {
+    const roverState = getState().marsRovers;
+    const newValue = roverState.solsCount - roverState.initialSolCount;
+    return dispatch(updateSolsShown(newValue));
   };
 };

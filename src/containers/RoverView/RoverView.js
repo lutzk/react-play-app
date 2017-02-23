@@ -2,7 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, updateCurrentSolShowCount } from '../../redux/modules/marsRovers';
+import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols } from '../../redux/modules/roverView';
+import PATHS from '../../config/pathsConfig.js';
 import './roverView.sass';
 
 const asyncInfo = {
@@ -13,32 +14,32 @@ const asyncInfo = {
       params: { rover }
     } = options;
 
-    if (getState().marsRovers.loaded) {
+    if (getState().roverView.loaded) {
       return 'Info';
     }
 
-    const _rover = getState().marsRovers.rover || rover;
+    const _rover = getState().roverView.rover || rover;
     return dispatch(getManifest(_rover, true)).then(() => 'Info');
   }
 };
 
 const mapStateToProps = state => ({
-  manifestLoaded: state.marsRovers.loaded,
-  manifestLoading: state.marsRovers.loading,
-  manifestLoadError: state.marsRovers.error,
-  initialSolCount: state.marsRovers.initialSolCount,
-  showMoreSols: state.marsRovers.showMoreSols,
-  minSolsShown: state.marsRovers.minSolsShown,
-  maxSolsShown: state.marsRovers.maxSolsShown,
-  currentSolShowCount: state.marsRovers.currentSolShowCount,
-  roverName: state.marsRovers.roverName,
-  missionStats: state.marsRovers.missionStats,
-  missionSolsToRender: state.marsRovers.missionSolsToRender
+  roverName: state.roverView.roverName,
+  minSolsShown: state.roverView.minSolsShown,
+  maxSolsShown: state.roverView.maxSolsShown,
+  moreSolsShown: state.roverView.moreSolsShown,
+  // solsCount: state.roverView.solsCount,
+  missionStats: state.roverView.missionStats,
+  solsToRender: state.roverView.solsToRender,
+  manifestLoaded: state.roverView.loaded,
+  manifestLoading: state.roverView.loading,
+  initialSolCount: state.roverView.initialSolCount,
+  manifestLoadError: state.roverView.error
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    Object.assign({}, { refreshManifest, updateCurrentSolShowCount }), dispatch
+    Object.assign({}, { refreshManifest, showMoreSols, showLessSols }), dispatch
   );
 };
 
@@ -50,19 +51,20 @@ const mapDispatchToProps = (dispatch) => {
 export default class Info extends Component {
 
   static propTypes = {
+    roverName: PropTypes.string,
+    showMoreSols: PropTypes.func,
+    showLessSols: PropTypes.func,
+    maxSolsShown: PropTypes.bool,
+    minSolsShown: PropTypes.bool,
+    moreSolsShown: PropTypes.bool,
+    // solsCount: PropTypes.number,
+    missionStats: PropTypes.object,
+    solsToRender: PropTypes.array,
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
-    manifestLoadError: PropTypes.any,
-    maxSolsShown: PropTypes.bool,
-    minSolsShown: PropTypes.bool,
-    showMoreSols: PropTypes.bool,
     initialSolCount: PropTypes.number,
-    currentSolShowCount: PropTypes.number,
-    updateCurrentSolShowCount: PropTypes.func,
-    roverName: PropTypes.string,
-    missionStats: PropTypes.object,
-    missionSolsToRender: PropTypes.array
+    manifestLoadError: PropTypes.any
   }
 
   constructor(props) {
@@ -97,13 +99,13 @@ export default class Info extends Component {
 
   renderSolsCards() {
 
-    const { missionSolsToRender } = this.props;
+    const { solsToRender } = this.props;
 
-    if (!missionSolsToRender) {
+    if (!solsToRender) {
       return;
     }
 
-    const sols = missionSolsToRender.map((sol, index) => {
+    const sols = solsToRender.map((sol, index) => {
       return (
         <div key={index} className="solCard">
           <div>
@@ -128,19 +130,19 @@ export default class Info extends Component {
   }
 
   handleRefreshManifestRequest(e) {
-    const { refreshManifest, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
+    const { refreshManifest } = this.props;// eslint-disable-line
     const offline = !!e.target.dataset.offline;
-    refreshManifest('Spirit', offline, initialSolCount, currentSolShowCount);
+    refreshManifest('Spirit', offline);
   }
 
   handleShowMoreSols() {
-    const { updateCurrentSolShowCount, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
-    updateCurrentSolShowCount(currentSolShowCount + initialSolCount);
+    const { showMoreSols } = this.props;// eslint-disable-line
+    showMoreSols();
   }
 
   handleShowLessSols() {
-    const { updateCurrentSolShowCount, initialSolCount, currentSolShowCount } = this.props;// eslint-disable-line
-    updateCurrentSolShowCount(currentSolShowCount - initialSolCount);
+    const { showLessSols } = this.props;// eslint-disable-line
+    showLessSols();
   }
 
   render() {
@@ -162,7 +164,7 @@ export default class Info extends Component {
           RoverView
           &nbsp;
         </h1>
-        <p><Link to="/home">go home</Link></p>
+        <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
 
         <div>
           <button onClick={this.handleRefreshManifestRequest}>refresh</button>
@@ -188,10 +190,9 @@ export default class Info extends Component {
           <div>
             {roverMissionStats}
             {solsCards}
-            {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
+            {!minSolsShown && <button onClick={this.handleShowLessSols}>show less sols</button>}
             &nbsp;
-            {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
-            }
+            {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more sols</button>}
           </div>
         }
       </div>);
