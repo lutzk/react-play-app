@@ -43,31 +43,42 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
+export function startLoading() {
+  return (dispatch, getState) => {
+    if (!getState().pageLoadBar.loading) {
+      dispatch({ type: LOADING });
+    }
+  };
+}
+
 export function endLoading(fromError = false, rewindOnError = true) {
   const resetDelay = 3000;
   const rewindDelay = 1400;
 
   if (fromError && rewindOnError) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+      if (getState().pageLoadBar.loading) {
+        clearTimeout(endWithDelay);// eslint-disable-line
+        const endWithDelay = setTimeout(() => {
+          dispatch({ type: END_LOADING_FROM_ERROR });
+        }, rewindDelay);
 
-      clearTimeout(endWithDelay);// eslint-disable-line
-      const endWithDelay = setTimeout(() => {
-        dispatch({ type: END_LOADING_FROM_ERROR });
-      }, rewindDelay);
+        clearTimeout(resetWithDelay);// eslint-disable-line
+        const resetWithDelay = setTimeout(() => {
+          dispatch({ type: RESET_LOADING });
+        }, resetDelay);
+      }
+    };
+  }
+
+  return (dispatch, getState) => {
+    if (getState().pageLoadBar.loading) {
+      dispatch({ type: END_LOADING });
 
       clearTimeout(resetWithDelay);// eslint-disable-line
       const resetWithDelay = setTimeout(() => {
         dispatch({ type: RESET_LOADING });
       }, resetDelay);
-    };
-  }
-
-  return (dispatch) => {
-    dispatch({ type: END_LOADING });
-
-    clearTimeout(resetWithDelay);// eslint-disable-line
-    const resetWithDelay = setTimeout(() => {
-      dispatch({ type: RESET_LOADING });
-    }, resetDelay);
+    }
   };
 }
