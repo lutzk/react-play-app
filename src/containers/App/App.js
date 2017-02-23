@@ -10,7 +10,6 @@ let mounted = false;
 
 
 const mapStateToProps = state => ({
-  app: state.app,
   loading: state.pageLoadBar.loading,
   loadEnd: state.pageLoadBar.loadEnded,
   loadError: state.pageLoadBar.error
@@ -18,7 +17,7 @@ const mapStateToProps = state => ({
 
 @asyncConnect([{
   key: 'App',
-  promise: () => Promise.resolve('App'),
+  promise: () => 'App'
 }],
 mapStateToProps)
 export default class App extends Component {
