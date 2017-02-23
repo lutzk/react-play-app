@@ -139,7 +139,6 @@ export default class Info extends Component {
 
   handleShowMoreSols() {
     const { updateCurrentSolShowCount, solShowCount, currentSolShowCount } = this.props;// eslint-disable-line
-    console.log('ADD: ', currentSolShowCount, solShowCount, currentSolShowCount + solShowCount);
     updateCurrentSolShowCount(currentSolShowCount + solShowCount);
   }
 
