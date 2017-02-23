@@ -5,20 +5,36 @@ export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_
 export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
+const spirit = { name: 'Spirit', label: 'spirit' };
+const curiosity = { name: 'Curiosity', label: 'curiosity' };
+const opportunity = { name: 'Opportunity', label: 'opportunity' };
+
+const rovers = {
+  [spirit.label]: spirit.name,
+  [curiosity.label]: curiosity.name,
+  [opportunity.label]: opportunity.name
+};
+
+export const roverMatcher = (roverToMatch) => {
+  return Object.keys(rovers).indexOf(roverToMatch) > -1;
+};
+
 const initialState = {
+  rover: null,
   error: null,
+  rovers,
   loaded: false,
   loading: false,
   solsCount: 15,
   roverName: null,
   solsLenght: 0,
   missionSols: null,
-  missionStats: null,
-  moreSolsShown: false,
-  maxSolsShown: false,
-  defaultRover: 'Spirit',
-  initialSolCount: 15,
   solsToRender: null,
+  missionStats: null,
+  maxSolsShown: false,
+  defaultRover: rovers[spirit.label],
+  moreSolsShown: false,
+  initialSolCount: 15
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -28,6 +44,7 @@ const initialState = {
 // const getJsonPath = (rover = initialState.defaultRover) => `./${rover}.json`;
 
 const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
+// const getRoverPath = rover => `rovers/${rover}/photos`;
 const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 const apiManifestsPath = 'manifests/';
 const apiKey = 'DEMO_KEY';
@@ -69,6 +86,7 @@ export default function reducer(state = initialState, action = {}) {
     case GET_MANIFEST_SUCCESS:
       return {
         ...state,
+        rover: action.result.photo_manifest.name,
         error: null,
         loaded: true,
         loading: false,

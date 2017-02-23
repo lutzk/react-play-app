@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols, roverMatcher } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import './roverView.sass';
 
@@ -14,11 +14,12 @@ const asyncInfo = {
       params: { rover }
     } = options;
 
-    if (getState().roverView.loaded) {
+    const roverViewState = getState().roverView;
+    if (roverViewState.loaded) {
       return 'Info';
     }
 
-    const _rover = getState().roverView.rover || rover;
+    const _rover = roverMatcher(rover) ? rover : roverViewState.defaultRover;// || getState().roverView.rover;
     return dispatch(getManifest(_rover, true)).then(() => 'Info');
   }
 };
@@ -28,7 +29,7 @@ const mapStateToProps = state => ({
   minSolsShown: state.roverView.minSolsShown,
   maxSolsShown: state.roverView.maxSolsShown,
   moreSolsShown: state.roverView.moreSolsShown,
-  // solsCount: state.roverView.solsCount,
+  solsCount: state.roverView.solsCount,
   missionStats: state.roverView.missionStats,
   solsToRender: state.roverView.solsToRender,
   manifestLoaded: state.roverView.loaded,
@@ -57,7 +58,7 @@ export default class Info extends Component {
     maxSolsShown: PropTypes.bool,
     minSolsShown: PropTypes.bool,
     moreSolsShown: PropTypes.bool,
-    // solsCount: PropTypes.number,
+    solsCount: PropTypes.number,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
     manifestLoaded: PropTypes.bool,
@@ -148,6 +149,7 @@ export default class Info extends Component {
   render() {
 
     const {
+      solsCount,
       minSolsShown,
       maxSolsShown,
       manifestLoaded,
@@ -174,6 +176,8 @@ export default class Info extends Component {
           {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
           &nbsp;
           {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
+          &nbsp;
+          {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
         </div>
 
         {manifestLoading && !manifestLoadError &&
