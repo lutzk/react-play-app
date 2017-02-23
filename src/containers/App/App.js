@@ -58,7 +58,7 @@ export default class App extends Component {
 
   render() {
 
-    const Content = this.getContent();
+    const content = this.getContent();
     const containerClass = cn('main_conatiner', 'container-fluid');
     const loaderProps = {
       mount: mounted,
@@ -71,7 +71,7 @@ export default class App extends Component {
       <div className="root">
         <Loader { ...loaderProps } />
         <div className={containerClass}>
-          {Content}
+          {content}
         </div>
         <Footer showFooter />
       </div>
