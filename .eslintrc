@@ -3,53 +3,46 @@ extends:
   - plugin:react/recommended
   - plugin:jsx-a11y/recommended
 
+plugins:
+  - react
+  - import
+  - jsx-a11y
+
 parser:
   babel-eslint
 
-settings:
-  ecmascript: 6
+rules:
+  no-console: 0
+  max-len: 0
+  no-confusing-arrow: 0
+  no-underscore-dangle: 0
+  global-require: 0
+  class-methods-use-this: 0
+  comma-dangle:
+    - 2
+    -
+      arrays: always-multiline
+      objects: always-multiline
+      imports: always-multiline
+      exports: always-multiline
+      functions: never
 
-ecmaFeatures:
-  jsx: true
-  modules: true
-  destructuring: true
-  classes: true
-  forOf: true
-  blockBindings: true
-  arrowFunctions: true
+  import/extensions: 0
+  padded-blocks: 0
+  react/prefer-stateless-function: 1
+  react/no-danger: 0
+  react/forbid-prop-types: 0
+  react/jsx-closing-bracket-location: 0
+  react/jsx-filename-extension: 0
+  jsx-a11y/html-has-lang: 0
+  import/no-extraneous-dependencies:
+    - 2
+    - 
+      devDependencies: true
 
 env:
   browser: true
   node: true
-
-rules:
-  indent: 2
-  func-style: 0
-  func-names: 0
-  comma-dangle: 0
-  no-console: 0
-  max-len: 0
-  space-in-parens: 0
-  padded-blocks: 0
-  no-return-assign: 0
-  no-confusing-arrow: 0
-  no-underscore-dangle: 0
-  no-param-reassign: 0
-  linebreak-style: 0
-  global-require: 0
-  arrow-body-style: 0
-  class-methods-use-this: 0
-  #import/no-extraneous-dependencies: 0
-  #import/no-unresolved: 0
-  import/extensions: 0
-  react/prefer-stateless-function: 1
-  react/no-danger: 0
-  react/no-children-prop: 0
-  react/forbid-prop-types: 0
-  #react/jsx-curly-spacing: 0
-  react/jsx-closing-bracket-location: 0
-  react/jsx-filename-extension: 0
-  jsx-a11y/html-has-lang: 0
 
 globals:
   __DEVELOPMENT__: true
@@ -57,8 +50,3 @@ globals:
   __SERVER__: true
   __DISABLE_SSR__: true
   __DEVTOOLS__: true
-
-plugins:
-  - react
-  - import
-  - jsx-a11y
