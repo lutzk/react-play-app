@@ -3,8 +3,8 @@ const PATHS = {
   HOME: 'home',
   ROVER_VIEW: {
     ROOT: 'rover-view',
-    SOL: 'sol',
   },
+  SOL: 'sol',
   LOGIN: 'login',
   NOT_FOUND: '*',
 };
