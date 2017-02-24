@@ -11,7 +11,7 @@ const asyncInfo = {
   promise: (options) => {
     const {
       store: { dispatch, getState },
-      params: { rover }
+      params: { rover },
     } = options;
 
     const roverViewState = getState().roverView;
@@ -21,7 +21,7 @@ const asyncInfo = {
 
     const _rover = roverMatcher(rover) ? rover : roverViewState.defaultRover;// || getState().roverView.rover;
     return dispatch(getManifest(_rover, true)).then(() => 'Info');
-  }
+  },
 };
 
 const mapStateToProps = state => ({
@@ -35,14 +35,12 @@ const mapStateToProps = state => ({
   manifestLoaded: state.roverView.loaded,
   manifestLoading: state.roverView.loading,
   initialSolCount: state.roverView.initialSolCount,
-  manifestLoadError: state.roverView.error
+  manifestLoadError: state.roverView.error,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators(
-    Object.assign({}, { refreshManifest, showMoreSols, showLessSols }), dispatch
-  );
-};
+const mapDispatchToProps = dispatch => bindActionCreators(
+  Object.assign({}, { refreshManifest, showMoreSols, showLessSols, push }), dispatch
+);
 
 @asyncConnect(
   [asyncInfo],
@@ -154,7 +152,7 @@ export default class Info extends Component {
       maxSolsShown,
       manifestLoaded,
       manifestLoading,
-      manifestLoadError
+      manifestLoadError,
     } = this.props;
 
     const solsCards = this.renderSolsCards();

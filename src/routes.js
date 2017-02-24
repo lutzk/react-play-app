@@ -2,7 +2,7 @@ import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 import {
     App,
-    Login
+    Login,
   } from './containers';
 
 import PATHS from './config/pathsConfig';
@@ -30,9 +30,10 @@ const getRoutes = () => {
 
   // const getHome = _getComponent();
 
-  const getHome = () => import('./containers/Home/Home').then((m) => { return m.default; });
-  const getRoverView = () => import('./containers/RoverView/RoverView').then((m) => { return m.default; });
-  const getNotFound = () => import('./containers/NotFound/NotFound').then((m) => { return m.default; });
+  const getHome = () => import('./containers/Home/Home').then(m => m.default);
+  const getRoverView = () => import('./containers/RoverView/RoverView').then(m => m.default);
+  const getSolView = () => import('./containers/RoverView/Sol').then(m => m.default);
+  const getNotFound = () => import('./containers/NotFound/NotFound').then(m => m.default);
 
   return (
     <Route path={PATHS.ROOT} component={App}>

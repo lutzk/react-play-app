@@ -12,7 +12,7 @@ export const Loader = (_props) => { // eslint-disable-line
     {
       loading: _props.loading && !_props.loadEnded,
       loadEnded: _props.loadEnded && !_props.loading,
-      loadError: _props.loadError
+      loadError: _props.loadError,
     });
 
   const bar = (

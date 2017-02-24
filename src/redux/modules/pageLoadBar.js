@@ -6,7 +6,7 @@ export const END_LOADING_FROM_ERROR = 'pageLoadBar/END_LOADING_FROM_ERROR';
 const initialState = {
   loading: false,
   loadEnd: false,
-  error: false
+  error: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -15,28 +15,28 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         loading: true,
-        loadEnd: false
+        loadEnd: false,
       };
     case END_LOADING:
       return {
         ...state,
         loading: false,
         loadEnd: true,
-        error: false
+        error: false,
       };
     case END_LOADING_FROM_ERROR:
       return {
         ...state,
         loading: false,
         loadEnd: false,
-        error: true
+        error: true,
       };
     case RESET_LOADING:
       return {
         ...state,
         loading: false,
         loadEnd: false,
-        error: false
+        error: false,
       };
     default:
       return state;

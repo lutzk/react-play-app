@@ -12,7 +12,7 @@ export const rootReducer = combineReducers({
   reduxAsyncConnect,
   app,
   roverView,
-  pageLoadBar
+  pageLoadBar,
 });
 
 export default rootReducer;

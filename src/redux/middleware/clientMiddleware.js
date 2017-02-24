@@ -12,58 +12,59 @@ import { startLoading, endLoading } from '../modules/pageLoadBar';
 
 // const REDUX_GLOBAL_LOAD_BEGIN = beginGlobalLoad.toString();
 // const REDUX_GLOBAL_LOAD_END = endGlobalLoad.toString();
+// const clientMiddleware = client =>
+// ({ dispatch, getState }) => next => action => {
+// export default clientMiddleware
 
 export default function clientMiddleware(client) {
-  return ({ dispatch, getState }) => {
-    return next => (action) => {
-      if (typeof action === 'function') {
-        return action(dispatch, getState);
-      }
+  return ({ dispatch, getState }) => next => (action) => {
+    if (typeof action === 'function') {
+      return action(dispatch, getState);
+    }
 
-      // if (action.type === REDUX_GLOBAL_LOAD_BEGIN) {
-      //   dispatch(startLoading());
-      // }
+    // if (action.type === REDUX_GLOBAL_LOAD_BEGIN) {
+    //   dispatch(startLoading());
+    // }
 
-      const { promise, types, ...rest } = action;
+    const { promise, types, ...rest } = action;
 
-      if (action.type === LOCATION_CHANGE && action.payload.pathname !== '/' && action.payload.key !== undefined) {
-        dispatch(startLoading());
-      }
-
-      if (action.type === '@redux-conn/END_GLOBAL_LOAD') {
-        dispatch(endLoading());
-      }
-
-      if (!promise) {
-        return next(action);
-      }
-
-      const [REQUEST, SUCCESS, FAILURE] = types;
-
+    if (action.type === LOCATION_CHANGE && action.payload.pathname !== '/' && action.payload.key !== undefined) {
       dispatch(startLoading());
-      next({ ...rest, type: REQUEST });
+    }
 
-      return promise(client).then(
+    if (action.type === '@redux-conn/END_GLOBAL_LOAD') {
+      dispatch(endLoading());
+    }
 
-        (result) => {
-          if (result === null || result.code === 'ENOTFOUND' || (result.status === undefined && result.stack !== undefined)) {
-            dispatch(endLoading(true));
-            return next({ ...rest, error: 'offline', type: FAILURE });
-          }
-          dispatch(endLoading());
-          return next({ ...rest, result, type: SUCCESS });
-        },
+    if (!promise) {
+      return next(action);
+    }
 
-        (error) => {
+    const [REQUEST, SUCCESS, FAILURE] = types;
+
+    dispatch(startLoading());
+    next({ ...rest, type: REQUEST });
+
+    return promise(client).then(
+
+      (result) => {
+        if (result === null || result.code === 'ENOTFOUND' || (result.status === undefined && result.stack !== undefined)) {
           dispatch(endLoading(true));
-          return next({ ...rest, error, type: FAILURE });
+          return next({ ...rest, error: 'offline', type: FAILURE });
         }
-      )
-      .catch((error) => {
+        dispatch(endLoading());
+        return next({ ...rest, result, type: SUCCESS });
+      },
+
+      (error) => {
         dispatch(endLoading(true));
-        console.error('MIDDLEWARE ERROR:', error);
-        next({ ...rest, error, type: FAILURE });
-      });
-    };
+        return next({ ...rest, error, type: FAILURE });
+      }
+    )
+    .catch((error) => {
+      dispatch(endLoading(true));
+      console.error('MIDDLEWARE ERROR:', error);
+      next({ ...rest, error, type: FAILURE });
+    });
   };
 }

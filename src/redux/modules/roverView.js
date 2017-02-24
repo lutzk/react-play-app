@@ -12,12 +12,11 @@ const opportunity = { name: 'Opportunity', label: 'opportunity' };
 const rovers = {
   [spirit.label]: spirit.name,
   [curiosity.label]: curiosity.name,
-  [opportunity.label]: opportunity.name
+  [opportunity.label]: opportunity.name,
 };
 
-export const roverMatcher = (roverToMatch) => {
-  return Object.keys(rovers).indexOf(roverToMatch) > -1;
-};
+export const roverMatcher = roverToMatch =>
+  Object.keys(rovers).indexOf(roverToMatch) > -1;
 
 const initialState = {
   rover: null,
@@ -34,7 +33,7 @@ const initialState = {
   maxSolsShown: false,
   defaultRover: rovers[spirit.label],
   moreSolsShown: false,
-  initialSolCount: 15
+  initialSolCount: 15,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -80,7 +79,7 @@ export default function reducer(state = initialState, action = {}) {
     case GET_MANIFEST:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
 
     case GET_MANIFEST_SUCCESS:
@@ -94,7 +93,7 @@ export default function reducer(state = initialState, action = {}) {
         solsLenght: action.result.photo_manifest.photos.length,
         missionSols: action.result.photo_manifest.photos,
         missionStats: getStats(action.result.photo_manifest),
-        solsToRender: filterSols(action.result.photo_manifest.photos, state)
+        solsToRender: filterSols(action.result.photo_manifest.photos, state),
       };
 
     case GET_MANIFEST_FAIL:
@@ -102,7 +101,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         error: action.error,
         loaded: false,
-        loading: false
+        loading: false,
       };
 
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
@@ -113,7 +112,7 @@ export default function reducer(state = initialState, action = {}) {
         maxSolsShown: action.newCount >= state.solsLenght,
         minSolsShown: action.newCount <= 0,
         solsToRender: filterSols(state.missionSols, state, newSolShowCount),
-        moreSolsShown: true
+        moreSolsShown: true,
       };
 
     default:
@@ -128,35 +127,29 @@ export const getManifest = (rover, offLine = false) => {
   if (offLine) {
     return {
       types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
-      promise: client => client.get(`${offlineManifestBasePath}?rover=${_rover}`)
+      promise: client => client.get(`${offlineManifestBasePath}?rover=${_rover}`),
     };
   }
 
   return {
     types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
-    promise: client => client.get(`${apiBasePath}${apiManifestsPath}${_rover}?api_key=${apiKey}`)
+    promise: client => client.get(`${apiBasePath}${apiManifestsPath}${_rover}?api_key=${apiKey}`),
   };
 };
 
-export const updateSolsShown = (newCount) => {
-  return {
-    type: UPDATE_CURRENT_SOL_SHOW_COUNT,
-    newCount: newCount > -1 ? newCount : 0
-  };
+export const updateSolsShown = newCount => ({
+  type: UPDATE_CURRENT_SOL_SHOW_COUNT,
+  newCount: newCount > -1 ? newCount : 0,
+});
+
+export const showMoreSols = () => (dispatch, getState) => {
+  const roverState = getState().roverView;
+  const newValue = roverState.solsCount + roverState.initialSolCount;
+  return dispatch(updateSolsShown(newValue));
 };
 
-export const showMoreSols = () => {
-  return (dispatch, getState) => {
-    const roverState = getState().roverView;
-    const newValue = roverState.solsCount + roverState.initialSolCount;
-    return dispatch(updateSolsShown(newValue));
-  };
-};
-
-export const showLessSols = () => {
-  return (dispatch, getState) => {
-    const roverState = getState().roverView;
-    const newValue = roverState.solsCount - roverState.initialSolCount;
-    return dispatch(updateSolsShown(newValue));
-  };
+export const showLessSols = () => (dispatch, getState) => {
+  const roverState = getState().roverView;
+  const newValue = roverState.solsCount - roverState.initialSolCount;
+  return dispatch(updateSolsShown(newValue));
 };

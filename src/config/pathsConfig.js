@@ -1,9 +1,12 @@
 const PATHS = {
   ROOT: '/',
   HOME: 'home',
-  ROVER_VIEW: 'rover-view',
+  ROVER_VIEW: {
+    ROOT: 'rover-view',
+    SOL: 'sol',
+  },
   LOGIN: 'login',
-  NOT_FOUND: '*'
+  NOT_FOUND: '*',
 };
 
 export default PATHS;

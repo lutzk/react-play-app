@@ -12,12 +12,12 @@ let mounted = false;
 const mapStateToProps = state => ({
   loading: state.pageLoadBar.loading,
   loadEnd: state.pageLoadBar.loadEnded,
-  loadError: state.pageLoadBar.error
+  loadError: state.pageLoadBar.error,
 });
 
 @asyncConnect([{
   key: 'App',
-  promise: () => 'App'
+  promise: () => 'App',
 }],
 mapStateToProps)
 export default class App extends Component {
@@ -27,11 +27,11 @@ export default class App extends Component {
     location: PropTypes.object.isRequired,
     loading: PropTypes.bool,
     loadError: PropTypes.bool,
-    loadEnded: PropTypes.bool
+    loadEnded: PropTypes.bool,
   };
 
   static contextTypes = {
-    store: PropTypes.object.isRequired
+    store: PropTypes.object.isRequired,
   };
 
   // constructor(props) {
@@ -64,7 +64,7 @@ export default class App extends Component {
       mount: mounted,
       loading: this.props.loading,
       loadEnd: this.props.loadEnded,
-      loadError: this.props.loadError
+      loadError: this.props.loadError,
     };
 
     return (
