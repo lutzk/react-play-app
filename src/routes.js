@@ -40,7 +40,8 @@ const getRoutes = () => {
       <IndexRoute component={Login} />
       <Route path={PATHS.LOGIN} component={Login} />
       <Route path={PATHS.HOME} getComponent={getHome} />
-      <Route path={`${PATHS.ROVER_VIEW}(/:rover)`} getComponent={getRoverView} />
+      <Route path={`${PATHS.ROVER_VIEW.ROOT}(/:rover)`} getComponent={getRoverView} />
+      <Route path={`${PATHS.ROVER_VIEW.SOL}/:sol`} getComponent={getSolView} />
       <Route path={PATHS.NOT_FOUND} getComponent={getNotFound} />
     </Route>
   );
