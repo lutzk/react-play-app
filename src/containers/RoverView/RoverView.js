@@ -1,9 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import { push } from 'react-router-redux';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols, roverMatcher } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
+import RoverMissionStats from './RoverMissionStats';
+import RoverMissionSols from './RoverMissionSols';
 import './roverView.sass';
 
 const asyncInfo = {
@@ -50,6 +53,7 @@ const mapDispatchToProps = dispatch => bindActionCreators(
 export default class Info extends Component {
 
   static propTypes = {
+    push: PropTypes.func,
     roverName: PropTypes.string,
     showMoreSols: PropTypes.func,
     showLessSols: PropTypes.func,
@@ -63,7 +67,7 @@ export default class Info extends Component {
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
     initialSolCount: PropTypes.number,
-    manifestLoadError: PropTypes.any
+    manifestLoadError: PropTypes.any,
   }
 
   constructor(props) {
@@ -74,74 +78,17 @@ export default class Info extends Component {
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
-  renderRoverMissionStats() {
-    const { missionStats, roverName } = this.props;
-    if (!missionStats) return;
-
-    const stats = Object.keys(missionStats).map((stat, index) => {
-      return (
-        <div key={index} className="roverMissionStatsCard">
-          {stat}:&nbsp;{missionStats[stat]}
-        </div>
-      );
-    });
-
-    return (// eslint-disable-line
-      <div className="roverMissionStatsWrap">
-        <h3 className="roverName">{roverName}</h3>
-        <div className="roverAvatar">
-          __roverAvatar__
-        </div>
-        <div className="roverMissionStats">{stats}</div>
-      </div>);
-  }
-
-  renderSolsCards() {
-
-    const { solsToRender } = this.props;
-
-    if (!solsToRender) {
-      return;
-    }
-
-    const sols = solsToRender.map((sol, index) => {
-      return (
-        <div key={index} className="solCard">
-          <div>
-            <h4>sol:&nbsp;{sol.sol}</h4>
-          </div>
-          <div>
-            total_photos:&nbsp;{sol.total_photos}
-          </div>
-          <div>
-            cams:&nbsp;
-            {sol.cameras.map((cam, i) => {
-              return (<span key={i}>{cam}&nbsp;</span>);
-            })}
-          </div>
-        </div>);
-    });
-
-    return (// eslint-disable-line
-      <div className="roverPhotoDataData">
-        {sols}
-      </div>);
-  }
-
   handleRefreshManifestRequest(e) {
-    const { refreshManifest } = this.props;// eslint-disable-line
     const offline = !!e.target.dataset.offline;
-    refreshManifest('Spirit', offline);
+    return this.props.refreshManifest('Spirit', offline);
   }
 
   handleShowMoreSols() {
-    const { showMoreSols } = this.props;// eslint-disable-line
-    showMoreSols();
+    return this.props.showMoreSols();
   }
 
   handleShowLessSols() {
-    const { showLessSols } = this.props;// eslint-disable-line
-    showLessSols();
+    return this.props.showLessSols();
   }
 
   render() {
@@ -155,31 +102,39 @@ export default class Info extends Component {
       manifestLoadError,
     } = this.props;
 
-    const solsCards = this.renderSolsCards();
-    const roverMissionStats = this.renderRoverMissionStats();
+    const missionStatsProps = {
+      roverName: this.props.roverName,
+      missionStats: this.props.missionStats,
+    };
 
+    const missionSolsProps = {
+      push: this.props.push,
+      sols: this.props.solsToRender,
+    };
+
+    const buttonPane = (
+      <div>
+        <button onClick={this.handleRefreshManifestRequest}>refresh</button>
+        &nbsp;
+        <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
+        {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
+        &nbsp;
+        {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
+      </div>);
     return (
       <div className="Page">
-        <h1>
-          RoverView
-          &nbsp;
-        </h1>
-        <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
 
+        <h1>RoverView</h1>
+        <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
+        {this.props.children}
         <div>
-          <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-          &nbsp;
-          <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-          &nbsp;
-          {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
-          &nbsp;
-          {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
+          {buttonPane}
           &nbsp;
           {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
         </div>
 
         {manifestLoading && !manifestLoadError &&
-          <div><h1>loading ...</h1></div>
+          <div><h3>loading ...</h3></div>
         }
 
         {manifestLoadError &&
@@ -190,11 +145,9 @@ export default class Info extends Component {
 
         {manifestLoaded && !manifestLoadError &&
           <div>
-            {roverMissionStats}
-            {solsCards}
-            {!minSolsShown && <button onClick={this.handleShowLessSols}>show less sols</button>}
-            &nbsp;
-            {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more sols</button>}
+            <RoverMissionStats {...missionStatsProps} />
+            <RoverMissionSols {...missionSolsProps} />
+            {buttonPane}
           </div>
         }
       </div>);
