@@ -4,13 +4,14 @@ const babelConfigBase = {
   presets: ['react', ['es2015', { modules: false }], 'stage-0'],
   plugins: [
     'transform-runtime',
-    'react-hot-loader/babel',
+    // 'react-hot-loader/babel',
     'syntax-dynamic-import',
     'transform-decorators-legacy'
   ]
 };
 
 const devPlugins = [
+  'react-hot-loader/babel',
   'react-transform',
   {
     transforms: [{
