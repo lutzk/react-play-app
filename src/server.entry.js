@@ -10,7 +10,7 @@ if (global.__DEVELOPMENT__) {
     if (!require('piping')(
       {
         hook: true,
-        ignore: /(\/\.|~$|\.json$)/i
+        ignore: /(\/\.|~$|\.json$)/i,
       }
     )) {
       // return;
@@ -21,16 +21,15 @@ if (global.__DEVELOPMENT__) {
 const startServer = () => {
   // const serverPath = './server/server';
   if (global.__DEVELOPMENT__) {
-    return import('./server/server').then((server) => {
-      return server.default({});
-    }).catch(e => console.log(e));
+    return import('./server/server').then(
+      server =>
+        server.default({}))
+        .catch(e => console.log(e));
   }
 
-  return getAssets().then((assets) => {
-    import('./server/server').then((server) => {
-      return server.default(formatAssets(assets));
-    });
-  });
+  return getAssets().then(assets =>
+    import('./server/server').then(server =>
+      server.default(formatAssets(assets))));
 };
 
 startServer();

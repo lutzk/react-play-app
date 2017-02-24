@@ -1,10 +1,10 @@
 const env = {
   development: {
-    isProduction: false
+    isProduction: false,
   },
   production: {
-    isProduction: true
-  }
+    isProduction: true,
+  },
 }[process.env.NODE_ENV || 'development'];
 
 const appConfig = Object.assign(
@@ -16,9 +16,9 @@ const appConfig = Object.assign(
     app: {
       title: 'app',
       meta: {
-        charSet: 'utf-8'
-      }
-    }
+        charSet: 'utf-8',
+      },
+    },
   },
   env
 );

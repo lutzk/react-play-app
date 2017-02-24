@@ -37,7 +37,7 @@ const getAssets = (path = false) => {
   let assets = null;
   if (checkAssetsJsonPresent(assetsFilePath)) {
     assets = parseAssetsJson(assetsFilePath);
-    return Promise.resolve().then(() => { return assets; });
+    return Promise.resolve().then(() => assets);
   }
 
   return waitForFile(assetsFilePath).then(() => {
@@ -48,9 +48,9 @@ const getAssets = (path = false) => {
 
 export const formatAssets = (assetsObj) => {
   if (assetsObj.javascript !== undefined && assetsObj.javascript.vendor !== undefined && assetsObj.javascript.main !== undefined) {
-    assetsObj.javascript = {
+    assetsObj.javascript = {// eslint-disable-line
       vendor: assetsObj.javascript.vendor,
-      main: assetsObj.javascript.main
+      main: assetsObj.javascript.main,
     };
   }
   return assetsObj;
