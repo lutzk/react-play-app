@@ -126,7 +126,7 @@ export default class Info extends Component {
 
         <h1>RoverView</h1>
         <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
-        {this.props.children}
+
         <div>
           {buttonPane}
           &nbsp;
