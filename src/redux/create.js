@@ -18,7 +18,7 @@ export default function createStore(history, client, data) {
 
   } else if (__CLIENT__) {
     finalCreateStore = compose(
-      applyMiddleware(...middleware),
+      applyMiddleware(...middleware)
     )(_createStore);
 
   } else {
