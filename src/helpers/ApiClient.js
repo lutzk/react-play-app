@@ -33,7 +33,7 @@ class _ApiClient1 {
         .on('error', e => console.log('error: ', e, JSON.stringify(e, 0, 2)))
         .then((success, error) => {
           if (error) {
-            console.error(JSON.stringify(error, 0, 2))
+            console.error(JSON.stringify(error, 0, 2));
             return error;
           }
 
