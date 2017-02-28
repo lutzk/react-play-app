@@ -40,21 +40,20 @@ const render = (_routes, renderProps) => {
       </Router>
     </Provider>);
 
-  /* eslint-disable */
+  let dom = null;
+
   if (__DEVELOPMENT__) {
-    return ReactDOM.render(
+    dom = ReactDOM.render(
       <HotReloader>
         {App}
       </HotReloader>,
       rootDomNode
     );
+  } else {
+    dom = ReactDOM.render(App, rootDomNode);
   }
 
-  return ReactDOM.render(
-    App,
-    rootDomNode
-  );
-  /* eslint-enable */
+  return dom;
 };
 
 const renderDevStuff = () => {
