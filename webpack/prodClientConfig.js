@@ -38,17 +38,17 @@ module.exports = {
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
-          loader: [
+          use: [
             'style-loader',
             'css-loader'
           ],
-          fallbackLoader: 'style-loader'
+          fallback: 'style-loader'
         })
       },
       {
         test: /\.(scss|sass)$/,
         loader: ExtractTextPlugin.extract({
-          loader: [
+          use: [
             {
               loader: 'css-loader',
               query: { importLoaders: 1 }
@@ -58,7 +58,7 @@ module.exports = {
               query: { outputStyle: 'compressed' }
             }
           ],
-          fallbackLoader: 'style-loader'
+          fallback: 'style-loader'
         })
       },
       {
