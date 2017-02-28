@@ -1,4 +1,4 @@
-const strip = require('strip-loader');
+// const strip = require('strip-loader');
 const config = require('./webpackCommons').webpackCommons;
 const babelrc = require('./babelConfig').babelConfigServerProd;
 const webpack = require('webpack');
@@ -43,7 +43,6 @@ module.exports = {
             loader: 'babel-loader',
             options: babelrc
           },
-          { loader: strip.loader('debug') },
           { loader: 'eslint-loader' }
         ]
       },

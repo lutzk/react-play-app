@@ -1,4 +1,4 @@
-const strip = require('strip-loader');
+// const strip = require('strip-loader');
 const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigProdClient;
@@ -28,7 +28,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: [
-          { loader: strip.loader('debug') },
+          // { loader: strip.loader('debug') },
           {
             loader: 'babel-loader',
             options: babelrc
