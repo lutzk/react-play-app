@@ -14,42 +14,36 @@ const methods = ['get', 'post', 'put', 'patch', 'del'];
  // not tested
 class _ApiClient1 {
   constructor(/* incomingReq */) {
-    methods.forEach( method =>
-      this[method] = (path /* , {  params, data  } */ = {}) => { // eslint-disbale-line
-        // new Promise((resolve, reject) => {
-        return superagent[method](path)
+    methods.forEach(method =>// eslint-disable-line
+      this[method] = (path /* , {  params, data  }  = {} */) =>// eslint-disable-line
+        superagent[method](path)
+        // return superagent[method](path)
         // if (cookie && cookie.load('loginResult')) {
         //   request.set(config.authTokenKey, cookie.load('loginResult'));
         // }
-
         // if (params) {
         //   request.query(params);
         // }
-
         // if (global.__SERVER__ && incomingReq.get('cookie')) {
         //   request.set('cookie', incomingReq.get('cookie'));
         // }
-
         // if (data) {
         //   request.send(data);
         // }
-
-        .on('error', e => console.log('E:: ', e, JSON.stringify(e, 0, 2)))
+        .on('error', e => console.log('error: ', e, JSON.stringify(e, 0, 2)))
         .then((success, error) => {
           if (error) {
-
+            console.error(JSON.stringify(error, 0, 2))
             return error;
           }
 
           return success.body;
         })
-        .catch(e => e);
-        // request.end((err, { body } = {}) => err ? reject(body || err) : resolve(body));
-      }
-      // )// promisse ...
+        .catch(e => e)
     );
   }
 }
+
 const Api2 = _ApiClient1;
 
 export default Api2;
