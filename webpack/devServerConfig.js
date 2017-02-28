@@ -150,7 +150,8 @@ module.exports = {
       __CLIENT__: false,
       __SERVER__: true,
       __DEVELOPMENT__: true,
-      __DEVTOOLS__: true
+      __DEVTOOLS__: true,
+      'process.env.NODE_ENV': JSON.stringify('development')
     })
   ]
 };
