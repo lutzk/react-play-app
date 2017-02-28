@@ -2,6 +2,7 @@ const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigClient;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const StatsPlugin = require('./StatsPlugin');
 
 const hmrSource = `webpack-hot-middleware/client?path=http://${config.host}:${config.assetServerPort}/__webpack_hmr&reload=true`;
 config.vendorList.unshift(hmrSource);
@@ -140,6 +141,7 @@ module.exports = {
     extensions: ['.json', '.js', '.jsx', '.css', '.scss', '.sass']
   },
   plugins: [
+    new StatsPlugin('webpack-stats.json'),
     new CaseSensitivePathsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
@@ -152,7 +154,8 @@ module.exports = {
       __CLIENT__: true,
       __SERVER__: false,
       __DEVELOPMENT__: true,
-      __DEVTOOLS__: true  // <-------- DISABLE redux-devtools HERE
+      __DEVTOOLS__: true,  // <-------- DISABLE redux-devtools HERE
+      'process.env.NODE_ENV': JSON.stringify('development')
     })
   ]
 };

@@ -1,59 +1,106 @@
-const fs = require('fs');
-const waitForFile = require('universal-webpack/build/wait for file.js').default;
+import fs from 'fs';
+import { timer } from '../helpers/logTiming';
 
-const parseAssetsJson = (path) => {
-  let file = null;
-  let assets = false;
+const parseAssetsJson = (_path) => {
+
+  let json = false;
+  let jsonFile = null;
+
   try {
-    file = fs.readFileSync(path, 'utf-8');
+    jsonFile = fs.readFileSync(_path, 'utf-8');
   } catch (e) {
-    console.error(`somethings wrong ${e}`);
+    console.error(`somethings wrong: ${e}`);
   } finally {
-    if (file) {
-      assets = JSON.parse(file);
+    if (jsonFile) {
+      json = JSON.parse(jsonFile);
     }
   }
-  return assets;
+
+  return json;
 };
 
-const checkAssetsJsonPresent = (path) => {
-  let file = null;
-  let found = null;
-  try {
-    file = fs.statSync(path, 'utf-8');
-  } catch (e) {
-    found = false;
-    console.error(`no asset.json found ${e}`);
-  } finally {
-    if (file) {
-      found = true;
+const isExtension = (file, ext) => {
+
+  if (ext === `${file}`.substr(parseInt(`-${ext.length}`, 10))) {
+    return true;
+  }
+
+  return false;
+};
+
+const getAssetExtension = (file) => {
+
+  let extension = null;
+  const extensions = ['js', 'css'];
+
+  extensions.map((ext) => {
+    if (isExtension(file, ext)) {
+      extension = ext;
     }
-  }
-  return found;
-};
-
-const getAssets = (path = false) => {
-  const assetsFilePath = path || './webpack-assets.json';
-  let assets = null;
-  if (checkAssetsJsonPresent(assetsFilePath)) {
-    assets = parseAssetsJson(assetsFilePath);
-    return Promise.resolve().then(() => assets);
-  }
-
-  return waitForFile(assetsFilePath).then(() => {
-    assets = parseAssetsJson(assetsFilePath);
-    return assets;
+    return extension;
   });
+
+  return extension;
+};
+
+
+const defineUndefined = (def, what = {})  => def = def || what;// eslint-disable-line
+
+export const getAssetsFromStats = (stats) => {
+
+  const startTime = timer.start();
+
+  const assetsObj = {};
+  const publicPath = stats.publicPath;
+  const assetsChunks = stats.assetsByChunkName;
+  const assetsChunksKeys = Object.keys(assetsChunks);
+  const assetsChunksLength = assetsChunksKeys.length;
+
+  for (let index = 0; index < assetsChunksLength; index += 1) {
+    const assetsChunkKey = assetsChunksKeys[index];
+    let assets = assetsChunks[assetsChunkKey];
+
+    if (!(Array.isArray(assets))) {
+      assets = [assets];
+    }
+
+    assets.map((asset) => {
+      const type = getAssetExtension(asset);
+      assetsObj[type] = defineUndefined(assetsObj[type], {});
+      assetsObj[type][assetsChunkKey] = defineUndefined(assetsObj[type][assetsChunkKey], []);
+      assetsObj[type][assetsChunkKey].push(`${publicPath}${asset}`);
+      return undefined;
+    });
+  }
+
+  timer.stop(startTime, 'getAssetsFromStats');
+  return assetsObj;
 };
 
 export const formatAssets = (assetsObj) => {
-  if (assetsObj.javascript !== undefined && assetsObj.javascript.vendor !== undefined && assetsObj.javascript.main !== undefined) {
-    assetsObj.javascript = {// eslint-disable-line
-      vendor: assetsObj.javascript.vendor,
-      main: assetsObj.javascript.main,
+
+  if (assetsObj.js !== undefined && assetsObj.js.vendor !== undefined && assetsObj.js.main !== undefined) {
+    const formatedAssetsObj = JSON.parse(JSON.stringify(assetsObj));
+    formatedAssetsObj.js = { // eslint-disable-line
+      vendor: assetsObj.js.vendor,
+      main: assetsObj.js.main,
     };
+    return formatedAssetsObj;
   }
+
   return assetsObj;
+};
+
+const getAssets = (assetsFilePath = false) => {
+  // in dev its served by webpack-dev-midleware
+  // so assetsFilePath is just present in prod
+  const _assetsFilePath = assetsFilePath || `${process.cwd()}/webpack-assets.json`;
+  const assets = parseAssetsJson(_assetsFilePath);
+  if (assets) {
+    return assets;
+  }
+
+  return {};
 };
 
 export default getAssets;

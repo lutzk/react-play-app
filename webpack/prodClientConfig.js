@@ -3,9 +3,8 @@ const config = require('./webpackCommons').webpackCommons;
 const webpack = require('webpack');
 const babelrc = require('./babelConfig').babelConfigProdClient;
 const CleanPlugin = require('clean-webpack-plugin');
+const StatsPlugin = require('./StatsPlugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const AssetsJsonPlugin = require('../node_modules/universal-webpack/build/chunks plugin.js').default;
-const assetsJsonPluginConfig = require('./webpackCommons').assetsJsonPluginProdConfig;
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
 module.exports = {
@@ -135,7 +134,7 @@ module.exports = {
     extensions: config.resolveExtensions
   },
   plugins: [
-    new AssetsJsonPlugin(assetsJsonPluginConfig.webpack, assetsJsonPluginConfig.plugin),
+    new StatsPlugin('webpack-assets.json'),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
