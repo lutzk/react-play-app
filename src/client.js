@@ -58,24 +58,25 @@ const render = (_routes, renderProps) => {
 
 const renderDevStuff = () => {
   if (__DEVELOPMENT__) {
+
     window.React = React;
     window.perf = Perf;// enable debugger
 
     if (!rootDomNode || !rootDomNode.firstChild || !rootDomNode.firstChild.attributes || !rootDomNode.firstChild.attributes['data-react-checksum']) {
       console.error('Server-side React render was discarded. Make sure that your initial render does not contain any client-side code.');
     }
-  }
 
-  if (__DEVTOOLS__) {
-    const DevTools = require('./containers/DevTools/DevTools').default;
-    const devToolsDest = document.createElement('div');
-    window.document.body.insertBefore(devToolsDest, null);
-    ReactDOM.render(
-      <Provider store={store} key="devToolsProvider">
-        <DevTools />
-      </Provider>,
-      devToolsDest
-    );
+    if (__DEVTOOLS__) {
+      const DevTools = require('./containers/DevTools/DevTools').default;
+      const devToolsDest = document.createElement('div');
+      window.document.body.insertBefore(devToolsDest, null);
+      ReactDOM.render(
+        <Provider store={store} key="devToolsProvider">
+          <DevTools />
+        </Provider>,
+        devToolsDest
+      );
+    }
   }
 };
 
