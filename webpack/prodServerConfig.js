@@ -177,7 +177,8 @@ module.exports = {
       __SERVER__: true,
       __DEVELOPMENT__: false,
       __DEVTOOLS__: false,
-      __DISABLE_SSR__: false
+      __DISABLE_SSR__: false,
+      'process.env.NODE_ENV': JSON.stringify('production')
     })
   ]
 };
