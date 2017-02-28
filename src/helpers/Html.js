@@ -36,30 +36,34 @@ const Html = (_props) => {
       className="content"
       dangerouslySetInnerHTML={{ __html: content }} />);
 
-  const css = Object.keys(assets.styles).map((style, key) => {
-    if (assets.styles[style]) {
-      return (
+  const css = assets.css ? Object.keys(assets.css).map((styles, key) => {
+    let scriptTags = null;
+    if (assets.css[styles]) {
+      scriptTags = assets.css[styles].map((style, i) => (
         <link
-          key={key}
+          key={key + i}
           rel="stylesheet"
-          href={assets.styles[style]}
+          href={style}
           type="text/css"
           media="screen, projection"
-          charSet="UTF-8" />);
+          charSet="UTF-8" />));
     }
-    return null;
-  });
 
-  const js = Object.keys(assets.javascript).map((script, key) => {
-    if (assets.javascript[script]) {
-      return (
+    return scriptTags;
+  }) : null;
+
+  const js = assets.js ? Object.keys(assets.js).map((scripts, key) => {
+    let scriptTags = null;
+    if (assets.js[scripts]) {
+      scriptTags = assets.js[scripts].map((script, i) => (
         <script
-          key={key}
+          key={i + key}
           charSet="UTF-8"
-          src={assets.javascript[script]} />);
+          src={script} />));
     }
-    return null;
-  });
+
+    return scriptTags;
+  }) : null;
 
   const html = (
     <html>
