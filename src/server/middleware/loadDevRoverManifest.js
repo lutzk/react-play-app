@@ -10,11 +10,9 @@ export const loadDevRoverManifest = () => {// eslint-disable-line
     if (req.query && req.query.rover) {
       rover = req.query.rover;
     }
-
-    return getAssets(`./${rover}.json`).then((manifest) => {
-      res.status(200);
-      res.send(manifest);
-      return res.end();
-    });
+    const roverManifest = getAssets(`./${rover}.json`);
+    res.status(200);
+    res.send(roverManifest);
+    return res.end();
   };
 };
