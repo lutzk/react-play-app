@@ -16,7 +16,6 @@ const asyncInfo = {
       store: { dispatch, getState },
       params: { rover },
     } = options;
-
     const roverViewState = getState().roverView;
     if (roverViewState.loaded) {
       return 'Info';
@@ -54,6 +53,7 @@ export default class Info extends Component {
 
   static propTypes = {
     push: PropTypes.func,
+    params: PropTypes.object,
     roverName: PropTypes.string,
     showMoreSols: PropTypes.func,
     showLessSols: PropTypes.func,
@@ -76,6 +76,12 @@ export default class Info extends Component {
     this.handleShowLessSols = ::this.handleShowLessSols;
     this.handleShowMoreSols = ::this.handleShowMoreSols;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
+  }
+
+  componentDidMount() {
+    if (!this.props.params.rover) {
+      window.history.pushState(null, '', `${window.location.pathname}/${this.props.roverName}`);
+    }
   }
 
   handleRefreshManifestRequest(e) {
@@ -134,11 +140,11 @@ export default class Info extends Component {
         </div>
 
         {manifestLoading && !manifestLoadError &&
-          <div><h3>loading ...</h3></div>
+          <div className="manifestLoading"><h3>loading ...</h3></div>
         }
 
         {manifestLoadError &&
-          <div>
+          <div className="error">
             {JSON.stringify(manifestLoadError, 0, 2)}
           </div>
         }

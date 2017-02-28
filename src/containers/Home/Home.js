@@ -9,7 +9,7 @@ const Home = () => (
     <p>
       <Link to={PATHS.ROOT}>root</Link>
       &nbsp;
-      <Link to={`/${PATHS.ROVER_VIEW.ROOT}/spirit`}>RoverView Spirit</Link>
+      <Link to={`/${PATHS.ROVER_VIEW.ROOT}`}>RoverView (rover = "Spirit")</Link>
     </p>
   </div>);
 
