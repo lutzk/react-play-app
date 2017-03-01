@@ -8,7 +8,7 @@ import getRoutes from '../../routes';
 import createStore from '../../redux/create';
 import { timer } from '../../helpers/logTiming';
 
-const renderApp = serverAssets => (req, res, next) => {
+const renderApp = (serverAssets = {}) => (req, res, next) => {
 
   const startTime = timer.start();
 

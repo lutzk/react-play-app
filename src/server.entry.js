@@ -22,7 +22,9 @@ if (global.__DEVELOPMENT__) {
 // error ...
 const startServer = () =>
   import('./server/server').then(server =>
-    server.default(getAssets()))
+    server.default(getAssets({
+      empty: global.__DEVELOPMENT__,
+    })))
     .catch(e => console.log(e));
 
 startServer();

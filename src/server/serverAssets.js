@@ -91,15 +91,23 @@ export const formatAssets = (assetsObj) => {
   return assetsObj;
 };
 
-const getAssets = (assetsFilePath = false) => {
-  // in dev its served by webpack-dev-midleware
-  // so assetsFilePath is just present in prod
-  const _assetsFilePath = assetsFilePath || `${process.cwd()}/webpack-assets.json`;
-  const assets = parseAssetsJson(_assetsFilePath);
-  if (assets) {
-    return assets;
+const getAssets = (options = { path: false, empty: false }) => {
+
+  const { path, empty } = options;
+
+  if (!empty) {
+    const _path = path || `${process.cwd()}/webpack-assets.json`;
+    const assets = parseAssetsJson(_path);
+
+    if (assets) {
+      return assets;
+    }
+
+    return {};
   }
 
+  // in dev its served by webpack-dev-midleware
+  // so assetsFilePath is just present in prod
   return {};
 };
 
