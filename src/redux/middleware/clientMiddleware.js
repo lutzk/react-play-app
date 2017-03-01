@@ -48,10 +48,6 @@ export default function clientMiddleware(client) {
     return promise(client).then(
 
       (result) => {
-        if (result === null || result.code === 'ENOTFOUND' || (result.status === undefined && result.stack !== undefined)) {
-          dispatch(endLoading(true));
-          return next({ ...rest, error: 'offline', type: FAILURE });
-        }
         dispatch(endLoading());
         return next({ ...rest, result, type: SUCCESS });
       },
