@@ -16,6 +16,7 @@ const asyncInfo = {
       store: { dispatch, getState },
       params: { rover },
     } = options;
+
     const roverViewState = getState().roverView;
     if (roverViewState.loaded) {
       return 'Info';
@@ -28,12 +29,12 @@ const asyncInfo = {
 
 const mapStateToProps = state => ({
   roverName: state.roverView.roverName,
-  minSolsShown: state.roverView.minSolsShown,
-  maxSolsShown: state.roverView.maxSolsShown,
-  moreSolsShown: state.roverView.moreSolsShown,
   solsCount: state.roverView.solsCount,
   missionStats: state.roverView.missionStats,
   solsToRender: state.roverView.solsToRender,
+  minSolsShown: state.roverView.minSolsShown,
+  maxSolsShown: state.roverView.maxSolsShown,
+  moreSolsShown: state.roverView.moreSolsShown,
   manifestLoaded: state.roverView.loaded,
   manifestLoading: state.roverView.loading,
   initialSolCount: state.roverView.initialSolCount,
@@ -54,15 +55,15 @@ export default class Info extends Component {
   static propTypes = {
     push: PropTypes.func,
     params: PropTypes.object,
+    solsCount: PropTypes.number,
     roverName: PropTypes.string,
     showMoreSols: PropTypes.func,
     showLessSols: PropTypes.func,
     maxSolsShown: PropTypes.bool,
     minSolsShown: PropTypes.bool,
-    moreSolsShown: PropTypes.bool,
-    solsCount: PropTypes.number,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
+    moreSolsShown: PropTypes.bool,
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
@@ -79,7 +80,7 @@ export default class Info extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.params.rover) {
+    if (!this.props.params.rover && this.props.roverName) {
       window.history.pushState(null, '', `${window.location.pathname}/${this.props.roverName}`);
     }
   }
@@ -145,7 +146,7 @@ export default class Info extends Component {
 
         {manifestLoadError &&
           <div className="error">
-            {JSON.stringify(manifestLoadError, 0, 2)}
+            something went wrong loading rover manifest
           </div>
         }
 
