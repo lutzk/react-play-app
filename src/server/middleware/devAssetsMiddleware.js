@@ -4,7 +4,6 @@ import appConfig from '../../config/appConfig';
 import { timer } from '../../helpers/logTiming';
 
 const devAssetsMiddleware = () => (req, res, next) => {
-  const startTime = timer.start();
   if (!global.__DEVELOPMENT__) {
     return next();
   }
@@ -24,7 +23,6 @@ const devAssetsMiddleware = () => (req, res, next) => {
         }
 
         res.locals.devAssets = formatAssets(devAssets);// eslint-disable-line
-        timer.stop(startTime, `devAssetsMiddleware req: ${req.url}`);
         return next();
       }
       if (err) {
