@@ -1,30 +1,34 @@
 import React from 'react';
+import { Link } from 'react-router';
+import PATHS from '../../config/pathsConfig';
 
 const RoverMissionSols = (input) => {
 
   /*
   * input:
+  *  rover: string
   *  sols: array
-  *  push: func
   */
 
   if (!input.sols) {
     return null;
   }
 
-  const handleClick = (e) => {
-    const sol = e.target.dataset.sol;
+  // const handleClick = (e) => {
+  //   const sol = e.currentTarget.dataset.sol;
 
-    if (!sol) {
-      return;
-    }
+  //   if (!sol) {
+  //     return;
+  //   }
 
-    input.push(`/sol/${sol}`);
-  };
+  //   input.push(`/sol/${sol}`);
+  // };
 
-  const sols = input.sols.map((sol, index) => (
+  const { rover, sols } = input;
+
+  const solsCards = sols.map((sol, index) => (
       // eslint-disable-next-line
-      <div key={index} data-sol={sol.sol} className="solCard" onClick={handleClick}>
+      <Link key={index} data-sol={sol.sol} className="solCard" to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}/${PATHS.SOL}/${sol.sol}`}>
         {Object.keys(sol).map((key, i) => {
           if (typeof sol[key] === 'string' || typeof sol[key] === 'number') {
             return (
@@ -41,13 +45,13 @@ const RoverMissionSols = (input) => {
           }
           return 1;
         })}
-      </div>
+      </Link>
     )
  );
 
   return (
     <div className="roverPhotoDataData">
-      {sols}
+      {solsCards}
     </div>);
 };
 

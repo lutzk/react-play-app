@@ -1,10 +1,11 @@
 const PATHS = {
   ROOT: '/',
   HOME: 'home',
+  SOL: 'sol',
+  ROVER: 'rover',
   ROVER_VIEW: {
     ROOT: 'rover-view',
   },
-  SOL: 'sol',
   LOGIN: 'login',
   NOT_FOUND: '*',
 };

@@ -7,10 +7,19 @@ export const loadDevRoverManifest = () => {// eslint-disable-line
     }
 
     let rover = 'Spirit';
-    if (req.query && req.query.rover) {
+    const sol = 55;
+    let roverManifest = null;
+    if (req.query && req.query.rover && !req.query.sol) {
       rover = req.query.rover;
+      roverManifest = getAssets({ path: `./${rover}.json` });
     }
-    const roverManifest = getAssets({ path: `./${rover}.json` });
+
+    if (req.query && req.query.rover && req.query.sol) {
+      rover = req.query.rover;
+      // sol = req.query.sol;
+      roverManifest = getAssets({ path: `./${rover}_sol_${sol}.json` });
+    }
+
     res.status(200);
     res.send(roverManifest);
     return res.end();
