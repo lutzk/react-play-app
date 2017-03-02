@@ -49,3 +49,42 @@
 
   &:hover
     background-color: rgba($white, .66)
+
+.solsImgs
+  display: flex
+  flex-wrap: wrap
+  background-color: rgba($black, .61)
+  padding: 16px
+
+.solImg
+  flex: 1 0 200px
+  margin: 6px
+  border: 1px solid rgba($black, .61)
+  background-color: rgba($white, .44)
+  padding: 16px
+  color: $text_color
+
+  .headline
+    +adjust-font-size-to(20px)
+    color: darken($text_color, 10%)
+    font-weight: bold
+    margin: 0
+  
+  .subHeadline
+    +adjust-font-size-to(18px)
+    color: darken($text_color, 10%)
+    margin: 0
+
+  .image
+    max-width: 100%
+    border: 1px solid darken($text_color, 10%)
+
+  .cameraData
+
+
+      // display: flex
+      // flex-wrap: wrap
+  
+      // div
+      //   flex: 1 1  100px
+  
