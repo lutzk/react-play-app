@@ -1,7 +1,6 @@
 import superagent from 'superagent';
 import { formatAssets, getAssetsFromStats } from '../serverAssets';
 import appConfig from '../../config/appConfig';
-import { timer } from '../../helpers/logTiming';
 
 const devAssetsMiddleware = () => (req, res, next) => {
   if (!global.__DEVELOPMENT__) {
