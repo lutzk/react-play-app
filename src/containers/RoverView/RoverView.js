@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { push } from 'react-router-redux';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols, roverMatcher } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols, roverMatcher, sortSols } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -28,6 +27,7 @@ const asyncInfo = {
 };
 
 const mapStateToProps = state => ({
+  solSortSettings: state.roverView.solSortSettings,
   roverName: state.roverView.roverName,
   solsCount: state.roverView.solsCount,
   missionStats: state.roverView.missionStats,
@@ -42,7 +42,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMoreSols, showLessSols, push }), dispatch
+  Object.assign({}, { refreshManifest, showMoreSols, showLessSols, sortSols }), dispatch
 );
 
 @asyncConnect(
@@ -53,8 +53,8 @@ const mapDispatchToProps = dispatch => bindActionCreators(
 export default class Info extends Component {
 
   static propTypes = {
-    push: PropTypes.func,
     params: PropTypes.object,
+    sortSols: PropTypes.func,
     solsCount: PropTypes.number,
     roverName: PropTypes.string,
     showMoreSols: PropTypes.func,
@@ -69,11 +69,13 @@ export default class Info extends Component {
     manifestLoading: PropTypes.bool,
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
+    solSortSettings: PropTypes.object,
   }
 
   constructor(props) {
     super(props);
 
+    this.handleSortSols = ::this.handleSortSols;
     this.handleShowLessSols = ::this.handleShowLessSols;
     this.handleShowMoreSols = ::this.handleShowMoreSols;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
@@ -98,6 +100,16 @@ export default class Info extends Component {
     return this.props.showLessSols();
   }
 
+  handleSortSols(e) {
+    const fields = e.currentTarget.dataset.sortfield ?
+      [e.currentTarget.dataset.sortfield] : this.props.solSortSettings.fields;
+
+    const fieldsOrders = e.currentTarget.dataset.sortorder ?
+      [e.currentTarget.dataset.sortorder] : this.props.solSortSettings.fieldsOrders;
+
+    return this.props.sortSols({ fields, fieldsOrders });
+  }
+
   render() {
 
     const {
@@ -115,8 +127,8 @@ export default class Info extends Component {
     };
 
     const missionSolsProps = {
-      push: this.props.push,
       sols: this.props.solsToRender,
+      rover: this.props.roverName.toLowerCase(),
     };
 
     const buttonPane = (
@@ -128,6 +140,21 @@ export default class Info extends Component {
         &nbsp;
         {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
       </div>);
+
+    const sortPane = (
+      <div>
+        <button onClick={this.handleSortSols}>sort</button>
+        &nbsp;
+        <button data-sortorder="asc" onClick={this.handleSortSols}>sort asc</button>
+        &nbsp;
+        <button data-sortorder="desc" onClick={this.handleSortSols}>sort desc</button>
+        &nbsp;
+        <button data-sortfield="cameras" onClick={this.handleSortSols}>sort by cams</button>
+        &nbsp;
+        <button data-sortfield="total_photos" onClick={this.handleSortSols}>sort by photos</button>
+        &nbsp;
+      </div>
+    );
     return (
       <div className="Page">
 
@@ -139,7 +166,7 @@ export default class Info extends Component {
           &nbsp;
           {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
         </div>
-
+        {sortPane}
         {manifestLoading && !manifestLoadError &&
           <div className="manifestLoading"><h3>loading ...</h3></div>
         }
@@ -154,6 +181,7 @@ export default class Info extends Component {
           <div>
             <RoverMissionStats {...missionStatsProps} />
             <RoverMissionSols {...missionSolsProps} />
+            {sortPane}
             {buttonPane}
           </div>
         }

@@ -1,9 +1,17 @@
+import _ from 'lodash'; // eslint-disable-line
+
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_COUNT';
 export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
+
+export const SORT_SOLS = 'roverView/SORT_SOLS';
+
+export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
+export const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
+export const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
@@ -17,6 +25,8 @@ const rovers = {
 
 export const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
+
+const solSortSettings = { fields: ['total_photos'], fieldsOrders: ['desc'] };
 
 const initialState = {
   rover: null,
@@ -34,6 +44,7 @@ const initialState = {
   defaultRover: rovers[spirit.label],
   moreSolsShown: false,
   initialSolCount: 15,
+  solSortSettings,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -41,12 +52,12 @@ const initialState = {
 // https://api.nasa.gov/mars-photos/api/v1/manifests/Spirit?api_key=DEMO_KEY
 
 // const getJsonPath = (rover = initialState.defaultRover) => `./${rover}.json`;
-
-const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
 // const getRoverPath = rover => `rovers/${rover}/photos`;
-const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
-const apiManifestsPath = 'manifests/';
+
 const apiKey = 'DEMO_KEY';
+const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
+const apiManifestsPath = 'manifests/';
+const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 
 const getStats = (data) => {
   const stats = { ...data };
@@ -74,8 +85,18 @@ const filterSols = (sols, state, newSolShowCount = undefined) => {
   return sols.filter((sol, index) => index < solShowCount);
 };
 
+// const filterSolsRange = (sols, start = 0, end) =>
+//   sols.filter((sol, index) => index >= start && index <= end);
+
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case SORT_SOLS:
+      return {
+        ...state,
+        solsToRender: action.sols,
+        solSortSettings: action.solSortSettings,
+      };
+
     case GET_MANIFEST:
       return {
         ...state,
@@ -85,7 +106,7 @@ export default function reducer(state = initialState, action = {}) {
     case GET_MANIFEST_SUCCESS:
       return {
         ...state,
-        rover: action.result.photo_manifest.name,
+        rover: action.result.photo_manifest.name.toLowerCase(),
         error: null,
         loaded: true,
         loading: false,
@@ -104,6 +125,26 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
       };
 
+    // extraxt
+    case GET_SOL_MANIFEST:
+      return {
+        ...state,
+      };
+
+    case GET_SOL_MANIFEST_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        solData: action.result,
+      };
+
+    case GET_SOL_MANIFEST_FAIL:
+      return {
+        ...state,
+        error: action.error,
+      };
+
+    //
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
       const newSolShowCount = getNewSolShowCount(action.newCount, state.solsLenght);
       return {
@@ -137,6 +178,21 @@ export const getManifest = (rover, offLine = false) => {
   };
 };
 
+export const getSolManifest = (rover, sol, offLine = false) => {
+
+  if (offLine) {
+    return {
+      types: [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL],
+      promise: client => client.get(`${offlineManifestBasePath}?rover=${rover}&sol=${sol}`),
+    };
+  }
+
+  return {
+    types: [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL],
+    promise: client => client.get(`${apiBasePath}${rover}/${sol}/photos?${sol}&api_key=${apiKey}`),
+  };
+};
+
 export const updateSolsShown = newCount => ({
   type: UPDATE_CURRENT_SOL_SHOW_COUNT,
   newCount: newCount > -1 ? newCount : 0,
@@ -153,3 +209,22 @@ export const showLessSols = () => (dispatch, getState) => {
   const newValue = roverState.solsCount - roverState.initialSolCount;
   return dispatch(updateSolsShown(newValue));
 };
+
+// export const getSolsToRender = (options = solSortSettings) =>
+export const sortSols = (options = solSortSettings) =>
+  (dispatch, getState) => {
+
+    const state = getState().roverView;
+    const { fields, fieldsOrders } = options;
+    const { solsCount, missionSols } = state;
+    let sols = [];
+
+    sols = _.orderBy(missionSols, fields, fieldsOrders);
+    sols = filterSols(sols, state, solsCount);
+
+    return dispatch({
+      sols,
+      type: SORT_SOLS,
+      solSortSettings: options,
+    });
+  };
