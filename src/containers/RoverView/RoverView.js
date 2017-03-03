@@ -141,20 +141,33 @@ export default class Info extends Component {
         {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
       </div>);
 
-    const sortPane = (
-      <div>
-        <button onClick={this.handleSortSols}>sort</button>
-        &nbsp;
-        <button data-sortorder="asc" onClick={this.handleSortSols}>sort asc</button>
-        &nbsp;
-        <button data-sortorder="desc" onClick={this.handleSortSols}>sort desc</button>
-        &nbsp;
-        <button data-sortfield="cameras" onClick={this.handleSortSols}>sort by cams</button>
-        &nbsp;
-        <button data-sortfield="total_photos" onClick={this.handleSortSols}>sort by photos</button>
-        &nbsp;
-      </div>
-    );
+    const renderSortPane = () => {
+      const sortOrder = this.props.solSortSettings.fieldsOrders[0];
+      const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      const sortField = this.props.solSortSettings.fields[0];
+      // const newSortField = sortField === 'total_photos' ? 'cameras' : 'total_photos';
+      let sortButtons = null;
+      if (this.props.solsToRender && this.props.solsToRender.length) {
+        sortButtons = (
+          <div>
+            {Object.keys(this.props.solsToRender[0]).map((key, i) =>
+              <button key={i} data-sortfield={key} onClick={this.handleSortSols}>sort by {key}</button>)
+            }
+            &nbsp;
+            <button data-sortorder={newSortOrder} onClick={this.handleSortSols}>sort {newSortOrder}</button>
+            &nbsp;
+            <span>
+              current sort: {sortField} - {sortOrder}
+            </span>
+          </div>
+        );
+      }
+
+      return sortButtons;
+    };
+
+    const sortPane = renderSortPane();
+
     return (
       <div className="Page">
 

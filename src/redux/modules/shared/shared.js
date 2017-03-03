@@ -5,6 +5,16 @@ export const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
 export const apiManifestsPath = 'manifests/';
 export const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 
+export const spirit = { name: 'Spirit', label: 'spirit' };
+export const curiosity = { name: 'Curiosity', label: 'curiosity' };
+export const opportunity = { name: 'Opportunity', label: 'opportunity' };
+
+export const rovers = {
+  [spirit.label]: spirit.name,
+  [curiosity.label]: curiosity.name,
+  [opportunity.label]: opportunity.name,
+};
+
 export const filterList = ({ list, count, newCount } = {}) => {
 
   let _count = count;
@@ -17,26 +27,35 @@ export const filterList = ({ list, count, newCount } = {}) => {
   return list.filter((item, index) => index < _count);
 };
 
-export const sortList = ({ sortSettings, list, count, type } = {}) =>
-  (dispatch) => {
+export const sortList = ({ sortSettings, list, count, newCount } = {}) => {
 
-    let sortedList = [];
-    const { fields, fieldsOrders } = sortSettings;
+  let sortedList = [];
+  const { fields, fieldsOrders } = sortSettings;
 
-    sortedList = filterList({
-      count,
-      list: _.orderBy(list, fields, fieldsOrders),
-    });
+  sortedList = filterList({
+    count,
+    newCount,
+    list: _.orderBy(list, fields, fieldsOrders),
+  });
 
-    return dispatch({
+  return sortedList;
+};
+
+export const sortListAction = ({ list, count, sortSettings, type } = {}) =>
+  dispatch =>
+    dispatch({
       type,
       sortSettings,
-      list: sortedList,
+      list: sortList({
+        list,
+        count,
+        sortSettings,
+      }),
     });
-  };
 
 // const filterSolsRange = (sols, start = 0, end) =>
 //   sols.filter((sol, index) => index >= start && index <= end);
+
 export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
 
   const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
@@ -66,23 +85,13 @@ export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
   };
 };
 
-// export const getNewCount = (newCount, lenght) => {
-//   let _newCount = newCount > -1 ? newCount : 0;
-//   _newCount = _newCount > lenght ? lenght : _newCount;
-//   return _newCount;
-// };
+export const getNewCount = (newCount, lenght) => {
+  let _newCount = newCount > -1 ? newCount : 0;
+  _newCount = _newCount > lenght ? lenght : _newCount;
+  return _newCount;
+};
 
 export const updateCount = (newCount, type) => ({
   type,
   newCount: newCount > -1 ? newCount : 0,
 });
-
-export const increaseCount = ({ currentCount, add, type } = {}) => (dispatch) => {
-  const newCount = currentCount + add;
-  return dispatch(updateCount(newCount, type));
-};
-
-export const decreaseCount = ({ currentCount, subtract, type } = {}) => (dispatch) => {
-  const newCount = currentCount - subtract;
-  return dispatch(updateCount(newCount, type));
-};
