@@ -1,4 +1,5 @@
 import _ from 'lodash'; // eslint-disable-line
+import { getManifestFor } from './shared/shared';
 
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
@@ -8,10 +9,6 @@ export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
 export const SORT_SOLS = 'roverView/SORT_SOLS';
-
-export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
-export const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
-export const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
@@ -54,10 +51,10 @@ const initialState = {
 // const getJsonPath = (rover = initialState.defaultRover) => `./${rover}.json`;
 // const getRoverPath = rover => `rovers/${rover}/photos`;
 
-const apiKey = 'DEMO_KEY';
-const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
-const apiManifestsPath = 'manifests/';
-const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
+// const apiKey = 'DEMO_KEY';
+// const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
+// const apiManifestsPath = 'manifests/';
+// const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 
 const getStats = (data) => {
   const stats = { ...data };
@@ -125,26 +122,6 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
       };
 
-    // extraxt
-    case GET_SOL_MANIFEST:
-      return {
-        ...state,
-      };
-
-    case GET_SOL_MANIFEST_SUCCESS:
-      return {
-        ...state,
-        error: null,
-        solData: action.result,
-      };
-
-    case GET_SOL_MANIFEST_FAIL:
-      return {
-        ...state,
-        error: action.error,
-      };
-
-    //
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
       const newSolShowCount = getNewSolShowCount(action.newCount, state.solsLenght);
       return {
@@ -161,36 +138,14 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export const getManifest = (rover, offLine = false) => {
-
-  const _rover = rover || initialState.defaultRover;
-
-  if (offLine) {
-    return {
-      types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
-      promise: client => client.get(`${offlineManifestBasePath}?rover=${_rover}`),
-    };
-  }
-
-  return {
-    types: [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL],
-    promise: client => client.get(`${apiBasePath}${apiManifestsPath}${_rover}?api_key=${apiKey}`),
-  };
-};
-
-export const getSolManifest = (rover, sol, offLine = false) => {
-
-  if (offLine) {
-    return {
-      types: [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL],
-      promise: client => client.get(`${offlineManifestBasePath}?rover=${rover}&sol=${sol}`),
-    };
-  }
-
-  return {
-    types: [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL],
-    promise: client => client.get(`${apiBasePath}${rover}/${sol}/photos?${sol}&api_key=${apiKey}`),
-  };
+export const getManifest = (_rover, offline) => {
+  const rover = _rover || initialState.defaultRover;
+  const types = [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL];
+  return getManifestFor({
+    rover,
+    types,
+    offline,
+  });
 };
 
 export const updateSolsShown = newCount => ({
