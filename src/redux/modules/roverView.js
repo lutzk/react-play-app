@@ -1,5 +1,8 @@
-import _ from 'lodash'; // eslint-disable-line
-import { getManifestFor } from './shared/shared';
+import {
+  sortList,
+  filterList,
+  getManifestFor,
+} from './shared/shared';
 
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
@@ -48,14 +51,6 @@ const initialState = {
 // https://api.nasa.gov/mars-photos/api/v1/manifests/Curiosity?api_key=DEMO_KEY
 // https://api.nasa.gov/mars-photos/api/v1/manifests/Spirit?api_key=DEMO_KEY
 
-// const getJsonPath = (rover = initialState.defaultRover) => `./${rover}.json`;
-// const getRoverPath = rover => `rovers/${rover}/photos`;
-
-// const apiKey = 'DEMO_KEY';
-// const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
-// const apiManifestsPath = 'manifests/';
-// const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
-
 const getStats = (data) => {
   const stats = { ...data };
   delete stats.name;
@@ -69,19 +64,6 @@ const getNewSolShowCount = (newCount, solsLenght) => {
   return _newCount;
 };
 
-const filterSols = (sols, state, newSolShowCount = undefined) => {
-
-  const { initialSolCount, solsLength } = state;
-  const _solsLength = solsLength || sols.length;
-  let solShowCount = initialSolCount;
-
-  if (newSolShowCount > -1) {
-    solShowCount = newSolShowCount > _solsLength ? _solsLength : newSolShowCount;
-  }
-
-  return sols.filter((sol, index) => index < solShowCount);
-};
-
 // const filterSolsRange = (sols, start = 0, end) =>
 //   sols.filter((sol, index) => index >= start && index <= end);
 
@@ -90,8 +72,8 @@ export default function reducer(state = initialState, action = {}) {
     case SORT_SOLS:
       return {
         ...state,
-        solsToRender: action.sols,
-        solSortSettings: action.solSortSettings,
+        solsToRender: action.list,
+        solSortSettings: action.sortSettings,
       };
 
     case GET_MANIFEST:
@@ -100,7 +82,8 @@ export default function reducer(state = initialState, action = {}) {
         loading: true,
       };
 
-    case GET_MANIFEST_SUCCESS:
+    case GET_MANIFEST_SUCCESS:// eslint-disable-line
+      const { solsCount } = state;
       return {
         ...state,
         rover: action.result.photo_manifest.name.toLowerCase(),
@@ -111,7 +94,10 @@ export default function reducer(state = initialState, action = {}) {
         solsLenght: action.result.photo_manifest.photos.length,
         missionSols: action.result.photo_manifest.photos,
         missionStats: getStats(action.result.photo_manifest),
-        solsToRender: filterSols(action.result.photo_manifest.photos, state),
+        solsToRender: filterList({
+          list: action.result.photo_manifest.photos,
+          count: solsCount,
+        }),
       };
 
     case GET_MANIFEST_FAIL:
@@ -123,13 +109,18 @@ export default function reducer(state = initialState, action = {}) {
       };
 
     case UPDATE_CURRENT_SOL_SHOW_COUNT:// eslint-disable-line
+      const _solsCount = state.solsCount;// eslint-disable-line
       const newSolShowCount = getNewSolShowCount(action.newCount, state.solsLenght);
       return {
         ...state,
         solsCount: newSolShowCount,
         maxSolsShown: action.newCount >= state.solsLenght,
         minSolsShown: action.newCount <= 0,
-        solsToRender: filterSols(state.missionSols, state, newSolShowCount),
+        solsToRender: filterList({
+          list: state.missionSols,
+          count: solsCount,
+          newCount: newSolShowCount,
+        }),
         moreSolsShown: true,
       };
 
@@ -165,21 +156,13 @@ export const showLessSols = () => (dispatch, getState) => {
   return dispatch(updateSolsShown(newValue));
 };
 
-// export const getSolsToRender = (options = solSortSettings) =>
-export const sortSols = (options = solSortSettings) =>
+export const sortSols = (sortSettings = solSortSettings) =>
   (dispatch, getState) => {
 
-    const state = getState().roverView;
-    const { fields, fieldsOrders } = options;
-    const { solsCount, missionSols } = state;
-    let sols = [];
+    const { solsCount, missionSols } = getState().roverView;
+    const list = missionSols;
+    const type = SORT_SOLS;
+    const count = solsCount;
 
-    sols = _.orderBy(missionSols, fields, fieldsOrders);
-    sols = filterSols(sols, state, solsCount);
-
-    return dispatch({
-      sols,
-      type: SORT_SOLS,
-      solSortSettings: options,
-    });
+    return dispatch(sortList({ sortSettings, list, count, type }));
   };

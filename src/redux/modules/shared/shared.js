@@ -1,3 +1,5 @@
+import _ from 'lodash'; // eslint-disable-line
+
 export const apiKey = 'DEMO_KEY';
 export const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
 export const apiManifestsPath = 'manifests/';
@@ -9,18 +11,35 @@ export const getNewShowCount = (newCount, lenght) => {
   return _newCount;
 };
 
-// export const filterList = (list, state, newShowCount = undefined) => {
+export const filterList = ({ list, count, newCount } = {}) => {
 
-//   const { initialCount, listlength } = state[stateKey];
-//   const _listLength = listLength || list.length;
-//   let showCount = initialCount;
+  let _count = count;
+  const listLength = list.length;
 
-//   if (newShowCount > -1) {
-//     showCount = newShowCount > _listLength ? _listLength : newShowCount;
-//   }
+  if (newCount > -1) {
+    _count = newCount > listLength ? listLength : newCount;
+  }
 
-//   return list.filter((item, index) => index < showCount);
-// };
+  return list.filter((item, index) => index < _count);
+};
+
+export const sortList = ({ sortSettings, list, count, type } = {}) =>
+  (dispatch) => {
+
+    let sortedList = [];
+    const { fields, fieldsOrders } = sortSettings;
+
+    sortedList = filterList({
+      count,
+      list: _.orderBy(list, fields, fieldsOrders),
+    });
+
+    return dispatch({
+      type,
+      sortSettings,
+      list: sortedList,
+    });
+  };
 
 // const filterSolsRange = (sols, start = 0, end) =>
 //   sols.filter((sol, index) => index >= start && index <= end);
@@ -70,22 +89,3 @@ export const showLess = (stateKey, type) => (dispatch, getState) => {
   const newCount = state.count - state.initialCount;
   return dispatch(updateCountShown(newCount, type));
 };
-
-// export const getSolsToRender = (options = solSortSettings) =>
-// export const sortList = (options = sortSettings, stateKey, type) =>
-//   (dispatch, getState) => {
-
-//     const state = getState()[stateKey];
-//     const { fields, fieldsOrders } = options;
-//     const { count, __LIST__ } = state;
-//     let list = [];
-
-//     list = _.orderBy(__LIST__, fields, fieldsOrders);
-//     list = filterList(list, state, count);
-
-//     return dispatch({
-//       sols,
-//       type,
-//       sortSettings: options,
-//     });
-//   };
