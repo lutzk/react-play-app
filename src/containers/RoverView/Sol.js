@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
-import { getSolManifest } from '../../redux/modules/roverView';
+import { getSolManifest } from '../../redux/modules/solView';
 import PATHS from '../../config/pathsConfig';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './roverView.sass';
@@ -19,7 +19,7 @@ const asyncInfo = {
 };
 
 const mapStateToProps = state => ({
-  data: state.roverView.solData,
+  solPhotos: state.solView.solPhotosToRender,
 });
 
 // const mapDispatchToProps = dispatch => bindActionCreators(
@@ -30,17 +30,15 @@ const mapStateToProps = state => ({
 export default class Sol extends Component { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
-    // sol: PropTypes.number,
-    // rover: PropTypes.string,
-    data: PropTypes.object,
     params: PropTypes.object,
+    solPhotos: PropTypes.array,
   }
 
   render() {
 
-    const { data } = this.props;
+    const { solPhotos } = this.props;
     const { sol, rover } = this.props.params;
-    console.dir(data);
+    console.dir(solPhotos);
     return (
       <div className="Page">
         <h1><Link to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}`}>{rover}</Link></h1>
@@ -48,7 +46,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
         <p><Link to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}`}>back to rover</Link></p>
         <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
         <div className="solsImgs">
-          {data.photos && data.photos.length && data.photos.map((photo, i) => (
+          {solPhotos && solPhotos.length && solPhotos.map((photo, i) => (
               <div key={i} className="solImg">
                 <h4 className="headline">photo id:&nbsp;{photo.id}</h4>
                 <div className="cameraData">
