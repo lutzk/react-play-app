@@ -1,6 +1,7 @@
 import {
   sortList,
   filterList,
+  updateCount,
   getManifestFor,
 } from './shared/shared';
 
@@ -139,21 +140,16 @@ export const getManifest = (_rover, offline) => {
   });
 };
 
-export const updateSolsShown = newCount => ({
-  type: UPDATE_CURRENT_SOL_SHOW_COUNT,
-  newCount: newCount > -1 ? newCount : 0,
-});
-
 export const showMoreSols = () => (dispatch, getState) => {
   const roverState = getState().roverView;
   const newValue = roverState.solsCount + roverState.initialSolCount;
-  return dispatch(updateSolsShown(newValue));
+  return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
 };
 
 export const showLessSols = () => (dispatch, getState) => {
   const roverState = getState().roverView;
   const newValue = roverState.solsCount - roverState.initialSolCount;
-  return dispatch(updateSolsShown(newValue));
+  return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
 };
 
 export const sortSols = (sortSettings = solSortSettings) =>
