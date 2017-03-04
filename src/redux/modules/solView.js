@@ -1,46 +1,44 @@
-import { getManifestFor } from './shared/shared';
+import {
+  sortList,
+  updateCount,
+  getNewCount,
+  getManifestFor,
+  sortListAction,
+} from './shared/shared';
 
 export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
 export const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
 export const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 
+export const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
+export const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
+
+const sortSettings = { fields: ['id', 'earth_date', 'camera', 'camera.id'], fieldsOrders: ['asc', 'desc'] };
+
 const initialState = {
-  rover: null,
+  sol: null,
   error: null,
-  // rovers,
   loaded: false,
   loading: false,
-  solPhotosCount: 15,
-  roverName: null,
+  count: 15,
   solPhotosLenght: 0,
   solPhotos: null,
   solPhotosToRender: null,
-  maxPhotosShown: false,
-  // defaultRover: rovers[spirit.label],
-  moreSolsShown: false,
-  initialSolCount: 15,
-  // photosSortSettings,
-};
-
-// const apiKey = 'DEMO_KEY';
-// const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
-// const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
-
-const filterSols = (sols, state, newSolShowCount = undefined) => {
-
-  const { initialSolCount, solsLength } = state;
-  const _solsLength = solsLength || sols.length;
-  let solShowCount = initialSolCount;
-
-  if (newSolShowCount > -1) {
-    solShowCount = newSolShowCount > _solsLength ? _solsLength : newSolShowCount;
-  }
-
-  return sols.filter((sol, index) => index < solShowCount);
+  maxShown: false,
+  moreShown: false,
+  initialCount: 15,
+  sortSettings,
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case SORT_SOL_PHOTOS:
+      return {
+        ...state,
+        solPhotosToRender: action.list,
+        sortSettings: action.sortSettings,
+      };
+
     case GET_SOL_MANIFEST:
       return {
         ...state,
@@ -55,7 +53,11 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
         solPhotos: action.result.photos,
         solPhotosLenght: action.result.photos.length,
-        solPhotosToRender: filterSols(action.result.photos, state),
+        solPhotosToRender: sortList({
+          list: action.result.photos,
+          count: state.count,
+          sortSettings: state.sortSettings,
+        }),
       };
 
     case GET_SOL_MANIFEST_FAIL:
@@ -65,6 +67,22 @@ export default function reducer(state = initialState, action = {}) {
         loaded: false,
         loading: false,
       };
+
+    case UPDATE_SOL_PHOTOS_SHOW_COUNT:
+      return {
+        ...state,
+        count: getNewCount(action.newCount, state.solPhotosLenght),
+        maxShown: action.newCount >= state.solPhotosLenght,
+        minShown: action.newCount <= 0,
+        solPhotosToRender: sortList({
+          list: state.solPhotos,
+          count: state.count,
+          newCount: getNewCount(action.newCount, state.solPhotosLenght),
+          sortSettings: state.sortSettings,
+        }),
+        moreShown: true,
+      };
+
     default:
       return state;
   }
@@ -80,3 +98,35 @@ export const getSolManifest = (rover, sol, offline) => {
     offline,
   });
 };
+
+export const showMore = () => (dispatch, getState) => {
+
+  const { count, initialCount } = getState().solView;
+  const newValue = count + initialCount;
+
+  return dispatch(updateCount(newValue, UPDATE_SOL_PHOTOS_SHOW_COUNT));
+};
+
+export const showLess = () => (dispatch, getState) => {
+
+  const { count, initialCount } = getState().solView;
+  const newValue = count - initialCount;
+
+  return dispatch(updateCount(newValue, UPDATE_SOL_PHOTOS_SHOW_COUNT));
+};
+
+export const sort = _sortSettings =>
+  (dispatch, getState) => {
+
+    const { count, solPhotos } = getState().solView;
+    const list = solPhotos;
+    const type = SORT_SOL_PHOTOS;
+
+    return dispatch(sortListAction({
+      list,
+      count,
+      type,
+      sortSettings: _sortSettings,
+    }));
+  };
+

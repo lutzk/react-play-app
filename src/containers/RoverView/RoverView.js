@@ -151,7 +151,7 @@ export default class Info extends Component {
         sortButtons = (
           <div>
             {Object.keys(this.props.solsToRender[0]).map((key, i) =>
-              <button key={i} data-sortfield={key} onClick={this.handleSortSols}>sort by {key}</button>)
+              <button key={i} disabled={sortField === key} data-sortfield={key} onClick={this.handleSortSols}>sort by {key}</button>)
             }
             &nbsp;
             <button data-sortorder={newSortOrder} onClick={this.handleSortSols}>sort {newSortOrder}</button>
@@ -169,26 +169,27 @@ export default class Info extends Component {
     const sortPane = renderSortPane();
 
     return (
-      <div className="Page">
+      <div className="page roverView">
+        <div className="pageHeader">
+          <h1>RoverView</h1>
+          <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
 
-        <h1>RoverView</h1>
-        <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
-
-        <div>
-          {buttonPane}
-          &nbsp;
-          {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
-        </div>
-        {sortPane}
-        {manifestLoading && !manifestLoadError &&
-          <div className="manifestLoading"><h3>loading ...</h3></div>
-        }
-
-        {manifestLoadError &&
-          <div className="error">
-            something went wrong loading rover manifest
+          <div>
+            {buttonPane}
+            &nbsp;
+            {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
           </div>
-        }
+          {sortPane}
+          {manifestLoading && !manifestLoadError &&
+            <div className="manifestLoading"><h3>loading ...</h3></div>
+          }
+
+          {manifestLoadError &&
+            <div className="error">
+              something went wrong loading rover manifest
+            </div>
+          }
+        </div>
 
         {manifestLoaded && !manifestLoadError &&
           <div>
