@@ -27,29 +27,30 @@ export const filterList = ({ list, count, newCount } = {}) => {
   return list.filter((item, index) => index < _count);
 };
 
-export const sortList = ({ sortSettings, list, count, newCount } = {}) => {
+export const sortList = ({ sorts, list, count, newCount } = {}) => {
 
   let sortedList = [];
-  const { fields, fieldsOrders } = sortSettings;
+  const { fields, orders } = sorts;
 
   sortedList = filterList({
     count,
     newCount,
-    list: _.orderBy(list, fields, fieldsOrders),
+    list: _.orderBy(list, fields, orders),
   });
 
   return sortedList;
 };
 
-export const sortListAction = ({ list, count, sortSettings, type } = {}) =>
+export const sortListAction = ({ list, count, sorts, type, filter } = {}) =>
   dispatch =>
     dispatch({
       type,
-      sortSettings,
+      sorts,
+      filter,
       list: sortList({
         list,
         count,
-        sortSettings,
+        sorts,
       }),
     });
 

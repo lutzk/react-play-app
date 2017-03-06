@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getSolManifest, getSolManifest as refreshManifest, sort, showMore, showLess } from '../../redux/modules/solView';
+import { getSolManifest, getSolManifest as refreshManifest, updateList, showMore, showLess } from '../../redux/modules/solView';
 import PATHS from '../../config/pathsConfig';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './roverView.sass';
@@ -20,8 +20,8 @@ const asyncInfo = {
 };
 
 const mapStateToProps = state => ({
-  solPhotos: state.solView.solPhotosToRender,
-  sortSettings: state.solView.sortSettings,
+  solPhotos: state.solView.listToRender,
+  sortSettings: state.solView.sorts,
   count: state.solView.count,
   minShown: state.solView.minShown,
   maxShown: state.solView.maxShown,
@@ -29,12 +29,12 @@ const mapStateToProps = state => ({
   manifestLoaded: state.solView.loaded,
   manifestLoading: state.solView.loading,
   initialCount: state.solView.initialCount,
-  solPhotosLenght: state.solView.solPhotosLenght,
+  solPhotosLenght: state.solView.listLength,
   manifestLoadError: state.solView.error,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMore, showLess, sort }), dispatch
+  Object.assign({}, { refreshManifest, showMore, showLess, updateList }), dispatch
 );
 
 @asyncConnect([asyncInfo], mapStateToProps, mapDispatchToProps)
@@ -51,7 +51,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     manifestLoading: PropTypes.bool,
     initialCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
-    sort: PropTypes.func,
+    updateList: PropTypes.func,
     sortSettings: PropTypes.object,
     refreshManifest: PropTypes.func,
     showMore: PropTypes.func,
@@ -65,6 +65,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     this.handleSort = ::this.handleSort;
     this.handleShowLess = ::this.handleShowLess;
     this.handleShowMore = ::this.handleShowMore;
+    this.handleFilterByField = ::this.handleFilterByField;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
@@ -81,14 +82,20 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     return this.props.showLess();
   }
 
+  handleFilterByField(e) {
+    const filter = JSON.parse(e.target.dataset.field);
+    return this.props.updateList({ filter });
+  }
+
   handleSort(e) {
     const fields = e.currentTarget.dataset.sortfield ?
       [e.currentTarget.dataset.sortfield] : this.props.sortSettings.fields;
 
-    const fieldsOrders = e.currentTarget.dataset.sortorder ?
-      [e.currentTarget.dataset.sortorder] : this.props.sortSettings.fieldsOrders;
+    const orders = e.currentTarget.dataset.sortorder ?
+      [e.currentTarget.dataset.sortorder] : this.props.sortSettings.orders;
+    const sorts = { fields, orders };
 
-    return this.props.sort({ fields, fieldsOrders });
+    return this.props.updateList({ sorts });
   }
 
   render() {
@@ -104,7 +111,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     } = this.props;
 
     const { sol, rover } = this.props.params;
-    // console.dir(solPhotos);
+
     const buttonPane = (
       <div>
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
@@ -113,10 +120,13 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
         {!minShown && <button onClick={this.handleShowLess}>show less</button>}
         &nbsp;
         {!maxShown && <button onClick={this.handleShowMore}>show more</button>}
+        &nbsp;
+        <button data-field={JSON.stringify({ field: 'camera.id', value: 31 })} onClick={this.handleFilterByField}>filter by camera id: 31</button>
+        <button data-field={JSON.stringify({ off: true })} onClick={this.handleFilterByField}>filter off</button>
       </div>);
 
-    const renderSortPane = () => {
-      const sortOrder = this.props.sortSettings.fieldsOrders[0];
+    const renderSortPane = () => {// eslint-disable-line
+      const sortOrder = this.props.sortSettings.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
       const sortField = this.props.sortSettings.fields[0];
       // const newSortField = sortField === 'total_photos' ? 'cameras' : 'total_photos';
@@ -127,6 +137,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
             {Object.keys(this.props.solPhotos[0]).map((key, i) =>
               <button key={i} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
             }
+            <button data-sortfield={'camera.id'} onClick={this.handleSort}>sort by camera id</button>
             &nbsp;
             <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
             &nbsp;
@@ -147,6 +158,7 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
             <h4 className="headline">photo id:&nbsp;{photo.id}</h4>
             <div className="cameraData">
               <h5 className="subHeadline">camera:&nbsp;{photo.camera.name}</h5>
+              <p>id:&nbsp;{photo.camera.id}</p>
               <p>full name:&nbsp;{photo.camera.full_name}</p>
             </div>
             <p>earth_date:&nbsp;{photo.earth_date}</p>
