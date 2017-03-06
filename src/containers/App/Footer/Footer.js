@@ -11,8 +11,10 @@ const Footer = (_props) => {
 
   const footer = (
     <div className="footer">
-      Footer&nbsp;
-      <Link to={`/${PATHS.HOME}`}>home</Link>
+      <p>
+        Footer&nbsp;
+        <Link to={`/${PATHS.HOME}`}>home</Link>
+      </p>
     </div>);
 
   return (footer);
