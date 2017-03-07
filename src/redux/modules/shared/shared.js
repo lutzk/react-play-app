@@ -15,6 +15,8 @@ export const rovers = {
   [opportunity.label]: opportunity.name,
 };
 
+export const filterByFieldValue = (list, field, value) => list.filter(item => _.get(item, field) === value);
+
 export const filterList = ({ list, count, newCount } = {}) => {
 
   let _count = count;

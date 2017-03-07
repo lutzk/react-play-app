@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMoreSols, showLessSols, roverMatcher, sortSols } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -27,22 +27,22 @@ const asyncInfo = {
 };
 
 const mapStateToProps = state => ({
-  solSortSettings: state.roverView.solSortSettings,
+  sorts: state.roverView.sorts,
   roverName: state.roverView.roverName,
-  solsCount: state.roverView.solsCount,
+  count: state.roverView.count,
   missionStats: state.roverView.missionStats,
-  solsToRender: state.roverView.solsToRender,
-  minSolsShown: state.roverView.minSolsShown,
-  maxSolsShown: state.roverView.maxSolsShown,
-  moreSolsShown: state.roverView.moreSolsShown,
+  solsToRender: state.roverView.listToRender,
+  minShown: state.roverView.minShown,
+  maxShown: state.roverView.maxShown,
+  moreShown: state.roverView.moreShown,
   manifestLoaded: state.roverView.loaded,
   manifestLoading: state.roverView.loading,
-  initialSolCount: state.roverView.initialSolCount,
+  initialSolCount: state.roverView.initialCount,
   manifestLoadError: state.roverView.error,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMoreSols, showLessSols, sortSols }), dispatch
+  Object.assign({}, { refreshManifest, showMore, showLess, updateList }), dispatch
 );
 
 @asyncConnect(
@@ -54,28 +54,28 @@ export default class Info extends Component {
 
   static propTypes = {
     params: PropTypes.object,
-    sortSols: PropTypes.func,
-    solsCount: PropTypes.number,
+    updateList: PropTypes.func,
+    count: PropTypes.number,
     roverName: PropTypes.string,
-    showMoreSols: PropTypes.func,
-    showLessSols: PropTypes.func,
-    maxSolsShown: PropTypes.bool,
-    minSolsShown: PropTypes.bool,
+    showMore: PropTypes.func,
+    showLess: PropTypes.func,
+    maxShown: PropTypes.bool,
+    minShown: PropTypes.bool,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
-    moreSolsShown: PropTypes.bool,
+    moreShown: PropTypes.bool,
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
-    solSortSettings: PropTypes.object,
+    sorts: PropTypes.object,
   }
 
   constructor(props) {
     super(props);
 
-    this.handleSortSols = ::this.handleSortSols;
+    this.handleSort = ::this.handleSort;
     this.handleShowLessSols = ::this.handleShowLessSols;
     this.handleShowMoreSols = ::this.handleShowMoreSols;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
@@ -93,29 +93,30 @@ export default class Info extends Component {
   }
 
   handleShowMoreSols() {
-    return this.props.showMoreSols();
+    return this.props.showMore();
   }
 
   handleShowLessSols() {
-    return this.props.showLessSols();
+    return this.props.showLess();
   }
 
-  handleSortSols(e) {
+  handleSort(e) {
     const fields = e.currentTarget.dataset.sortfield ?
-      [e.currentTarget.dataset.sortfield] : this.props.solSortSettings.fields;
+      [e.currentTarget.dataset.sortfield] : this.props.sorts.fields;
 
-    const fieldsOrders = e.currentTarget.dataset.sortorder ?
-      [e.currentTarget.dataset.sortorder] : this.props.solSortSettings.fieldsOrders;
+    const orders = e.currentTarget.dataset.sortorder ?
+      [e.currentTarget.dataset.sortorder] : this.props.sorts.orders;
 
-    return this.props.sortSols({ fields, fieldsOrders });
+    const sorts = { fields, orders };
+    return this.props.updateList({ sorts });
   }
 
   render() {
 
     const {
-      solsCount,
-      minSolsShown,
-      maxSolsShown,
+      count,
+      minShown,
+      maxShown,
       manifestLoaded,
       manifestLoading,
       manifestLoadError,
@@ -136,29 +137,29 @@ export default class Info extends Component {
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
         &nbsp;
         <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-        {!minSolsShown && <button onClick={this.handleShowLessSols}>show less</button>}
+        {!minShown && <button onClick={this.handleShowLessSols}>show less</button>}
         &nbsp;
-        {!maxSolsShown && <button onClick={this.handleShowMoreSols}>show more</button>}
+        {!maxShown && <button onClick={this.handleShowMoreSols}>show more</button>}
       </div>);
 
-    const renderSortPane = () => {
-      const sortOrder = this.props.solSortSettings.fieldsOrders[0];
+    const renderSortPane = () => {// eslint-disable-line
+      const sortOrder = this.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-      const sortField = this.props.solSortSettings.fields[0];
+      const sortField = this.props.sorts.fields[0];
       // const newSortField = sortField === 'total_photos' ? 'cameras' : 'total_photos';
       let sortButtons = null;
       if (this.props.solsToRender && this.props.solsToRender.length) {
         sortButtons = (
           <div>
             {Object.keys(this.props.solsToRender[0]).map((key, i) =>
-              <button key={i} disabled={sortField === key} data-sortfield={key} onClick={this.handleSortSols}>sort by {key}</button>)
+              <button key={i} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
             }
             &nbsp;
-            <button data-sortorder={newSortOrder} onClick={this.handleSortSols}>sort {newSortOrder}</button>
+            <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
             &nbsp;
-            <span>
+            <div>
               current sort: {sortField} - {sortOrder}
-            </span>
+            </div>
           </div>
         );
       }
@@ -177,7 +178,7 @@ export default class Info extends Component {
           <div>
             {buttonPane}
             &nbsp;
-            {solsCount && <span>currently shown sols: {`${solsCount}`}</span>}
+            {count && <span>currently shown sols: {`${count}`}</span>}
           </div>
           {sortPane}
           {manifestLoading && !manifestLoadError &&

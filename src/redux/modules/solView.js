@@ -5,6 +5,7 @@ import {
   getNewCount,
   getManifestFor,
   sortListAction,
+  filterByFieldValue,
 } from './shared/shared';
 
 export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
@@ -131,7 +132,6 @@ export const showLess = () => (dispatch, getState) => {
 
 // const setFilter = ({ field, value, off }) => ({ field, value, off: false });
 // const resetFilter = () => (defaultFilter);
-const filterByFieldValue = (list, field, value) => list.filter(item => _.get(item, field) === value);
 export const updateList = ({ sorts, filter } = {}) => (dispatch, getState) => {
 
   const { count, list: stateList, filter: stateFilter, sorts: stateSorts } = getState().solView;
