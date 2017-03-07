@@ -133,7 +133,8 @@ module.exports = {
             loader: 'url-loader',
             options: {
               emitFile: false,
-              limit: config.embedLimit
+              limit: config.embedLimit,
+              name: '[name]-[hash].[ext]',
             }
           }
         ]

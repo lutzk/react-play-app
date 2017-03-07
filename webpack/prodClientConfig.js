@@ -119,7 +119,8 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: config.embedLimit
+              limit: config.embedLimit,
+              name: '[name]-[hash].[ext]',
             }
           }
         ]
