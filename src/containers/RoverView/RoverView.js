@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList, updateFilter } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -28,6 +28,7 @@ const asyncInfo = {
 
 const mapStateToProps = state => ({
   sorts: state.roverView.sorts,
+  filter: state.roverView.filter,
   roverName: state.roverView.roverName,
   count: state.roverView.count,
   missionStats: state.roverView.missionStats,
@@ -42,7 +43,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMore, showLess, updateList }), dispatch
+  Object.assign({}, { refreshManifest, showMore, showLess, updateList, updateFilter }), dispatch
 );
 
 @asyncConnect(
@@ -50,7 +51,7 @@ const mapDispatchToProps = dispatch => bindActionCreators(
   mapStateToProps,
   mapDispatchToProps
 )
-export default class Info extends Component {
+export default class RoverView extends Component {
 
   static propTypes = {
     params: PropTypes.object,
@@ -70,6 +71,8 @@ export default class Info extends Component {
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
     sorts: PropTypes.object,
+    updateFilter: PropTypes.func,
+    filter: PropTypes.object,
   }
 
   constructor(props) {
@@ -78,6 +81,7 @@ export default class Info extends Component {
     this.handleSort = ::this.handleSort;
     this.handleShowLessSols = ::this.handleShowLessSols;
     this.handleShowMoreSols = ::this.handleShowMoreSols;
+    this.handleUpdateFilter = ::this.handleUpdateFilter;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
@@ -111,6 +115,26 @@ export default class Info extends Component {
     return this.props.updateList({ sorts });
   }
 
+  handleUpdateFilter(e) {
+    const field = `${e.target.dataset.field}`;
+    const toggle = e.target.dataset.toggle;
+    const filter = { on: this.props.filter.on };
+
+    if (toggle) {
+      filter.on = !this.props.filter.on;
+
+    } else if (!toggle) {
+      if (e.target.type === 'checkbox') {
+        filter[field] = { on: e.target.checked };
+
+      } else {
+        filter[field] = { value: e.target.value };
+      }
+    }
+
+    return this.props.updateFilter(filter);
+  }
+
   render() {
 
     const {
@@ -142,6 +166,34 @@ export default class Info extends Component {
         {!maxShown && <button onClick={this.handleShowMoreSols}>show more</button>}
       </div>);
 
+    const renderFilterPane = () => {
+      const filterPane = Object.keys(this.props.filter.fields)
+        .map((field, i) =>
+          (<div key={i}>
+            <label htmlFor={`${field}`}>
+              {`${field}`}
+              &nbsp;
+              <input type="checkbox"
+                id={`${field}`}
+                onClick={this.handleUpdateFilter}
+                data-field={`${field}`}/>
+            </label>
+            &nbsp;
+            {this.props.filter.fields[field].on &&
+              <input
+                type="number"
+                value={this.props.filter.fields[field].value || 0}
+                onChange={this.handleUpdateFilter}
+                data-field={`${field}`}/>}
+          </div>));
+
+      return (
+        <div>
+          <a data-toggle onClick={this.handleUpdateFilter}>toggle filter</a>
+          {this.props.filter.on && <div>{filterPane}</div>}
+        </div>);
+    };
+
     const renderSortPane = () => {// eslint-disable-line
       const sortOrder = this.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
@@ -168,6 +220,7 @@ export default class Info extends Component {
     };
 
     const sortPane = renderSortPane();
+    const filterPane = renderFilterPane();
 
     return (
       <div className="page roverView">
@@ -177,6 +230,7 @@ export default class Info extends Component {
 
           <div>
             {buttonPane}
+            {filterPane}
             &nbsp;
             {count && <span>currently shown sols: {`${count}`}</span>}
           </div>

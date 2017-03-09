@@ -1,4 +1,3 @@
-import _ from 'lodash'; // eslint-disable-line
 import {
   rovers,
   spirit,
@@ -17,6 +16,8 @@ export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_
 export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
+export const CHANGE_FILTER_VALUE = 'roverView/CHANGE_FILTER_VALUE';
+
 export const SORT_SOLS = 'roverView/SORT_SOLS';
 
 export const roverMatcher = roverToMatch =>
@@ -24,14 +25,23 @@ export const roverMatcher = roverToMatch =>
 
 const availableSorts = { fields: ['sol', 'total_photos', 'cameras'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['sol'], orders: ['asc', 'desc'] };
-// const defaultFilter = { [{ field: null, value: null }], off: true };
-const defaultFilter = { field: null, value: null, off: true };
-
-// const defaultSolSortSettings = [
-//   ['sol', 'asc'],
-//   ['total_photos', 'asc'],
-//   ['cameras', 'asc'],
-// ];
+const defaultFilter = {
+  fields: {
+    sol: {
+      value: 0,
+      on: false,
+    },
+    total_photos: {
+      value: 0,
+      on: false,
+    },
+    cameras: {
+      value: 0,
+      on: false,
+    },
+  },
+  on: false,
+};
 
 const initialState = {
   rover: null,
@@ -72,6 +82,12 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         listToRender: action.list,
         sorts: action.sorts,
+        filter: action.filter,
+      };
+
+    case CHANGE_FILTER_VALUE:
+      return {
+        ...state,
         filter: action.filter,
       };
 
@@ -153,6 +169,40 @@ export const showLess = () => (dispatch, getState) => {
   const newValue = count - initialCount;
 
   return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
+};
+
+export const updateFilter = filter => (dispatch, getState) => {
+  const currentFilter = getState().roverView.filter;
+  const newFilter = { ...currentFilter };
+  const filterKeys = Object.keys(filter);
+
+  if (filter.on !== newFilter.on) {
+    newFilter.on = filter.on;
+
+  } else { // eslint-disable-line
+    Object.keys(currentFilter.fields).map((key) => {
+      const item = newFilter.fields[key];
+      const filterKey = filterKeys[1];
+
+      if (key === filterKey) {
+        const _filter = filter[key];
+
+        if (_filter.value) {
+          item.value = _filter.value;
+
+        } else if (_filter.on !== item.on) {
+          item.on = _filter.on;
+        }
+      }
+
+      return 0;
+    });
+  }
+
+  return dispatch({
+    type: CHANGE_FILTER_VALUE,
+    filter: newFilter,
+  });
 };
 
 export const updateList = ({ sorts, filter } = {}) => (dispatch, getState) => {
