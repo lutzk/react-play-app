@@ -112,6 +112,7 @@ export default function reducer(state = initialState, action = {}) {
           list: action.result.photo_manifest.photos,
           count: state.count,
           sorts: state.sorts,
+          filter: state.filter,
         }),
       };
 
@@ -134,6 +135,7 @@ export default function reducer(state = initialState, action = {}) {
           count: state.solsCount,
           newCount: getNewCount(action.newCount, state.listLenght),
           sorts: state.sorts,
+          filter: state.filter,
         }),
         moreShown: true,
       };
@@ -188,7 +190,7 @@ export const updateFilter = filter => (dispatch, getState) => {
         const _filter = filter[key];
 
         if (_filter.value) {
-          item.value = _filter.value;
+          item.value = parseInt(_filter.value, 10);
 
         } else if (_filter.on !== item.on) {
           item.on = _filter.on;

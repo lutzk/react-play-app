@@ -15,7 +15,18 @@ export const rovers = {
   [opportunity.label]: opportunity.name,
 };
 
-export const filterByFieldValue = (list, field, value) => list.filter(item => _.get(item, field) === value);
+export const filterByFieldValue = (list, filter) => {
+  const newList = [];
+  list.map(listItem =>
+    filter.map((filterItem) => {
+      if (filterItem !== undefined && _.get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
+        newList.push(listItem);
+      }
+      return 0;
+    }));
+
+  return newList;
+};
 
 export const filterList = ({ list, count, newCount } = {}) => {
 
@@ -29,15 +40,22 @@ export const filterList = ({ list, count, newCount } = {}) => {
   return list.filter((item, index) => index < _count);
 };
 
-export const sortList = ({ sorts, list, count, newCount } = {}) => {
-
+export const sortList = ({ sorts, list, count, newCount, filter } = {}) => {
   let sortedList = [];
   const { fields, orders } = sorts;
+
+  if (filter && filter.on) {
+    sortedList = filterByFieldValue(list, Object.keys(filter.fields).map((field) => { // eslint-disable-line
+      if (filter.fields[field].on) {
+        return { field, value: filter.fields[field].value };
+      }
+    }));
+  }
 
   sortedList = filterList({
     count,
     newCount,
-    list: _.orderBy(list, fields, orders),
+    list: _.orderBy(sortedList.length ? sortedList : list, fields, orders),
   });
 
   return sortedList;
@@ -53,6 +71,7 @@ export const sortListAction = ({ list, count, sorts, type, filter } = {}) =>
         list,
         count,
         sorts,
+        filter,
       }),
     });
 
