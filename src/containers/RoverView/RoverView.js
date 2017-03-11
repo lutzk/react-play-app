@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList, updateFilter } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -43,7 +43,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMore, showLess, updateList, updateFilter }), dispatch
+  Object.assign({}, { refreshManifest, showMore, showLess, updateList }), dispatch
 );
 
 @asyncConnect(
@@ -71,7 +71,6 @@ export default class RoverView extends Component {
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
     sorts: PropTypes.object,
-    updateFilter: PropTypes.func,
     filter: PropTypes.object,
   }
 
@@ -116,23 +115,26 @@ export default class RoverView extends Component {
   }
 
   handleUpdateFilter(e) {
-    const field = `${e.target.dataset.field}`;
+    const field = e.target.dataset.field;
     const toggle = e.target.dataset.toggle;
     const filter = { on: this.props.filter.on };
 
     if (toggle) {
       filter.on = !this.props.filter.on;
 
-    } else if (!toggle) {
+    } else if (field && !toggle) {
       if (e.target.type === 'checkbox') {
         filter[field] = { on: e.target.checked };
+
+      } else if (e.target.type === 'number') {
+        filter[field] = { value: parseInt(e.target.value, 10) };
 
       } else {
         filter[field] = { value: e.target.value };
       }
     }
 
-    return this.props.updateFilter(filter);
+    return this.props.updateList({ filter });
   }
 
   render() {
@@ -181,8 +183,8 @@ export default class RoverView extends Component {
             &nbsp;
             {this.props.filter.fields[field].on &&
               <input
-                type="number"
-                value={this.props.filter.fields[field].value || 0}
+                type={typeof this.props.filter.fields[field].value === 'number' ? 'number' : 'text'}
+                value={this.props.filter.fields[field].value}
                 onChange={this.handleUpdateFilter}
                 data-field={`${field}`}/>}
           </div>));

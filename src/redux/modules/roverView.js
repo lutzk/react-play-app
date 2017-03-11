@@ -3,10 +3,11 @@ import {
   spirit,
   sortList,
   updateCount,
+  updateFilter,
   getNewCount,
   getManifestFor,
   sortListAction,
-  filterByFieldValue,
+  // filterByFieldValue,
 } from './shared/shared';
 
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
@@ -36,7 +37,7 @@ const defaultFilter = {
       on: false,
     },
     cameras: {
-      value: 0,
+      value: '',
       on: false,
     },
   },
@@ -89,6 +90,13 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         filter: action.filter,
+        listToRender: sortList({
+          list: state.list,
+          count: state.solsCount,
+          newCount: getNewCount(action.newCount, state.listLenght),
+          sorts: state.sorts,
+          filter: state.filter,
+        }),
       };
 
     case GET_MANIFEST:
@@ -173,52 +181,20 @@ export const showLess = () => (dispatch, getState) => {
   return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
 };
 
-export const updateFilter = filter => (dispatch, getState) => {
-  const currentFilter = getState().roverView.filter;
-  const newFilter = { ...currentFilter };
-  const filterKeys = Object.keys(filter);
-
-  if (filter.on !== newFilter.on) {
-    newFilter.on = filter.on;
-
-  } else { // eslint-disable-line
-    Object.keys(currentFilter.fields).map((key) => {
-      const item = newFilter.fields[key];
-      const filterKey = filterKeys[1];
-
-      if (key === filterKey) {
-        const _filter = filter[key];
-
-        if (_filter.value) {
-          item.value = parseInt(_filter.value, 10);
-
-        } else if (_filter.on !== item.on) {
-          item.on = _filter.on;
-        }
-      }
-
-      return 0;
-    });
-  }
-
-  return dispatch({
-    type: CHANGE_FILTER_VALUE,
-    filter: newFilter,
-  });
-};
-
 export const updateList = ({ sorts, filter } = {}) => (dispatch, getState) => {
 
   const { count, list: stateList, filter: stateFilter, sorts: stateSorts } = getState().roverView;
 
-  let list = stateList;
+  const list = stateList;
   const type = SORT_SOLS;
-  const _filter = filter || stateFilter;
   const _sorts = sorts || stateSorts;
+  let newFilter = null;
 
-  if (_filter && _filter.field && _filter.value) {
-    list = filterByFieldValue(list, _filter.field, _filter.value);
+  if (filter) {
+    newFilter = updateFilter(filter, stateFilter);
+  } else {
+    newFilter = { ...stateFilter };
   }
 
-  return dispatch(sortListAction({ list, type, count, sorts: _sorts, filter: _filter }));
+  return dispatch(sortListAction({ list, type, count, sorts: _sorts, filter: newFilter }));
 };

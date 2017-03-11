@@ -40,22 +40,76 @@ export const filterList = ({ list, count, newCount } = {}) => {
   return list.filter((item, index) => index < _count);
 };
 
+const formatFilters = filters =>
+  Object.keys(filters).map((field) => { // eslint-disable-line
+    if (filters[field].on) {
+      return { field, value: filters[field].value };
+    }
+  });
+
+const isFilterOn = (filter) => {
+  console.log(filter);
+  let on = filter.on;
+
+  Object.keys(filter.fields).map((field) => {
+    if (filter.fields[field].on) {
+      on = true;
+      return on;
+    }
+    return on;
+  });
+  return on;
+};
+
+export const updateFilter = (filter, currentFilter) => {
+
+  const newFilter = { ...currentFilter };
+  const filterKeys = Object.keys(filter);
+
+  if (filter.on !== newFilter.on) {
+    newFilter.on = filter.on;
+
+  } else { // eslint-disable-line
+    Object.keys(currentFilter.fields).map((key) => {
+      const item = newFilter.fields[key];
+      const filterKey = filterKeys[1];
+
+      if (key === filterKey) {
+        const _filter = filter[key];
+
+        if (_filter.value || _filter.value === 0) {
+          if (typeof _filter.value === 'number' && !isNaN(_filter.value) && _filter.value > -1) {
+            item.value = _filter.value;
+          } else if (typeof _filter.value === 'string') {
+            item.value = _filter.value;
+          }
+
+        } else if (_filter.on !== undefined && _filter.on !== item.on) {
+          item.on = _filter.on;
+        }
+      }
+
+      return 0;
+    });
+  }
+
+  return newFilter;
+};
+
 export const sortList = ({ sorts, list, count, newCount, filter } = {}) => {
-  let sortedList = [];
+  let sortedList = list;
   const { fields, orders } = sorts;
 
-  if (filter && filter.on) {
-    sortedList = filterByFieldValue(list, Object.keys(filter.fields).map((field) => { // eslint-disable-line
-      if (filter.fields[field].on) {
-        return { field, value: filter.fields[field].value };
-      }
-    }));
+  if (filter && isFilterOn(filter)) {
+    console.log(filter.fields);
+    const filters = formatFilters(filter.fields);
+    sortedList = filterByFieldValue(sortedList, filters);
   }
 
   sortedList = filterList({
     count,
     newCount,
-    list: _.orderBy(sortedList.length ? sortedList : list, fields, orders),
+    list: _.orderBy(sortedList, fields, orders),
   });
 
   return sortedList;
