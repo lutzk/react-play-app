@@ -4,7 +4,7 @@ import PATHS from '../../config/pathsConfig.js';
 import './Home.sass';
 
 const Home = () => (
-  <div className="home">
+  <div className="page home">
     <h1>home</h1>
     <p>
       <Link to={PATHS.ROOT}>root</Link>

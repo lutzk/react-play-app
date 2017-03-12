@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { asyncConnect } from 'redux-connect';
-import cn from 'classnames';
+// import cn from 'classnames';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 
@@ -52,14 +52,13 @@ export default class App extends Component {
     if (children) {
       return React.cloneElement(children, { key });
     }
-    // return React.cloneElement(<div className="loading" />, { key });
-    return null;
+    return React.cloneElement(<div className="page loading" />, { key });
+    // return null;
   }
 
   render() {
 
     const content = this.getContent();
-    const containerClass = cn('main_conatiner', 'container-fluid');
     const loaderProps = {
       mount: mounted,
       loading: this.props.loading,
@@ -68,11 +67,9 @@ export default class App extends Component {
     };
 
     return (
-      <div className="root">
+      <div className="app">
         <Loader { ...loaderProps } />
-        <div className={containerClass}>
-          {content}
-        </div>
+        {content}
         <Footer showFooter />
       </div>
     );

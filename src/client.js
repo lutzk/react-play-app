@@ -18,7 +18,7 @@ import createStore from './redux/create';
 const client = new ApiClient();
 const store = createStore(browserHistory, client, window.__data);
 const history = syncHistoryWithStore(browserHistory, store);
-const rootDomNode = document.getElementById('content');
+const rootDomNode = document.getElementById('root');
 const routes = getRoutes(store);
 const asyncConnectRender = applyRouterMiddleware(useScroll());
 

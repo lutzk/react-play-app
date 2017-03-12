@@ -4,7 +4,7 @@ import PATHS from '../../config/pathsConfig';
 import './Login.sass';
 
 const Login = () => (
-  <div className="login">
+  <div className="page login">
     <div className="login_content">
       <h1 className="login_headline">
         <Link to="/bla">aaa</Link>

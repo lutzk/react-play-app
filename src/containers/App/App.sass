@@ -1,11 +1,8 @@
 @import "../../theme/styles/theme"
 
-.page
-  +clearfix
-  +margin-trailer(2)
-
-.content
+.root
   height: 100%
+  min-height: 100%
   background:
     image: url('../../theme/bg.jpg')
     repeat: no-repeat
@@ -16,15 +13,18 @@
     // blend-mode: lighten
   overflow: auto
 
-.main_conatiner
-  position: relative
-  flex: 1 1 100%
+  .app
+    height: 100%
+    min-height: 100%
+    display: flex
+    // ???
+    // flex-direction: row
+    flex-direction: column
 
-.root
-  display: flex
-  // ???
-  // flex-direction: row
-  flex-direction: column
-  height: 100%
-  min-height: 100%
-  overflow: auto
+    .page
+      position: relative
+      flex: 1 1 100%
+      +margin-trailer(2)
+      padding-left: $fullPageSpacing
+      padding-right: $fullPageSpacing
+      

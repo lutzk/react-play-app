@@ -22,7 +22,7 @@ const Html = (_props) => {
   */
 
   const { assets, component, store } = _props;
-  const content = component ? ReactDOM.renderToString(component) : '';
+  const appRoot = component ? ReactDOM.renderToString(component) : '';
   const windowData = { __html: `window.__data=${serialize(store.getState())};` };
 
   const windowDataScript = (
@@ -32,9 +32,9 @@ const Html = (_props) => {
 
   const htmlContent = (
     <div
-      id="content"
-      className="content"
-      dangerouslySetInnerHTML={{ __html: content }} />);
+      id="root"
+      className="root"
+      dangerouslySetInnerHTML={{ __html: appRoot }} />);
 
   const css = assets.css ? Object.keys(assets.css).map((styles, key) => {
     let scriptTags = null;
