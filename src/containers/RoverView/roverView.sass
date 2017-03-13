@@ -10,11 +10,12 @@
   display: flex
   flex-wrap: wrap
   // background-color: rgba($black, .61)
-  padding: 16px
+  // padding: $spacing
+  margin: 0 -2px
 
 .roverMissionStatsWrap
   // background-color: rgba($black, .61)
-  padding: 16px
+  padding: $spacing
 
   .roverName
     display: block
@@ -30,16 +31,16 @@
   .roverMissionStats
     display: inline-flex
     flex-direction: column
-    margin-left: 16px
+    margin-left: $spacing
     .roverMissionStatsCard
       flex: 1
 
 .solCard
-  flex: 1 1  100px
-  margin: 6px
-  border: 1px solid rgba($black, .61)
+  flex: 1 1  70px
+  margin: 2px
+  // border: 1px solid rgba($black, .61)
   background-color: rgba($white, .44)
-  padding: 16px
+  padding: $spacing
   color: $text_color
   cursor: pointer
 
@@ -58,14 +59,14 @@
   display: flex
   flex-wrap: wrap
   // background-color: rgba($black, .61)
-  padding: 16px
+  padding: $spacing
 
 .solImg
   flex: 1 0 200px
   margin: 6px
   border: 1px solid rgba($black, .61)
   background-color: rgba($white, .44)
-  padding: 16px
+  padding: $spacing
   color: $text_color
 
   .headline
