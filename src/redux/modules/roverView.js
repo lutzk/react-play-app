@@ -2,8 +2,6 @@ import {
   rovers,
   spirit,
   sortList,
-  getNewCount,
-  updateCount,
   updateRange,
   updateFilter,
   getManifestFor,
@@ -43,7 +41,7 @@ const defaultFilter = {
 
 const initialCount = 15;
 
-const range = {
+const defaultRange = {
   start: 0,
   end: initialCount,
   initialCount,
@@ -67,7 +65,7 @@ const initialState = {
   sorts: availableSorts,
   filter: defaultFilter,
   defaultSorts,
-  range,
+  range: defaultRange,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -142,34 +140,34 @@ export const getManifest = (_rover, offline) => {
   });
 };
 
-export const updateList = ({ sorts, filter, range } = {}) => (dispatch, getState) => { //eslint-disable-line
+export const updateList = ({ sorts, filter, range } = {}) =>
+  (dispatch, getState) => {
+    const {
+      list: stateList,
+      filter: stateFilter,
+      sorts: stateSorts,
+      range: stateRange,
+    } = getState().roverView;
 
-  const {
-    list: stateList,
-    filter: stateFilter,
-    sorts: stateSorts,
-    range: stateRange,
-    initialCount } = getState().roverView;//eslint-disable-line
+    const list = stateList;
+    const listLength = list.length || 0;
+    const type = SORT_SOLS;
+    const newSorts = sorts || stateSorts;
+    let newFilter = null;
+    let newRange = null;
 
-  const list = stateList;
-  const listLength = list.length || 0;
-  const type = SORT_SOLS;
-  const newSorts = sorts || stateSorts;
-  let newFilter = null;
-  let newRange = null;
+    if (filter) {
+      newFilter = updateFilter(filter, stateFilter);
 
-  if (filter) {
-    newFilter = updateFilter(filter, stateFilter);
+    } else {
+      newFilter = stateFilter;
+    }
 
-  } else {
-    newFilter = stateFilter;
-  }
+    if (range) {
+      newRange = updateRange(range, stateRange, listLength);
+    } else {
+      newRange = stateRange;
+    }
 
-  if (range) {
-    newRange = updateRange(range, stateRange, listLength);
-  } else {
-    newRange = stateRange;
-  }
-
-  return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
-};
+    return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
+  };

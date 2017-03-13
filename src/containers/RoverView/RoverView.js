@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { getManifest, getManifest as refreshManifest, showMore, showLess, roverMatcher, updateList } from '../../redux/modules/roverView';
+import { getManifest, getManifest as refreshManifest, roverMatcher, updateList } from '../../redux/modules/roverView';
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -28,23 +28,22 @@ const asyncInfo = {
 
 const mapStateToProps = state => ({
   sorts: state.roverView.sorts,
+  range: state.roverView.range,
   filter: state.roverView.filter,
   roverName: state.roverView.roverName,
-  count: state.roverView.count,
+  listLenght: state.roverView.listLenght,
   missionStats: state.roverView.missionStats,
   solsToRender: state.roverView.listToRender,
-  minShown: state.roverView.minShown,
-  maxShown: state.roverView.maxShown,
-  moreShown: state.roverView.moreShown,
   manifestLoaded: state.roverView.loaded,
   manifestLoading: state.roverView.loading,
   initialSolCount: state.roverView.initialCount,
   manifestLoadError: state.roverView.error,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, showMore, showLess, updateList }), dispatch
-);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    Object.assign({}, { refreshManifest, updateList }),
+    dispatch);
 
 @asyncConnect(
   [asyncInfo],
@@ -54,32 +53,27 @@ const mapDispatchToProps = dispatch => bindActionCreators(
 export default class RoverView extends Component {
 
   static propTypes = {
+    range: PropTypes.object,
+    sorts: PropTypes.object,
+    filter: PropTypes.object,
     params: PropTypes.object,
-    updateList: PropTypes.func,
-    count: PropTypes.number,
     roverName: PropTypes.string,
-    showMore: PropTypes.func,
-    showLess: PropTypes.func,
-    maxShown: PropTypes.bool,
-    minShown: PropTypes.bool,
+    updateList: PropTypes.func,
+    listLenght: PropTypes.number,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
-    moreShown: PropTypes.bool,
     manifestLoaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
     manifestLoading: PropTypes.bool,
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
-    sorts: PropTypes.object,
-    filter: PropTypes.object,
   }
 
   constructor(props) {
     super(props);
 
     this.handleSort = ::this.handleSort;
-    this.handleShowLessSols = ::this.handleShowLessSols;
-    this.handleShowMoreSols = ::this.handleShowMoreSols;
+    this.handleRangeUpdate = ::this.handleRangeUpdate;
     this.handleUpdateFilter = ::this.handleUpdateFilter;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
@@ -93,14 +87,6 @@ export default class RoverView extends Component {
   handleRefreshManifestRequest(e) {
     const offline = !!e.target.dataset.offline;
     return this.props.refreshManifest('Spirit', offline);
-  }
-
-  handleShowMoreSols() {
-    return this.props.showMore();
-  }
-
-  handleShowLessSols() {
-    return this.props.showLess();
   }
 
   handleSort(e) {
@@ -137,12 +123,15 @@ export default class RoverView extends Component {
     return this.props.updateList({ filter });
   }
 
+  handleRangeUpdate(e) {
+    const action = e.target.dataset.range;
+    const range = { action };
+    return this.props.updateList({ range });
+  }
+
   render() {
 
     const {
-      count,
-      minShown,
-      maxShown,
       manifestLoaded,
       manifestLoading,
       manifestLoadError,
@@ -158,14 +147,11 @@ export default class RoverView extends Component {
       rover: this.props.roverName.toLowerCase(),
     };
 
-    const buttonPane = (
+    const loadPane = (
       <div>
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
         &nbsp;
         <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-        {!minShown && <button onClick={this.handleShowLessSols}>show less</button>}
-        &nbsp;
-        {!maxShown && <button onClick={this.handleShowMoreSols}>show more</button>}
       </div>);
 
     const renderFilterPane = () => {
@@ -192,7 +178,29 @@ export default class RoverView extends Component {
       return (
         <div>
           <a data-toggle onClick={this.handleUpdateFilter}>toggle filter</a>
-          {this.props.filter.on && <div>{filterPane}</div>}
+          {this.props.filter.on &&
+            <div>
+              {filterPane}
+            </div>}
+        </div>);
+    };
+
+    const renderRangePane = () => {
+      const { listLenght, range: { start, end } } = this.props;
+      const currentRange = end - start;
+      console.log(listLenght, start, end, currentRange);
+      return (
+        <div>
+          {currentRange > 0 && <button data-range="next" onClick={this.handleRangeUpdate}>next {currentRange}</button>}
+          {currentRange > 0 && start > currentRange && <button data-range="prev" onClick={this.handleRangeUpdate}>prev {currentRange}</button>}
+          {currentRange > 0 && <button data-range="less" onClick={this.handleRangeUpdate}>show less</button>}
+          {end < listLenght && <button data-range="more" onClick={this.handleRangeUpdate}>show more</button>}
+          {currentRange > 0 &&
+            <div>
+              <span>sols: {`${currentRange}`},</span>
+              &nbsp;
+              <span>current range: {start + 1} - {end + 1}</span>
+            </div>}
         </div>);
     };
 
@@ -221,8 +229,14 @@ export default class RoverView extends Component {
       return sortButtons;
     };
 
-    const sortPane = renderSortPane();
-    const filterPane = renderFilterPane();
+    const buttonPane = (
+      <div>
+        {loadPane}
+        {renderSortPane()}
+        {renderFilterPane()}
+        {renderRangePane()}
+      </div>
+    );
 
     return (
       <div className="page roverView">
@@ -232,11 +246,8 @@ export default class RoverView extends Component {
 
           <div>
             {buttonPane}
-            {filterPane}
-            &nbsp;
-            {count && <span>currently shown sols: {`${count}`}</span>}
           </div>
-          {sortPane}
+
           {manifestLoading && !manifestLoadError &&
             <div className="manifestLoading"><h3>loading ...</h3></div>
           }
@@ -252,7 +263,6 @@ export default class RoverView extends Component {
           <div>
             <RoverMissionStats {...missionStatsProps} />
             <RoverMissionSols {...missionSolsProps} />
-            {sortPane}
             {buttonPane}
           </div>
         }

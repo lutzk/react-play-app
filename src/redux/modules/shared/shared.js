@@ -36,8 +36,12 @@ export const filterList = ({ list, range } = {}) => {
 
   if (range.start > -1) {
     start = range.start;
-    end = range.end || maxListLength;
+    end = range.end;
     end = end > maxListLength ? maxListLength : end;
+  }
+
+  if (range.start === 0 && range.end === 0) {
+    return [];
   }
 
   return list.filter((item, index) => index >= start && index <= end);
