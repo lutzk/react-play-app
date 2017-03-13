@@ -28,16 +28,19 @@ export const filterByFieldValue = (list, filter) => {
   return newList;
 };
 
-export const filterList = ({ list, count, newCount } = {}) => {
+export const filterList = ({ list, range } = {}) => {
 
-  let _count = count;
-  const listLength = list.length;
+  const maxListLength = list.length;
+  let start = null;
+  let end = null;
 
-  if (newCount > -1) {
-    _count = newCount > listLength ? listLength : newCount;
+  if (range.start > -1) {
+    start = range.start;
+    end = range.end || maxListLength;
+    end = end > maxListLength ? maxListLength : end;
   }
 
-  return list.filter((item, index) => index < _count);
+  return list.filter((item, index) => index >= start && index <= end);
 };
 
 const formatFilters = filters =>
@@ -48,17 +51,48 @@ const formatFilters = filters =>
   });
 
 const isFilterOn = (filter) => {
-  console.log(filter);
-  let on = filter.on;
-
-  Object.keys(filter.fields).map((field) => {
+  let on = false;
+  const globalOn = filter.on;
+  Object.keys(filter.fields).map((field) => { // eslint-disable-line
     if (filter.fields[field].on) {
       on = true;
-      return on;
+      return on;// eslint-disable-line
     }
+
     return on;
   });
-  return on;
+  return globalOn && on;
+};
+
+export const updateRange = (range, stateRange, listLength) => {
+  const newRange = { ...stateRange };
+  const rangeLength = newRange.end - newRange.start;
+
+  if (range.on !== undefined && range.on !== newRange.on) {
+    newRange.on = range.on;
+  }
+
+  if (range.action && range.action === 'next') {
+    newRange.start += rangeLength;
+    newRange.end += rangeLength;
+  }
+
+  if (range.action && range.action === 'prev') {
+    newRange.start -= rangeLength;
+    newRange.end -= rangeLength;
+  }
+
+  if (range.action && range.action === 'more') {
+    newRange.end += newRange.initialCount;
+    newRange.end = newRange.end > listLength ? listLength : newRange.end;
+  }
+
+  if (range.action && range.action === 'less') {
+    newRange.end -= newRange.initialCount;
+    newRange.end = newRange.end < 0 ? 0 : newRange.end;
+  }
+
+  return newRange;
 };
 
 export const updateFilter = (filter, currentFilter) => {
@@ -66,13 +100,13 @@ export const updateFilter = (filter, currentFilter) => {
   const newFilter = { ...currentFilter };
   const filterKeys = Object.keys(filter);
 
-  if (filter.on !== newFilter.on) {
+  if (filter.on !== undefined && filter.on !== newFilter.on) {
     newFilter.on = filter.on;
 
   } else { // eslint-disable-line
     Object.keys(currentFilter.fields).map((key) => {
       const item = newFilter.fields[key];
-      const filterKey = filterKeys[1];
+      const filterKey = filterKeys[filterKeys.indexOf(key)];
 
       if (key === filterKey) {
         const _filter = filter[key];
@@ -96,41 +130,37 @@ export const updateFilter = (filter, currentFilter) => {
   return newFilter;
 };
 
-export const sortList = ({ sorts, list, count, newCount, filter } = {}) => {
+export const sortList = ({ list, sorts, filter, range } = {}) => {
   let sortedList = list;
   const { fields, orders } = sorts;
 
   if (filter && isFilterOn(filter)) {
-    console.log(filter.fields);
     const filters = formatFilters(filter.fields);
     sortedList = filterByFieldValue(sortedList, filters);
   }
 
   sortedList = filterList({
-    count,
-    newCount,
+    range,
     list: _.orderBy(sortedList, fields, orders),
   });
 
   return sortedList;
 };
 
-export const sortListAction = ({ list, count, sorts, type, filter } = {}) =>
+export const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
   dispatch =>
     dispatch({
       type,
       sorts,
       filter,
+      range,
       list: sortList({
         list,
-        count,
         sorts,
         filter,
+        range,
       }),
     });
-
-// const filterSolsRange = (sols, start = 0, end) =>
-//   sols.filter((sol, index) => index >= start && index <= end);
 
 export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
 
@@ -160,14 +190,3 @@ export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
     promise: request,
   };
 };
-
-export const getNewCount = (newCount, lenght) => {
-  let _newCount = newCount > -1 ? newCount : 0;
-  _newCount = _newCount > lenght ? lenght : _newCount;
-  return _newCount;
-};
-
-export const updateCount = (newCount, type) => ({
-  type,
-  newCount: newCount > -1 ? newCount : 0,
-});

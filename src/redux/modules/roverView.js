@@ -2,22 +2,19 @@ import {
   rovers,
   spirit,
   sortList,
-  updateCount,
-  updateFilter,
   getNewCount,
+  updateCount,
+  updateRange,
+  updateFilter,
   getManifestFor,
   sortListAction,
-  // filterByFieldValue,
 } from './shared/shared';
 
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
-export const UPDATE_CURRENT_SOL_SHOW_COUNT = 'roverView/UPDATE_CURRENT_SOL_SHOW_COUNT';
 export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
-
-export const CHANGE_FILTER_VALUE = 'roverView/CHANGE_FILTER_VALUE';
 
 export const SORT_SOLS = 'roverView/SORT_SOLS';
 
@@ -44,13 +41,21 @@ const defaultFilter = {
   on: false,
 };
 
+const initialCount = 15;
+
+const range = {
+  start: 0,
+  end: initialCount,
+  initialCount,
+  on: true,
+};
+
 const initialState = {
   rover: null,
   error: null,
   rovers,
   loaded: false,
   loading: false,
-  count: 15,
   roverName: null,
   listLenght: 0,
   list: null,
@@ -59,10 +64,10 @@ const initialState = {
   maxShown: false,
   defaultRover: rovers[spirit.label],
   moreShown: false,
-  initialCount: 15,
   sorts: availableSorts,
   filter: defaultFilter,
   defaultSorts,
+  range,
 };
 
 // https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
@@ -84,19 +89,7 @@ export default function reducer(state = initialState, action = {}) {
         listToRender: action.list,
         sorts: action.sorts,
         filter: action.filter,
-      };
-
-    case CHANGE_FILTER_VALUE:
-      return {
-        ...state,
-        filter: action.filter,
-        listToRender: sortList({
-          list: state.list,
-          count: state.solsCount,
-          newCount: getNewCount(action.newCount, state.listLenght),
-          sorts: state.sorts,
-          filter: state.filter,
-        }),
+        range: action.range,
       };
 
     case GET_MANIFEST:
@@ -118,9 +111,9 @@ export default function reducer(state = initialState, action = {}) {
         missionStats: getStats(action.result.photo_manifest),
         listToRender: sortList({
           list: action.result.photo_manifest.photos,
-          count: state.count,
           sorts: state.sorts,
           filter: state.filter,
+          range: state.range,
         }),
       };
 
@@ -130,22 +123,6 @@ export default function reducer(state = initialState, action = {}) {
         error: action.error,
         loaded: false,
         loading: false,
-      };
-
-    case UPDATE_CURRENT_SOL_SHOW_COUNT:
-      return {
-        ...state,
-        count: getNewCount(action.newCount, state.listLenght),
-        maxShown: action.newCount >= state.listLenght,
-        minShown: action.newCount <= 0,
-        listToRender: sortList({
-          list: state.list,
-          count: state.solsCount,
-          newCount: getNewCount(action.newCount, state.listLenght),
-          sorts: state.sorts,
-          filter: state.filter,
-        }),
-        moreShown: true,
       };
 
     default:
@@ -165,36 +142,34 @@ export const getManifest = (_rover, offline) => {
   });
 };
 
-export const showMore = () => (dispatch, getState) => {
+export const updateList = ({ sorts, filter, range } = {}) => (dispatch, getState) => { //eslint-disable-line
 
-  const { count, initialCount } = getState().roverView;
-  const newValue = count + initialCount;
-
-  return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
-};
-
-export const showLess = () => (dispatch, getState) => {
-
-  const { count, initialCount } = getState().roverView;
-  const newValue = count - initialCount;
-
-  return dispatch(updateCount(newValue, UPDATE_CURRENT_SOL_SHOW_COUNT));
-};
-
-export const updateList = ({ sorts, filter } = {}) => (dispatch, getState) => {
-
-  const { count, list: stateList, filter: stateFilter, sorts: stateSorts } = getState().roverView;
+  const {
+    list: stateList,
+    filter: stateFilter,
+    sorts: stateSorts,
+    range: stateRange,
+    initialCount } = getState().roverView;//eslint-disable-line
 
   const list = stateList;
+  const listLength = list.length || 0;
   const type = SORT_SOLS;
-  const _sorts = sorts || stateSorts;
+  const newSorts = sorts || stateSorts;
   let newFilter = null;
+  let newRange = null;
 
   if (filter) {
     newFilter = updateFilter(filter, stateFilter);
+
   } else {
-    newFilter = { ...stateFilter };
+    newFilter = stateFilter;
   }
 
-  return dispatch(sortListAction({ list, type, count, sorts: _sorts, filter: newFilter }));
+  if (range) {
+    newRange = updateRange(range, stateRange, listLength);
+  } else {
+    newRange = stateRange;
+  }
+
+  return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
 };
