@@ -4,48 +4,70 @@
   background-color: $bg_color_alpha
 
   .pageHeader
-    padding: 0 30px
+    padding: 0 getRythm()
+
+  .pageContent
+    padding: getRythm()
+
+.listEmpty
+  +font_size(20px)
+  padding: getRythm()
+  margin: getRythm() 0
+  background-color: rgba($white, .44)
 
 .roverPhotoDataData
   display: flex
   flex-wrap: wrap
-  // background-color: rgba($black, .61)
-  // padding: $spacing
-  margin: 0 -2px
+  margin: -#{getRythm(.0875)}
+  padding: getRythm() 0
 
-.roverMissionStatsWrap
-  // background-color: rgba($black, .61)
-  padding: $spacing
-
+.roverMissionData
   .roverName
     display: block
     width: 100%
-    margin: 0
 
-  .roverAvatar
-    width: 100px
-    height: 100px
-    border: 1px solid rgba($white, .44)
-    display: inline-block
+  .roverMissionStatsWrap
+    display: flex
+    
+    .roverAvatar
+      flex: 0 0 100px
+      +height(3)
+      margin-right: getRythm()
+      background-color: red
+      border: 1px solid rgba($white, .44)
 
-  .roverMissionStats
-    display: inline-flex
-    flex-direction: column
-    margin-left: $spacing
-    .roverMissionStatsCard
+    .roverMissionStats
       flex: 1
+      .roverMissionStat
+
+.buttonPane
+  display: flex
+
+  .statsPane
+    flex: 1 1 auto
+  
+  .filterPane
+    flex: 0 0 100%
+  
+  .rangePane
+    flex: 1 1 auto
+  
+  .sortPane
+    flex: 1 1 auto
+
+  .loadPane
+    flex: 1 1 auto
 
 .solCard
-  flex: 1 1  70px
-  margin: 2px
-  // border: 1px solid rgba($black, .61)
+  flex: 1 1 70px
+  margin: getRythm(.0875)
   background-color: rgba($white, .44)
-  padding: $spacing
+  padding: getRythm()
   color: $text_color
   cursor: pointer
 
   .sol_card_sol
-    +adjust-font-size-to(20px)
+    +font_size(20px)
     color: darken($text_color, 10%)
     font-weight: bold
 
@@ -58,34 +80,30 @@
 .solsImgs
   display: flex
   flex-wrap: wrap
-  // background-color: rgba($black, .61)
-  padding: $spacing
 
 .solImg
   flex: 1 0 200px
-  margin: 6px
-  border: 1px solid rgba($black, .61)
+  margin: getRythm(.0875)
   background-color: rgba($white, .44)
-  padding: $spacing
+  padding: getRythm()
   color: $text_color
+  cursor: pointer
 
   .headline
-    +adjust-font-size-to(20px)
+    +font_size(20px)
     color: darken($text_color, 10%)
     font-weight: bold
-    margin: 0
   
   .subHeadline
-    +adjust-font-size-to(18px)
+    +font_size(18px)
     color: darken($text_color, 10%)
-    margin: 0
 
   .image
     max-width: 100%
+    +height(5)
     border: 1px solid darken($text_color, 10%)
 
   .cameraData
-
 
       // display: flex
       // flex-wrap: wrap

@@ -19,3 +19,26 @@
   &:not(:last-child),
   &:only-child
     margin-bottom: 16px
+
+
+button
+  color: $text_color
+  background-color: rgba(#ccc, .85)
+  cursor: pointer
+  padding-left: getRythm()
+  padding-right: getRythm()
+  +height(2)
+  +line_height(2)
+
+  &:hover
+    background-color: #ccc
+
+  &:disabled
+    cursor: not-allowed
+
+  &.enabled
+    cursor: default
+    background-color: $white
+
+button + button
+  margin-left: getRythm(.125)

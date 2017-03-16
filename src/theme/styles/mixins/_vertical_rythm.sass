@@ -1,0 +1,25 @@
+@import "../partials/vertical_rhythm_config"
+
+@function getRythm($lines: 1)
+  $rythmHeight: $base_size * ($lines * $base_line_height) / $base_font_size
+  @return $rythmHeight
+
+=height($lines: 1)
+  height: getRythm($lines)
+
+=line_height($lines: 1)
+  line-height: getRythm($lines)
+
+=font_size($size: false)
+  @if $size
+    font-size: $base_size * $size / $base_font_size
+
+  @else
+    font-size: $base_font_size
+
+=debug_rythm
+  $color: #000
+  background-image: linear-gradient(bottom, $color 5%, rgba($color, 0) 5%)
+  background-image: -webkit-linear-gradient(bottom, $color 5%, rgba($color, 0) 5%)
+  background-size: 100% getRythm()
+  background-position: left top
