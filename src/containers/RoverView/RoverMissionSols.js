@@ -14,6 +14,10 @@ const RoverMissionSols = (input) => {
     return null;
   }
 
+  if (!input.sols.length) {
+    return <div className="listEmpty">no sols match</div>;
+  }
+
   // const handleClick = (e) => {
   //   const sol = e.currentTarget.dataset.sol;
 
