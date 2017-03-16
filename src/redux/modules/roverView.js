@@ -17,7 +17,7 @@ export const SORT_SOLS = 'roverView/SORT_SOLS';
 export const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
 
-const availableSorts = { fields: ['sol', 'total_photos', 'cameras'], orders: ['asc', 'desc'] };
+const availableSorts = { fields: ['sol', 'totalPhotos', 'cameras'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['sol'], orders: ['asc', 'desc'] };
 const defaultFilter = {
   fields: {
@@ -25,7 +25,7 @@ const defaultFilter = {
       value: 0,
       on: false,
     },
-    total_photos: {
+    totalPhotos: {
       value: 0,
       on: false,
     },
@@ -98,17 +98,17 @@ export default function reducer(state = initialState, action = {}) {
     case GET_MANIFEST_SUCCESS:
       return {
         ...state,
-        rover: action.result.photo_manifest.name.toLowerCase(),
+        rover: action.result.photoManifest.name.toLowerCase(),
         error: null,
         loaded: true,
         loading: false,
-        maxSol: action.result.photo_manifest.photos[action.result.photo_manifest.photos.length - 1].sol,
-        roverName: action.result.photo_manifest.name,
-        listLength: action.result.photo_manifest.photos.length,
-        list: action.result.photo_manifest.photos,
-        missionStats: getStats(action.result.photo_manifest),
+        maxSol: action.result.photoManifest.photos[action.result.photoManifest.photos.length - 1].sol,
+        roverName: action.result.photoManifest.name,
+        listLength: action.result.photoManifest.photos.length,
+        list: action.result.photoManifest.photos,
+        missionStats: getStats(action.result.photoManifest),
         listToRender: sortList({
-          list: action.result.photo_manifest.photos,
+          list: action.result.photoManifest.photos,
           sorts: state.sorts,
           filter: state.filter,
           range: state.range,

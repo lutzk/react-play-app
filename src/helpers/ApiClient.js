@@ -1,5 +1,6 @@
 import superagent from 'superagent';
 // import formatUrl from './formatUrl';
+import { camelizeKeys } from 'humps';
 
 const methods = ['get', 'post', 'put', 'patch', 'del'];
 
@@ -25,7 +26,8 @@ class ApiClient {
             return success || error;
           }
 
-          return success.body;
+          const camelizedBody = camelizeKeys(success.body);
+          return camelizedBody;
         });
       });
   }
