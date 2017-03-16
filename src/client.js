@@ -1,4 +1,3 @@
-// import 'babel-polyfill';
 import Perf from 'react-addons-perf';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -87,11 +86,14 @@ match(
   { history, routes },
   (error, redirectLocation, renderProps) => {
     render(routes, renderProps);
-    renderDevStuff();
-    if (__DEVELOPMENT__ && module.hot) {
-      module.hot.accept('./routes', () => {
-        render(getRoutes(store), renderProps);
-      });
+
+    if (__DEVELOPMENT__) {
+      renderDevStuff();
+
+      if (module.hot) {
+        module.hot.accept('./routes',
+          () => render(getRoutes(store), renderProps));
+      }
     }
   }
 );
