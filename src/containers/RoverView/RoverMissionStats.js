@@ -8,25 +8,32 @@ const RoverMissionStats = (_props) => {
   *    missionStats: object
   */
 
-  if (!_props.missionStats) return null;
+  if (!_props.missionStats || !Object.keys(_props.missionStats).length) return null;
 
   const { missionStats, roverName } = _props;
   const stats = Object.keys(missionStats).map((stat, index) => (
-      <div key={index} className="roverMissionStatsCard">
+      <p key={index} className="roverMissionStat">
         {stat}:&nbsp;{missionStats[stat]}
-      </div>)
+      </p>)
   );
 
   const roverMissionStats = (
-    <div className="roverMissionStatsWrap">
+    <div className="roverMissionData">
+
       <h3 className="roverName">
         {roverName}
       </h3>
-      <div className="roverAvatar">
+
+      <div className="roverMissionStatsWrap">
+
+        <div className="roverAvatar">
         __roverAvatar__
-      </div>
-      <div className="roverMissionStats">
-        {stats}
+        </div>
+
+        <div className="roverMissionStats">
+          {stats}
+        </div>
+
       </div>
     </div>);
 
