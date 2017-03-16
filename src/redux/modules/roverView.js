@@ -2,10 +2,8 @@ import {
   rovers,
   spirit,
   sortList,
-  updateRange,
-  updateFilter,
+  _updateList,
   getManifestFor,
-  sortListAction,
 } from './shared/shared';
 
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
@@ -55,11 +53,12 @@ const initialState = {
   loaded: false,
   loading: false,
   roverName: null,
-  listLenght: 0,
+  listLength: 0,
   list: null,
   listToRender: null,
   missionStats: null,
   maxShown: false,
+  maxSol: null,
   defaultRover: rovers[spirit.label],
   moreShown: false,
   sorts: availableSorts,
@@ -103,8 +102,9 @@ export default function reducer(state = initialState, action = {}) {
         error: null,
         loaded: true,
         loading: false,
+        maxSol: action.result.photo_manifest.photos[action.result.photo_manifest.photos.length - 1].sol,
         roverName: action.result.photo_manifest.name,
-        listLenght: action.result.photo_manifest.photos.length,
+        listLength: action.result.photo_manifest.photos.length,
         list: action.result.photo_manifest.photos,
         missionStats: getStats(action.result.photo_manifest),
         listToRender: sortList({
@@ -140,34 +140,8 @@ export const getManifest = (_rover, offline) => {
   });
 };
 
-export const updateList = ({ sorts, filter, range } = {}) =>
-  (dispatch, getState) => {
-    const {
-      list: stateList,
-      filter: stateFilter,
-      sorts: stateSorts,
-      range: stateRange,
-    } = getState().roverView;
-
-    const list = stateList;
-    const listLength = list.length || 0;
-    const type = SORT_SOLS;
-    const newSorts = sorts || stateSorts;
-    let newFilter = null;
-    let newRange = null;
-
-    if (filter) {
-      newFilter = updateFilter(filter, stateFilter);
-
-    } else {
-      newFilter = stateFilter;
-    }
-
-    if (range) {
-      newRange = updateRange(range, stateRange, listLength);
-    } else {
-      newRange = stateRange;
-    }
-
-    return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
-  };
+export const updateList = ({ sorts, filter, range } = {}) => {
+  const type = SORT_SOLS;
+  const stateKey = 'roverView';
+  return _updateList({ type, stateKey, sorts, filter, range });
+};

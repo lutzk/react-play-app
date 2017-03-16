@@ -29,9 +29,10 @@ const asyncInfo = {
 const mapStateToProps = state => ({
   sorts: state.roverView.sorts,
   range: state.roverView.range,
+  maxSol: state.roverView.maxSol,
   filter: state.roverView.filter,
   roverName: state.roverView.roverName,
-  listLenght: state.roverView.listLenght,
+  listLength: state.roverView.listLength,
   missionStats: state.roverView.missionStats,
   solsToRender: state.roverView.listToRender,
   manifestLoaded: state.roverView.loaded,
@@ -57,9 +58,10 @@ export default class RoverView extends Component {
     sorts: PropTypes.object,
     filter: PropTypes.object,
     params: PropTypes.object,
+    maxSol: PropTypes.number,
     roverName: PropTypes.string,
     updateList: PropTypes.func,
-    listLenght: PropTypes.number,
+    listLength: PropTypes.number,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
     manifestLoaded: PropTypes.bool,
@@ -137,6 +139,37 @@ export default class RoverView extends Component {
       manifestLoadError,
     } = this.props;
 
+    /* eslint-disable */
+    const getListStats = () => {
+      const { solsToRender, listLength, range: { start, end } } = this.props;
+      let sols = null;
+      let maxSol = null;
+      let minSol = null;
+      let stats = null;
+      const currentRange = end - start;
+      // solsToRender && solsToRender.length && solsToRender.map(sol => sol.sol);
+
+      if (solsToRender && solsToRender.length) {
+        sols = solsToRender.map(sol => sol.sol);
+        maxSol = Math.max(...sols);
+        minSol = Math.min(...sols);
+
+        stats = (
+          <div className="statsPane">
+            total count: {listLength},
+            <br />
+            current count: {solsToRender.length + 1}
+            <br />
+            min shown sol: {minSol},
+            <br />
+            max shown sol: {maxSol}
+          </div>);
+
+        return stats;
+      }
+    };
+    /* eslint-enable */
+
     const missionStatsProps = {
       roverName: this.props.roverName,
       missionStats: this.props.missionStats,
@@ -148,9 +181,8 @@ export default class RoverView extends Component {
     };
 
     const loadPane = (
-      <div>
+      <div className="loadPane">
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-        &nbsp;
         <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
       </div>);
 
@@ -176,7 +208,7 @@ export default class RoverView extends Component {
           </div>));
 
       return (
-        <div>
+        <div className="filterPane">
           <a data-toggle onClick={this.handleUpdateFilter}>toggle filter</a>
           {this.props.filter.on &&
             <div>
@@ -186,22 +218,19 @@ export default class RoverView extends Component {
     };
 
     const renderRangePane = () => {
-      const { listLenght, range: { start, end } } = this.props;
+      const { listLength, range: { start, end } } = this.props;
       const currentRange = end - start;
-      console.log(listLenght, start, end, currentRange);
-      return (
-        <div>
-          {currentRange > 0 && <button data-range="next" onClick={this.handleRangeUpdate}>next {currentRange}</button>}
-          {currentRange > 0 && start > currentRange && <button data-range="prev" onClick={this.handleRangeUpdate}>prev {currentRange}</button>}
-          {currentRange > 0 && <button data-range="less" onClick={this.handleRangeUpdate}>show less</button>}
-          {end < listLenght && <button data-range="more" onClick={this.handleRangeUpdate}>show more</button>}
-          {currentRange > 0 &&
-            <div>
-              <span>sols: {`${currentRange}`},</span>
-              &nbsp;
-              <span>current range: {start + 1} - {end + 1}</span>
-            </div>}
-        </div>);
+      // maxSol
+      if (this.props.solsToRender && this.props.solsToRender.length) {
+        return (
+          <div className="rangePane">
+            {currentRange > 0 && <button data-range="next" onClick={this.handleRangeUpdate}>next {currentRange}</button>}
+            {currentRange > 0 && start >= currentRange && <button data-range="prev" onClick={this.handleRangeUpdate}>prev {currentRange}</button>}
+            {currentRange > 0 && <button data-range="less" onClick={this.handleRangeUpdate}>show less</button>}
+            {end < listLength && <button data-range="more" onClick={this.handleRangeUpdate}>show more</button>}
+          </div>);
+      }
+      return null;
     };
 
     const renderSortPane = () => {// eslint-disable-line
@@ -212,16 +241,14 @@ export default class RoverView extends Component {
       let sortButtons = null;
       if (this.props.solsToRender && this.props.solsToRender.length) {
         sortButtons = (
-          <div>
+          <div className="sortPane">
             {Object.keys(this.props.solsToRender[0]).map((key, i) =>
-              <button key={i} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
+              <button key={i} className={sortField === key ? 'enabled' : ''} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
             }
-            &nbsp;
             <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
-            &nbsp;
-            <div>
+            { /* <div>
               current sort: {sortField} - {sortOrder}
-            </div>
+            </div> */ }
           </div>
         );
       }
@@ -230,11 +257,9 @@ export default class RoverView extends Component {
     };
 
     const buttonPane = (
-      <div>
-        {loadPane}
-        {renderSortPane()}
-        {renderFilterPane()}
+      <div className="buttonPane">
         {renderRangePane()}
+        {renderSortPane()}
       </div>
     );
 
@@ -244,26 +269,27 @@ export default class RoverView extends Component {
           <h1>RoverView</h1>
           <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
 
-          <div>
-            {buttonPane}
-          </div>
+          {loadPane}
 
           {manifestLoading && !manifestLoadError &&
-            <div className="manifestLoading"><h3>loading ...</h3></div>
+            <div className="pageContent manifestLoading"><h3>loading ...</h3></div>
           }
 
           {manifestLoadError &&
-            <div className="error">
+            <div className="pageContent error">
               something went wrong loading rover manifest
             </div>
           }
         </div>
 
         {manifestLoaded && !manifestLoadError &&
-          <div>
+          <div className="pageContent">
             <RoverMissionStats {...missionStatsProps} />
+            {buttonPane}
+            {renderFilterPane()}
             <RoverMissionSols {...missionSolsProps} />
             {buttonPane}
+            {loadPane}
           </div>
         }
       </div>);

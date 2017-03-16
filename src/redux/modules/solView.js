@@ -1,10 +1,7 @@
 import {
   sortList,
-  updateCount,
-  getNewCount,
+  _updateList,
   getManifestFor,
-  sortListAction,
-  filterByFieldValue,
 } from './shared/shared';
 
 export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
@@ -16,23 +13,53 @@ export const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
 
 const availableSorts = { fields: ['id', 'earth_date', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
-const defaultFilter = { field: null, value: null, off: true };
+
+const defaultFilter = {
+  fields: {
+    id: {
+      value: 0,
+      on: false,
+    },
+    earth_date: {
+      value: 0,
+      on: false,
+    },
+    cameras: {
+      value: '',
+      on: false,
+    },
+    'camera.id': {
+      value: '',
+      on: false,
+    },
+  },
+  on: false,
+};
+
+const initialCount = 15;
+
+const defaultRange = {
+  start: 0,
+  end: initialCount,
+  initialCount,
+  on: true,
+};
 
 const initialState = {
   sol: null,
   error: null,
   loaded: false,
   loading: false,
-  count: 15,
+  initialCount: 15,
   listLength: 0,
   list: null,
   listToRender: null,
   maxShown: false,
   moreShown: false,
-  initialCount: 15,
   sorts: availableSorts,
   filter: defaultFilter,
   defaultSorts,
+  range: defaultRange,
 };
 
 const cleanUpData = data =>
@@ -52,15 +79,17 @@ export default function reducer(state = initialState, action = {}) {
     case SORT_SOL_PHOTOS:
       return {
         ...state,
+        listToRender: action.list,
         sorts: action.sorts,
         filter: action.filter,
-        listToRender: action.list,
+        range: action.range,
       };
 
     case GET_SOL_MANIFEST:
       return {
         ...state,
         loading: true,
+        loaded: false,
       };
 
     case GET_SOL_MANIFEST_SUCCESS:
@@ -73,8 +102,9 @@ export default function reducer(state = initialState, action = {}) {
         listLength: action.result.photos.length,
         listToRender: sortList({
           list: cleanUpData(action.result.photos),
-          count: state.count,
           sorts: state.sorts,
+          filter: state.filter,
+          range: state.range,
         }),
       };
 
@@ -86,26 +116,10 @@ export default function reducer(state = initialState, action = {}) {
         loading: false,
       };
 
-    case UPDATE_SOL_PHOTOS_SHOW_COUNT:
-      return {
-        ...state,
-        count: getNewCount(action.newCount, state.listLength),
-        maxShown: action.newCount >= state.listLength,
-        minShown: action.newCount <= 0,
-        listToRender: sortList({
-          list: state.list,
-          count: state.count,
-          newCount: getNewCount(action.newCount, state.listLength),
-          sorts: state.sorts,
-        }),
-        moreShown: true,
-      };
-
     default:
       return state;
   }
 }
-
 
 export const getSolManifest = (rover, sol, offline) => {
   const types = [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL];
@@ -113,37 +127,8 @@ export const getSolManifest = (rover, sol, offline) => {
   return getManifestFor({ sol, rover, types, offline });
 };
 
-export const showMore = () => (dispatch, getState) => {
-
-  const { count, initialCount } = getState().solView;
-  const newValue = count + initialCount;
-
-  return dispatch(updateCount(newValue, UPDATE_SOL_PHOTOS_SHOW_COUNT));
-};
-
-export const showLess = () => (dispatch, getState) => {
-
-  const { count, initialCount } = getState().solView;
-  const newValue = count - initialCount;
-
-  return dispatch(updateCount(newValue, UPDATE_SOL_PHOTOS_SHOW_COUNT));
-};
-
-// const setFilter = ({ field, value, off }) => ({ field, value, off: false });
-// const resetFilter = () => (defaultFilter);
-export const updateList = ({ sorts, filter } = {}) => (dispatch, getState) => {
-
-  const { count, list: stateList, filter: stateFilter, sorts: stateSorts } = getState().solView;
-
-  let list = stateList;
+export const updateList = ({ sorts, filter, range } = {}) => {
   const type = SORT_SOL_PHOTOS;
-  const _filter = filter || stateFilter;
-  const _sorts = sorts || stateSorts;
-
-  if (_filter && _filter.field && _filter.value) {
-    list = filterByFieldValue(list, _filter.field, _filter.value);
-  }
-
-  return dispatch(sortListAction({ list, type, count, sorts: _sorts, filter: _filter }));
+  const stateKey = 'solView';
+  return _updateList({ type, stateKey, sorts, filter, range });
 };
-

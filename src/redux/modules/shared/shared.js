@@ -79,11 +79,16 @@ export const updateRange = (range, stateRange, listLength) => {
   if (range.action && range.action === 'next') {
     newRange.start += rangeLength;
     newRange.end += rangeLength;
+    // newRange.start = newRange.start > listLength ? listLength : newRange.start;
+    newRange.end = newRange.end > listLength ? listLength : newRange.end;
+    newRange.start = newRange.end === listLength ?
+      newRange.start - rangeLength : newRange.start;
   }
 
   if (range.action && range.action === 'prev') {
     newRange.start -= rangeLength;
     newRange.end -= rangeLength;
+    // newRange.end = newRange.end < 0 ? 0 : newRange.end;
   }
 
   if (range.action && range.action === 'more') {
@@ -194,3 +199,35 @@ export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
     promise: request,
   };
 };
+
+export const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
+  (dispatch, getState) => {
+    const {
+      list: stateList,
+      filter: stateFilter,
+      sorts: stateSorts,
+      range: stateRange,
+    } = getState()[stateKey];
+
+    const list = stateList;
+    const listLength = list.length || 0;
+    const type = _type;
+    const newSorts = sorts || stateSorts;
+    let newFilter = null;
+    let newRange = null;
+
+    if (filter) {
+      newFilter = updateFilter(filter, stateFilter);
+
+    } else {
+      newFilter = stateFilter;
+    }
+
+    if (range) {
+      newRange = updateRange(range, stateRange, listLength);
+    } else {
+      newRange = stateRange;
+    }
+
+    return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
+  };
