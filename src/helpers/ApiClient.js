@@ -25,6 +25,8 @@ class ApiClient {
             request.send(data);
           }
         } catch (error) {
+          const errorString = JSON.stringify(error);
+          request = { error: errorString };
           return request;
         }
 
