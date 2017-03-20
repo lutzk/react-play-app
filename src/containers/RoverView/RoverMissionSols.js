@@ -36,16 +36,16 @@ const RoverMissionSols = (input) => {
         {Object.keys(sol).map((key, i) => {
           if (typeof sol[key] === 'string' || typeof sol[key] === 'number') {
             return (
-              <div key={i} className={`sol_card_${key}`}>{key}:&nbsp;{sol[key]}</div>);
+              <span key={i} className={`sol_card_${key}`}>{key}:&nbsp;{sol[key]}</span>);
           }
           if (typeof sol[key] === 'object' && key === 'cameras') {
             return (
-              <div key={i} className={`sol_card_${key}`}>
+              <span key={i} className={`sol_card_${key}`}>
                 cams:&nbsp;
                 {sol.cameras.map((cam, j) => (
                   <span key={j}>{cam}&nbsp;</span>)
                 )}
-              </div>);
+              </span>);
           }
           return 1;
         })}
