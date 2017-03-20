@@ -1,3 +1,5 @@
++create_rythm
+
 *
   +box-sizing(border-box)
   &:before,
@@ -10,9 +12,6 @@ html
   height: 100%
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
   overflow: auto
-  +font_size
-  +line_height
-
 
 body
   background-color: #f0f0f0
@@ -71,7 +70,7 @@ strong
 
 
 .lead
-  +margin-trailer
+  margin-bottom: getRythm()
   +font_size(20px)
   +line_height(1)
  
@@ -79,46 +78,36 @@ strong
 hr
   border: 0
   border-top: 1px solid $grey_light
-  +margin-leader
-  +margin-trailer
+  margin-top: getRythm()
+  margin-bottom: getRythm()
 
   &.slim
-    +margin-leader(0.22)
-    +margin-trailer(0.33)
+    margin-top: getRythm(0.22)
+    margin-bottom: getRythm(0.33)
 
 
 h1
   +font_size(36px)
   +line_height(2)
-  +margin-trailer(1)
+  margin-bottom: getRythm()
 
 
 h2
   +font_size(30px)
   +line_height(2)
-  +margin-trailer(1)
+  margin-bottom: getRythm()
 
 
 h3
   +font_size(24px)
   +line_height(1.5)
-  +margin-trailer(.5)
+  margin-bottom: getRythm(.5)
 
 
 h4
   +font_size(18px)
   +line_height(1.5)
-  +margin-trailer(.5)
-
-
-p > svg
-  vertical-align: middle
-
+  margin-bottom: getRythm(.5)
 
 .grey
   color: $grey_mid
-
-
-.dollar
-  &:before
-    content: "#{$dollar}#{$iso_whitespace}"

@@ -59,20 +59,35 @@
     flex: 1 1 auto
 
 .solCard
-  flex: 1 1 70px
+  flex: 1 1 auto
   margin: getRythm(.0875)
   background-color: rgba($white, .44)
   padding: getRythm()
   color: $text_color
   cursor: pointer
+  display: flex
+  flex-direction: column
 
   .sol_card_sol
     +font_size(20px)
     color: darken($text_color, 10%)
     font-weight: bold
+    flex: 0 1 auto
+    display: inline
+    width: auto
 
-  .sol_card_total_photos
-  .sol_card_total_cameras
+  .sol_card_totalPhotos
+    flex: 0 1 auto
+    display: inline
+    width: auto
+
+  .sol_card_cameras
+    flex: 0 1 auto
+    display: inline
+    width: auto
+    max-width: 100%
+    overflow: hidden
+    text-overflow: ellipsis
 
   &:hover
     background-color: rgba($white, .66)

@@ -1,8 +1,17 @@
 @import "../partials/vertical_rhythm_config"
 
+$big: (font-size: $base_font_size_big, lines: 1.2, line-height: $base_line_height_big)
+$small: (font-size: $base_font_size_small, lines: .8, line-height: $base_line_height_small)
+$normal: (font-size: $base_font_size, lines: 1, line-height: $base_line_height)
+
+$rythms: (big: $big, normal: $normal, small: $small)
+
+$brake_points: (small: 768px, normal: 1024px, big: 1200px)
+
 @function getRythm($lines: 1)
   $rythmHeight: $base_size * ($lines * $base_line_height) / $base_font_size
   @return $rythmHeight
+
 
 =height($lines: 1)
   height: getRythm($lines)
@@ -23,3 +32,17 @@
   background-image: -webkit-linear-gradient(bottom, $color 5%, rgba($color, 0) 5%)
   background-size: 100% getRythm()
   background-position: left top
+
+=create_rythm
+  html
+    +font_size
+    +line_height
+
+    @each $key, $rythm in $rythms
+      $rythm_lines: map-get($rythm, lines)
+      $rythm_size: map-get($brake_points, $key)
+      $rythm_font_size: map-get($rythm, font-size)
+
+      @media screen and (max-width: #{$rythm_size})
+        font-size: $rythm_font_size
+        +line_height($rythm_lines)
