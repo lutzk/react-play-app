@@ -21,23 +21,19 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
     return next(action);
   }
 
+  let result = null;
   const [REQUEST, SUCCESS, FAILURE] = types;
 
   dispatch(startLoading());
   next({ ...rest, type: REQUEST });
+  result = await promise(client);
 
-  let result;
-
-  try {
-    result = await promise(client);
-    dispatch(endLoading());
-
-  } catch (error) {
-    result = error;
+  if (result.error) {
     dispatch(endLoading(true));
-    return next({ ...rest, error, type: FAILURE });
+    return next({ ...rest, error: result.error, type: FAILURE });
   }
 
+  dispatch(endLoading());
   return next({ ...rest, result, type: SUCCESS });
 };
 
