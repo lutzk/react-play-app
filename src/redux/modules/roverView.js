@@ -81,6 +81,22 @@ const getStats = (data) => {
 
 function roverView(state = initialState, action = {}) {
   switch (action.type) {
+    case 'redux-pouchdb/SET_REDUCER':
+      if (action.reducer === 'roverView') {
+        if (action.state.error) {
+          return {
+            ...state,
+            loaded: true,
+            loading: false,
+            fromError: true,
+            error: false,
+          };
+        }
+      }
+      return {
+        ...state,
+      };
+
     case SORT_SOLS:
       return {
         ...state,
@@ -94,6 +110,7 @@ function roverView(state = initialState, action = {}) {
       return {
         ...state,
         loading: true,
+        loaded: false,
       };
 
     case GET_MANIFEST_SUCCESS:
