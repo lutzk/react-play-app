@@ -1,3 +1,4 @@
+import { persistentReducer } from 'redux-pouchdb';
 import {
   rovers,
   spirit,
@@ -78,7 +79,7 @@ const getStats = (data) => {
   return stats;
 };
 
-export default function reducer(state = initialState, action = {}) {
+function roverView(state = initialState, action = {}) {
   switch (action.type) {
     case SORT_SOLS:
       return {
@@ -145,3 +146,5 @@ export const updateList = ({ sorts, filter, range } = {}) => {
   const stateKey = 'roverView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
+
+export default persistentReducer(roverView, 'roverView');
