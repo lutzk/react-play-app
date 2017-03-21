@@ -1,7 +1,7 @@
 extends:
   - airbnb-base
   - plugin:react/recommended
-  - plugin:jsx-a11y/recommended
+  # - plugin:jsx-a11y/recommended
 
 plugins:
   - react
@@ -51,3 +51,4 @@ globals:
   __SERVER__: true
   __DISABLE_SSR__: true
   __DEVTOOLS__: true
+  

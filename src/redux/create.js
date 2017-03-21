@@ -16,7 +16,13 @@ export default function createStore({ history, client, preloadedState, remoteCou
   ];
 
   if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
-    db = new PouchDB('earth', { revs_limit: 100, auto_compaction: true });
+    db = new PouchDB('earth', {
+      // revs_limit: 50,
+      auto_compaction: true,
+    });
+    if (typeof window !== 'undefined') {
+      window.PouchDB = PouchDB;
+    }
     const DevTools = require('../containers/DevTools/DevTools').default;
     finalCreateStore = compose(
       persistentStore(db),
@@ -42,10 +48,12 @@ export default function createStore({ history, client, preloadedState, remoteCou
     db.sync(remoteCouch, {
       live: true,
       retry: true,
+      // batch_size: 5,
+      // heartbeat: 10000,
     })
-    // .on('active', () => console.log('__ACTIVE'))
-    // .on('change', () => console.log('__CHANGE'))
-    // .on('complete', () => console.log('__COMPLETE'))
+    .on('active', () => console.log('__ACTIVE'))
+    .on('change', () => console.log('__CHANGE'))
+    .on('complete', () => console.log('__COMPLETE'))
     .on('error', e => console.log('__ERROR', e));
   }
 
