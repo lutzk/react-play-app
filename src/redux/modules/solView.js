@@ -1,3 +1,4 @@
+import { persistentReducer } from 'redux-pouchdb';
 import {
   sortList,
   _updateList,
@@ -74,7 +75,7 @@ const cleanUpData = data =>
     return returnObj;
   });
 
-export default function reducer(state = initialState, action = {}) {
+function solView(state = initialState, action = {}) {
   switch (action.type) {
     case SORT_SOL_PHOTOS:
       return {
@@ -132,3 +133,5 @@ export const updateList = ({ sorts, filter, range } = {}) => {
   const stateKey = 'solView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
+
+export default persistentReducer(solView, 'solView');

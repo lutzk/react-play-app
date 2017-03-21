@@ -5,15 +5,18 @@ import PouchDB from 'pouchdb';
 import { persistentStore } from 'redux-pouchdb';
 import createMiddleware from './middleware/clientMiddleware';
 
-export default function createStore(history, client, data) {
+export default function createStore({ history, client, preloadedState, remoteCouch }) {
   let db = null;
-  const remoteDB = new PouchDB('http://127.0.0.1:5984/mars');
-  const reduxRouterMiddleware = routerMiddleware(history);
-  const middleware = [createMiddleware(client), reduxRouterMiddleware, thunkMiddleware];
   let finalCreateStore;
+  const reduxRouterMiddleware = routerMiddleware(history);
+  const middleware = [
+    createMiddleware(client),
+    reduxRouterMiddleware,
+    thunkMiddleware,
+  ];
 
   if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
-    db = new PouchDB('earth');
+    db = new PouchDB('earth', { revs_limit: 100, auto_compaction: true });
     const DevTools = require('../containers/DevTools/DevTools').default;
     finalCreateStore = compose(
       persistentStore(db),
@@ -28,22 +31,21 @@ export default function createStore(history, client, data) {
 
   } else {
     finalCreateStore = compose(
-      // persistentStore(remoteDB),
       applyMiddleware(...middleware)
     )(_createStore);
   }
 
   const reducer = require('./modules/reducer').default;
-  const store = finalCreateStore(reducer, data);
+  const store = finalCreateStore(reducer, preloadedState);
 
   if (__CLIENT__) {
-    db.sync(remoteDB, {
+    db.sync(remoteCouch, {
       live: true,
       retry: true,
     })
-    .on('active', () => console.log('__ACTIVE'))
-    .on('change', () => console.log('__CHANGE'))
-    .on('complete', () => console.log('__COMPLETE'))
+    // .on('active', () => console.log('__ACTIVE'))
+    // .on('change', () => console.log('__CHANGE'))
+    // .on('complete', () => console.log('__COMPLETE'))
     .on('error', e => console.log('__ERROR', e));
   }
 

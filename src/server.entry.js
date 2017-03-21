@@ -20,11 +20,13 @@ if (global.__DEVELOPMENT__) {
 
 // const serverPath = './server/server';
 // error ...
+const serverAssets = getAssets({
+  empty: global.__DEVELOPMENT__,
+});
+
 const startServer = () =>
   import('./server/server').then(server =>
-    server.default(getAssets({
-      empty: global.__DEVELOPMENT__,
-    })))
+    server.default({ serverAssets }))
     .catch(e => console.log(e));
 
 startServer();

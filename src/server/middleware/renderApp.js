@@ -8,14 +8,20 @@ import getRoutes from '../../routes';
 import createStore from '../../redux/create';
 import { timer } from '../../helpers/logTiming';
 
-const renderApp = (serverAssets = {}) => (req, res, next) => {
-
-  const startTime = timer.start();
+const renderApp = ({ serverAssets, remoteCouch } = {}) => (req, res, next) => { // eslint-disable-line
 
   let assets = serverAssets;
   const client = new ApiClient(req);
   const history = createMemoryHistory(req.originalUrl);
-  const store = createStore(history, client);
+  const preloadedState = res.preloadedState || {};
+  const store = createStore({
+    client,
+    history,
+    remoteCouch,
+    preloadedState,
+  });
+
+  const startTime = timer.start();
   const routes = getRoutes(store);
   const doctype = '<!doctype html>\n';
 

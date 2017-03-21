@@ -2,6 +2,7 @@ import cors from 'cors';
 import http from 'http';
 import path from 'path';
 import Express from 'express';
+import PouchDB from 'pouchdb';
 import compression from 'compression';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { logJSON } from '../helpers';
@@ -10,11 +11,13 @@ import renderApp from './middleware/renderApp';
 import devAssetsMiddleware from './middleware/devAssetsMiddleware';
 import { loadDevRoverManifest } from './middleware/loadDevRoverManifest';
 import { faviconReqKiller } from './middleware/faviconReqKiller';
+import { getCouchDocs } from './middleware/getCouchDocs';
 
 injectTapEventPlugin();
 
 const app = new Express();
 const server = new http.Server(app);
+const remoteCouch = new PouchDB('http://127.0.0.1:5984/mars');
 const staticDir = path.join(process.cwd(), './static');
 const corsConfig = {
   // origin: 'https://api.nasa.gov/',
@@ -33,11 +36,12 @@ const startServer = (serverAssets = {}) => {
 
   app
     .use(faviconReqKiller())
-    .use(loadDevRoverManifest())
     .use(compression())
     .use(Express.static(staticDir))
     .use(cors(corsConfig))
-    .use(renderApp(serverAssets));
+    .use(loadDevRoverManifest())
+    .use(getCouchDocs(remoteCouch))
+    .use(renderApp({ serverAssets, remoteCouch }));
 
   if (appConfig.port) {
     server.listen(appConfig.port, (err) => {
