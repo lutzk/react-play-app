@@ -36,7 +36,8 @@ const webpackCommons = {
     'redux-thunk',
     'superagent',
     'classnames',
-    'lodash-es'
+    'pouchdb',
+    'redux-pouchdb'
   ]
 };
 
