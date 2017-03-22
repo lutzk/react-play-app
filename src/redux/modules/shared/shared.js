@@ -17,34 +17,47 @@ export const rovers = {
 
 export const filterByFieldValue = (list, filter) => {
   const newList = [];
-  list.map(listItem =>
-    filter.map((filterItem) => {
-      if (filterItem !== undefined && _.get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
-        newList.push(listItem);
+  list.map(listItem => { // eslint-disable-line
+    const combinedFilterMatrix = [];
+    filter.map((filterItem) => { // eslint-disable-line
+      if (filterItem !== undefined) {
+        if (_.get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
+          return combinedFilterMatrix.push(1);
+        }
+        return combinedFilterMatrix.push(0);
       }
-      return 0;
-    }));
+    });
+
+    if (combinedFilterMatrix.indexOf(0) === -1) {
+      newList.push(listItem);
+    }
+  });
 
   return newList;
 };
 
 export const filterList = ({ list, range } = {}) => {
-
   const maxListLength = list.length;
   let start = null;
   let end = null;
+  let rangeSpan = null;
 
   if (range.start > -1) {
     start = range.start;
     end = range.end;
-    end = end > maxListLength ? maxListLength : end;
+    rangeSpan = end - start;
+
+    if (maxListLength < rangeSpan) {
+      end = end > maxListLength ? maxListLength : end;
+      start = 1;
+    }
   }
 
-  if (range.start === 0 && range.end === 0) {
+  if (start === 0 && end === 0 && !list.length) {
     return [];
   }
 
-  return list.filter((item, index) => index >= start && index <= end);
+  return list.filter((item, index) => (index + 1) >= start && (index + 1) <= end);
 };
 
 const formatFilters = filters =>
