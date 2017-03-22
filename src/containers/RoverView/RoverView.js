@@ -195,7 +195,8 @@ export default class RoverView extends Component {
               &nbsp;
               <input type="checkbox"
                 id={`${field}`}
-                onClick={this.handleUpdateFilter}
+                checked={this.props.filter.fields[field].on}
+                onChange={this.handleUpdateFilter}
                 data-field={`${field}`}/>
             </label>
             &nbsp;
