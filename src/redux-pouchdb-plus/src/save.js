@@ -37,8 +37,6 @@ export default (db, localId) => {
       doc.state = reducerState;
       return doc;
     }).then(doc => {
-      // console.log('____SAVING____');
-      // console.dir(doc);
       return db.put(doc);
     }).then(() => {
       delete isSaving[reducerName];
