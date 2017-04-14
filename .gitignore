@@ -16,3 +16,5 @@ npm-debug.log
 bin/server.prod.js
 
 .DS_Store
+
+bin/server.js
