@@ -1,6 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { asyncConnect } from 'redux-connect';
 // import cn from 'classnames';
+import _ from 'lodash'; // eslint-disable-line
+import { push } from 'react-router-redux';
+import { bindActionCreators } from 'redux';
+import PATHS from '../../config/pathsConfig';
+import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 
@@ -8,8 +13,13 @@ import './App.sass';
 
 let mounted = false;
 
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    Object.assign({}, { loadAuth, push, logout }),
+    dispatch);
 
 const mapStateToProps = state => ({
+  user: state.user,
   loading: state.pageLoadBar.loading,
   loadEnd: state.pageLoadBar.loadEnded,
   loadError: state.pageLoadBar.error,
@@ -17,17 +27,25 @@ const mapStateToProps = state => ({
 
 @asyncConnect([{
   key: 'App',
-  promise: () => 'App',
+  promise: (options) => {
+    const { store: { dispatch } } = options;
+    return dispatch(loadAuth())
+      .then(() => 'App');
+  },
 }],
-mapStateToProps)
+mapStateToProps, mapDispatchToProps)
 export default class App extends Component {
 
   static propTypes = {
+    push: PropTypes.func,
+    user: PropTypes.object,
+    logout: PropTypes.func,
     children: PropTypes.any.isRequired,
     location: PropTypes.object.isRequired,
     loading: PropTypes.bool,
     loadError: PropTypes.bool,
     loadEnded: PropTypes.bool,
+    loadAuth: PropTypes.func,
   };
 
   static contextTypes = {
@@ -40,6 +58,33 @@ export default class App extends Component {
 
   componentDidMount() {
     mounted = true;
+    this.props.loadAuth();
+  }
+
+  componentWillReceiveProps(nextProps) { // eslint-disable-line
+    if (!this.props.user.user && nextProps.user.user) {
+      const nextPathnameFromState = _.get(nextProps, 'location.state.nextPathname', false);
+      const status = _.get(nextProps, 'routes[1].status', false);
+      const status404 = status && status === 404;
+
+      // check if it matches a route at all
+      if (nextPathnameFromState && nextPathnameFromState !== PATHS.ROOT) {
+        // console.log('nextPathnameFromState', nextPathnameFromState);
+        return this.props.push(`${nextPathnameFromState}`);
+      }
+
+      if (!status404) {
+        const nextPath = nextProps.user.user.savedPath || PATHS.ROVER_VIEW.ROOT;
+        // console.log('!status404', nextPath);
+        return this.props.push(nextPath);
+      }
+
+    } else if (this.props.user.user && !nextProps.user.user) {
+      return this.props.push({
+        pathname: `/${PATHS.LOGIN}`,
+        state: { nextPathname: nextProps.location.pathname !== PATHS.ROOT ? nextProps.location.pathname : null },
+      });
+    }
   }
 
   componentWillUnMount() {
@@ -70,7 +115,7 @@ export default class App extends Component {
       <div className="app">
         <Loader { ...loaderProps } />
         {content}
-        <Footer showFooter />
+        <Footer showFooter logout={this.props.logout}/>
       </div>
     );
   }

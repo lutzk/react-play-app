@@ -6,29 +6,29 @@ import {
   } from './containers';
 
 import PATHS from './config/pathsConfig';
+import { loadAuth, isLoaded, killUser } from './redux/modules/user';// eslint-disable-line
 
-const getRoutes = () => {
+const getRoutes = (store) => {
 
- /*
- const _getComponent = () => {
+  const requireLogin = (nextState, replace, cb) => {
+    function checkAuth() {
+      const { user: { user } } = store.getState();
+      if (!user) {
+        const target = nextState.location.pathname.substring(0, 6) !== PATHS.LOGIN ? `/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`;
+        replace({
+          pathname: target,
+          state: { nextPathname: nextState.location.pathname },
+        });
+      }
+      cb();
+    }
 
-    // with string concat:
-    //   on navigating there:
-    //     Uncaught Error: Cannot find module './containers/Home/Home'.
-    // code:
-    const _path = './containers/Home/Home.js';// eslint-disable-line
-    return () => import('' + _path).then((m) => { return m.default; });// eslint-disable-line
-
-    // on compilation:
-    //   WARNING in ./src async ^.*$
-    //   Module not found: Error: [CaseSensitivePathsPlugin] `/Users/jonny/Desktop/do/src/containers/Home/home.js` does not match the corresponding path on disk `Home.js`.
-    // code:
-    // const _path = `./containers/${path}`;
-    // return () => import(`${_path}`).then((m) => { return m.default; });
+    if (!isLoaded(store.getState())) {
+      store.dispatch(loadAuth()).then(() => checkAuth());
+    } else {
+      checkAuth();
+    }
   };
-  */
-
-  // const getHome = _getComponent();
 
   const getHome = () => import(/* webpackChunkName: "home" */ './containers/Home/Home').then(m => m.default);
   const getRoverView = () => import(/* webpackChunkName: "roverView" */ './containers/RoverView/RoverView').then(m => m.default);
@@ -39,9 +39,11 @@ const getRoutes = () => {
     <Route path={PATHS.ROOT} component={App}>
       <IndexRoute component={Login} />
       <Route path={PATHS.LOGIN} component={Login} />
-      <Route path={PATHS.HOME} getComponent={getHome} />
-      <Route path={`${PATHS.ROVER_VIEW.ROOT}(/:rover)`} getComponent={getRoverView} />
-      <Route path={`${PATHS.ROVER_VIEW.ROOT}/:rover/${PATHS.SOL}/:sol`} getComponent={getSolView} />
+      <Route onEnter={requireLogin}>
+        <Route path={PATHS.HOME} getComponent={getHome} />
+        <Route path={`${PATHS.ROVER_VIEW.ROOT}(/:rover)`} getComponent={getRoverView} />
+        <Route path={`${PATHS.ROVER_VIEW.ROOT}/:rover/${PATHS.SOL}/:sol`} getComponent={getSolView} />
+      </Route>
       <Route path={PATHS.NOT_FOUND} getComponent={getNotFound} />
     </Route>
   );
