@@ -82,6 +82,7 @@ export const formatAssets = (assetsObj) => {
   if (assetsObj.js !== undefined && assetsObj.js.vendor !== undefined && assetsObj.js.main !== undefined) {
     const formatedAssetsObj = JSON.parse(JSON.stringify(assetsObj));
     formatedAssetsObj.js = { // eslint-disable-line
+      manifest: assetsObj.js.manifest,
       vendor: assetsObj.js.vendor,
       main: assetsObj.js.main,
     };
