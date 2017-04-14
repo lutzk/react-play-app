@@ -16,7 +16,7 @@ module.exports = {
   },
   output: {
     path: config.serverPath,
-    filename: '[name].dev.js',
+    filename: '[name].js',
     chunkFilename: '[name]-[chunkhash].js',
     libraryTarget: 'commonjs2',
     publicPath: config.publicPath

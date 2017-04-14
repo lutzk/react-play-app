@@ -2,7 +2,7 @@
 
 (function () {
   require('./setEnv');
-  const serverFilePath = './static/server/server.dev.js';
+  const serverFilePath = './bin/server.js';
   const fs = require('fs');
   let found = false;
   let checker = null;
