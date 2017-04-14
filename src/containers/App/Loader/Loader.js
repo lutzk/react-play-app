@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import './loader.sass';
+import './Loader.sass';
 
 export const Loader = (_props) => { // eslint-disable-line
   if (!_props.mount) {

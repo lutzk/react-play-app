@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
 import PATHS from '../../config/pathsConfig';
 import imageSrc from '../../theme/IMG_1672.jpg';
-import './roverView.sass';
+import './roverViewStyles.sass';
 
 const asyncInfo = {
   key: 'Sol',

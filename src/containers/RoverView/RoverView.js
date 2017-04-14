@@ -6,7 +6,7 @@ import { getManifest, getManifest as refreshManifest, roverMatcher, updateList }
 import PATHS from '../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
-import './roverView.sass';
+import './roverViewStyles.sass';
 
 const asyncInfo = {
   key: 'Info',
