@@ -181,7 +181,7 @@ module.exports = {
     new CaseSensitivePathsPlugin(),
     new webpack.IgnorePlugin(/\.\/dev/, /\/config$/),
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
+      names: ['vendor', 'manifest'],
       filename: '[name]-[chunkhash].js',
       minChunks: Infinity
     })
