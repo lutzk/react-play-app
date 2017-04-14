@@ -1,5 +1,4 @@
 import _ from 'lodash'; // eslint-disable-line
-
 export const apiKey = 'DEMO_KEY';
 export const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
 export const apiManifestsPath = 'manifests/';
@@ -184,35 +183,20 @@ export const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
       }),
     });
 
+/* eslint-disable */
 export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
 
   const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
-  const getPath = () => {
-    let path = '';
-
-    if (manifestFor.rover) {
-      path = offline ?
-        `${offlineManifestBasePath}?rover=${rover}`
-        : `${apiBasePath}${apiManifestsPath}${rover}?api_key=${apiKey}`;
-
-    } else if (manifestFor.sol) {
-      path = offline ?
-        `${offlineManifestBasePath}?rover=${rover}&sol=${sol}`
-        : `${apiBasePath}${rover}/${sol}/photos?${sol}&api_key=${apiKey}`;
-    }
-
-    return path;
-  };
-
-  const requestPath = getPath();
-  const request = client => client.get(requestPath);
+  const params = { rover, sol, offline };
+  const requestPath = '/nasa';
+  const request = client => client.get(requestPath, { params });
 
   return {
     types,
     promise: request,
   };
 };
-
+/* eslint-enable */
 export const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
   (dispatch, getState) => {
     const {
