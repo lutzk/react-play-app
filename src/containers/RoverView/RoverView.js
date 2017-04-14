@@ -177,7 +177,7 @@ export default class RoverView extends Component {
 
     const missionSolsProps = {
       sols: this.props.solsToRender,
-      rover: this.props.roverName.toLowerCase(),
+      rover: this.props.roverName ? this.props.roverName.toLowerCase() : '',
     };
 
     const loadPane = (
