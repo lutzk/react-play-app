@@ -1,39 +1,63 @@
 import superagent from 'superagent';
-// import formatUrl from './formatUrl';
 import { camelizeKeys } from 'humps';
+import cookie from 'react-cookie';
+import formatUrl from './formatUrl';
+import { authTokenKey } from '../config/appConfig';
 
-const methods = ['get', 'post', 'put', 'patch', 'del'];
+const verbs = ['get', 'post'];
 
-class ApiClient {
-  constructor(incomingReq) {
-    methods.forEach(method =>// eslint-disable-line
-      this[method] = async (path, {  params, data  }  = {}) => {// eslint-disable-line
-        let request = null;
 
-        try {
-          request = await superagent[method](path);
-          // if (cookie && cookie.load('loginResult')) {
-          //   request.set(config.authTokenKey, cookie.load('loginResult'));
-          // }
-          if (params) {
-            request.query(params);
-          }
-          if (global.__SERVER__ && incomingReq.get('cookie')) {
-            request.set('cookie', incomingReq.get('cookie'));
-          }
-          if (data) {
-            request.send(data);
-          }
-        } catch (error) {
-          const errorString = JSON.stringify(error);
-          request = { error: errorString };
-          return request;
-        }
+function ApiClient(incomingReq) {
 
-        const camelizedBody = camelizeKeys(request.body);
-        return camelizedBody;
-      });
-  }
+  const client = verb => async (path, { params, data, headers } = {}) => {
+    let request = null;
+    let result = null;
+
+    try {
+
+      request = superagent[verb](formatUrl(path));
+
+      if (cookie && cookie.load('session')) {
+        request.set(authTokenKey, cookie.load('session'));
+      }
+
+      if (__SERVER__ && incomingReq.get('cookie')) {
+        request.set('cookie', incomingReq.get('cookie'));
+      }
+
+      if (headers) {
+        request.set(headers);
+      }
+
+      if (params) {
+        request.query(params);
+      }
+
+      if (data) {
+        request.send(data);
+      }
+
+      result = await request;
+
+    } catch (error) {
+
+      if (error && error.code && !error.status) {
+        result = { error: error.code };
+      } else if (error && error.response) {
+        result = { error: { status: error.status, error: error.response.body || error.response.text } };
+      } else {
+        result = 'SOLAR FLARE';
+      }
+
+      return result;
+    }
+
+    const camelizedBody = camelizeKeys(result.body || result);
+    return camelizedBody;
+  };
+
+  verbs.map(verb =>
+    ApiClient.prototype[verb] = client(verb));
 }
 
 export default ApiClient;
