@@ -151,6 +151,7 @@ module.exports = {
       debug: false
     }),
     new webpack.optimize.UglifyJsPlugin({
+      beautify: false,
       compress: {
         warnings: false,
         screw_ie8: true,
@@ -164,13 +165,9 @@ module.exports = {
         join_vars: true,
       },
       mangle: {
-        props: {
-          regex: /_$/
-        }
+        screw_ie8: true,
       },
-      output: {
-        comments: false
-      },
+      comments: false,
     }),
     new webpack.DefinePlugin({
       __CLIENT__: false,
