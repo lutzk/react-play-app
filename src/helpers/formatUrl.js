@@ -1,13 +1,15 @@
-import appConfig from '../config/appConfig';
+import { apiBase, apiPath } from '../config/appConfig';
 
-const formatUrl = (path) => {
-  const adjustedPath = path[0] !== '/' ? `/${path}` : path;
-  if (global.__SERVER__) {
-    // Prepend host and port of the API server to the path.
-    return `http://${appConfig.apiHost}${appConfig.apiPort}${appConfig.apiBasePath}${adjustedPath}`;
-  }
-  // Prepend `/api` to relative URL, to proxy to API server.
-  return `${appConfig.apiBasePath}${adjustedPath}`;
-};
+const lead = '/';
+
+const prefix = path =>
+  path[0] !== lead ?
+    lead + path
+    : path;
+
+const formatUrl = path =>
+  __SERVER__ ?
+    apiPath + prefix(path)
+    : apiBase + prefix(path);
 
 export default formatUrl;

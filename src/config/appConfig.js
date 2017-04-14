@@ -1,26 +1,24 @@
-const env = {
-  development: {
-    isProduction: false,
-  },
-  production: {
-    isProduction: true,
-  },
-}[process.env.NODE_ENV || 'development'];
+const host = process.env.HOST || 'localhost';
+const port = process.env.PORT || 3010;
+// const protocol = process.env.SSL ? 'http://' : 'https://';
+const apiHost = process.env.API_HOST || 'localhost';
+const apiPort = process.env.API_PORT || 3040;
+const apiBase = process.env.API_BASE || '/api/v1';
+const apiPath = `http://${apiHost}:${apiPort}${apiBase}`;
+const authTokenKey = 'x-authentication';
+const ssrAssetsRoute = process.env.SSR_ASSETS_ROUTE;
+const devAssetServerPort = process.env.DEV_ASSETS_SERVER_PORT || 3011;
+const devAssetServerPath = `http://${host}:${devAssetServerPort}${ssrAssetsRoute}`;
 
-const appConfig = Object.assign(
-  {
-    host: process.env.HOST,
-    port: process.env.PORT,
-    ssrAssetsRoute: process.env.SSR_ASSETS_ROUTE,
-    devAssetServerPort: process.env.DEV_ASSETS_SERVER_PORT || 3011,
-    app: {
-      title: 'app',
-      meta: {
-        charSet: 'utf-8',
-      },
-    },
-  },
-  env
-);
-
-export default appConfig;
+export {
+  host,
+  port,
+  apiHost,
+  apiPort,
+  apiBase,
+  apiPath,
+  authTokenKey,
+  ssrAssetsRoute,
+  devAssetServerPort,
+  devAssetServerPath,
+};
