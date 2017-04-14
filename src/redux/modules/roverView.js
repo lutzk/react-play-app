@@ -1,4 +1,5 @@
-import { persistentReducer } from 'redux-pouchdb';
+import { persistentReducer } from '../../redux-pouchdb-plus/src/index';
+
 import {
   rovers,
   spirit,
@@ -164,4 +165,4 @@ export const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-export default persistentReducer(roverView, 'roverView');
+export default persistentReducer(roverView);

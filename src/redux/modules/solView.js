@@ -1,4 +1,4 @@
-import { persistentReducer } from 'redux-pouchdb';
+import { persistentReducer } from '../../redux-pouchdb-plus/src/index';
 import {
   sortList,
   _updateList,
@@ -134,4 +134,4 @@ export const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-export default persistentReducer(solView, 'solView');
+export default persistentReducer(solView);
