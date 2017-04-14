@@ -57,7 +57,8 @@ export function endLoading(fromError = false, rewindOnError = true) {
 
   if (fromError && rewindOnError) {
     return (dispatch, getState) => {
-      if (getState().pageLoadBar.loading) {
+      const state = getState().pageLoadBar;
+      if (state.loading && !state.loadEnd) {
         clearTimeout(endWithDelay);// eslint-disable-line
         const endWithDelay = setTimeout(() => {
           dispatch({ type: END_LOADING_FROM_ERROR });
@@ -72,7 +73,8 @@ export function endLoading(fromError = false, rewindOnError = true) {
   }
 
   return (dispatch, getState) => {
-    if (getState().pageLoadBar.loading) {
+    const state = getState().pageLoadBar;
+    if (state.loading && !state.loadEnd) {
       dispatch({ type: END_LOADING });
 
       clearTimeout(resetWithDelay);// eslint-disable-line
