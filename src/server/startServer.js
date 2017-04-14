@@ -16,7 +16,7 @@ const staticDir = path.join(process.cwd(), './static');
 
 injectTapEventPlugin();
 
-export const startServer = (serverAssets = {}) => { // eslint-disable-line
+export const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
 
   if (!port) {
     throw Error('ERROR: No PORT environment variable has been specified');
