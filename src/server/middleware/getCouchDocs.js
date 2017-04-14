@@ -1,38 +1,13 @@
-const fetchDoc = async (db, docName) => {
+import { ApiClient } from '../../helpers';
 
-  let doc = false;
-  try {
-    doc = await db.get(docName);
-  } catch (e) {
-    console.error(`error fetching document: ${docName} from: ${db.name}`, e);
-  }
+export const getCouchDocs = () => (req, res, next) => {
+  const client = new ApiClient(req);
 
-  return doc;
-};
-
-const fetchStatesFromCouch = (db) => {
-
-  const statesKeysToFetch = ['roverView', 'solView'];
-  const statesFromCouch = statesKeysToFetch.map(key =>
-    fetchDoc(db, key).then(doc => ({
-      name: doc._id,
-      state: doc.state,
-    })));
-
-  return Promise.all(statesFromCouch);
-};
-
-export const getCouchDocs = (remoteCouch) => async (req, res, next) => { // eslint-disable-line
-
-  const preloadedState = {};
-  const states = await fetchStatesFromCouch(remoteCouch);
-
-  states
-    .filter(state =>
-      (state !== null && typeof state === 'object'))
-    .map(state =>
-      preloadedState[state.name] = state.state);
-
-  res.preloadedState = preloadedState;// eslint-disable-line
-  return next();
+  return client.get('/userCouch').then((couch) => {
+    if (couch.error) {
+      return next();
+    }
+    res.preloadedState = couch;
+    return next();
+  });
 };

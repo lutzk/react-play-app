@@ -1,5 +1,6 @@
-import { LOCATION_CHANGE } from 'react-router-redux';
+import { reinit } from '../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
+import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
 
 const clientMiddleware = client => ({ dispatch, getState }) => next => async (action) => {
 
@@ -9,28 +10,39 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   const { promise, types, ...rest } = action;
 
-  if (action.type === LOCATION_CHANGE && action.payload.pathname !== '/' && action.payload.key !== undefined) {
-    dispatch(startLoading());
-  }
-
-  if (action.type === '@redux-conn/END_GLOBAL_LOAD') {
-    dispatch(endLoading());
-  }
-
   if (!promise) {
     return next(action);
   }
 
   let result = null;
   const [REQUEST, SUCCESS, FAILURE] = types;
+  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
+  // const maybeReinitReducerTypes = [LOAD_AUTH_SUCCESS];
 
-  dispatch(startLoading());
   next({ ...rest, type: REQUEST });
+  dispatch(startLoading());
   result = await promise(client);
 
   if (result.error) {
+    console.log('_ERROR_RE');
+    console.log(result);
+    if (result.error.status === 401) {
+      dispatch(endLoading(true));
+      return next({ ...rest, result: { savedPath: getState().router.locationBeforeTransitions.pathname }, type: KILL_USER });
+    }
+
+    if (result.error.status === 500) {
+      dispatch(endLoading(true));
+      return next({ ...rest, error: result.error, type: FAILURE });
+    }
     dispatch(endLoading(true));
     return next({ ...rest, error: result.error, type: FAILURE });
+  }
+
+  if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
+    return dispatch({ ...rest, result, type: SUCCESS })
+      .then(() => dispatch(reinit()))
+      .then(() => dispatch(endLoading()));
   }
 
   dispatch(endLoading());

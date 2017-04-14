@@ -1,12 +1,12 @@
 import { createStore as _createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk';
-import PouchDB from 'pouchdb';
-import { persistentStore } from 'redux-pouchdb';
 import createMiddleware from './middleware/clientMiddleware';
 
-export default function createStore({ history, client, preloadedState, remoteCouch }) {
-  let db = null;
+export default function createStore({ history, client, preloadedState }) { // eslint-disable-line
+  let db;
+  let DevTools;
+  let persistentStore;
   let finalCreateStore;
   const reduxRouterMiddleware = routerMiddleware(history);
   const middleware = [
@@ -15,24 +15,25 @@ export default function createStore({ history, client, preloadedState, remoteCou
     thunkMiddleware,
   ];
 
-  if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
-    db = new PouchDB('earth', {
-      // revs_limit: 50,
-      auto_compaction: true,
-    });
-    if (typeof window !== 'undefined') {
-      window.PouchDB = PouchDB;
+  if (__CLIENT__) {
+    if (__DEVELOPMENT__ && __DEVTOOLS__) {
+      DevTools = require('./clientRequireProxy').DevTools;
     }
-    const DevTools = require('../containers/DevTools/DevTools').default;
+    db = require('./clientRequireProxy').db;
+    persistentStore = require('./clientRequireProxy').persistentStore;
+  }
+
+  if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
     finalCreateStore = compose(
-      persistentStore(db),
       applyMiddleware(...middleware),
+      persistentStore({ db }),
       DevTools.instrument()
     )(_createStore);
 
   } else if (__CLIENT__) {
     finalCreateStore = compose(
-      applyMiddleware(...middleware)
+      applyMiddleware(...middleware),
+      persistentStore({ db })
     )(_createStore);
 
   } else {
@@ -43,21 +44,6 @@ export default function createStore({ history, client, preloadedState, remoteCou
 
   const reducer = require('./modules/reducer').default;
   const store = finalCreateStore(reducer, preloadedState);
-
-  if (__CLIENT__) {
-    db.sync(remoteCouch, {
-      live: true,
-      retry: true,
-      // batch_size: 5,
-      // heartbeat: 10000,
-    })
-    .on('active', () => console.log('__ACTIVE'))
-    .on('change', () => console.log('__CHANGE'))
-    .on('complete', () => console.log('__COMPLETE'))
-    .on('error', e => console.log('__ERROR', e));
-  }
-
-  // reduxRouterMiddleware.listenForReplays(store);
 
   if (__DEVELOPMENT__ && module.hot) {
     module.hot.accept('./modules/reducer', () => {

@@ -9,18 +9,15 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ReduxAsyncConnect } from 'redux-connect';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { Router, browserHistory, applyRouterMiddleware, match } from 'react-router';
-import PouchDB from 'pouchdb';
 
 import getRoutes from './routes';
 import ApiClient from './helpers/ApiClient';
 import createStore from './redux/create';
 
 const client = new ApiClient();
-const remoteCouch = new PouchDB('http://127.0.0.1:5984/mars');
 const store = createStore({
   client,
   history: browserHistory,
-  remoteCouch,
   preloadedState: window.__data,
 });
 

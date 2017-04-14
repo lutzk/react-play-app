@@ -8,7 +8,7 @@ import getRoutes from '../../routes';
 import createStore from '../../redux/create';
 import { timer } from '../../helpers/logTiming';
 
-const renderApp = ({ serverAssets, remoteCouch } = {}) => (req, res, next) => { // eslint-disable-line
+const renderApp = ({ serverAssets } = {}) => (req, res, next) => { // eslint-disable-line
 
   let assets = serverAssets;
   const client = new ApiClient(req);
@@ -17,7 +17,6 @@ const renderApp = ({ serverAssets, remoteCouch } = {}) => (req, res, next) => { 
   const store = createStore({
     client,
     history,
-    remoteCouch,
     preloadedState,
   });
 
