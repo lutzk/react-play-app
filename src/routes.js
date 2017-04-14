@@ -30,10 +30,10 @@ const getRoutes = () => {
 
   // const getHome = _getComponent();
 
-  const getHome = () => import('./containers/Home/Home').then(m => m.default);
-  const getRoverView = () => import('./containers/RoverView/RoverView').then(m => m.default);
-  const getSolView = () => import('./containers/RoverView/Sol').then(m => m.default);
-  const getNotFound = () => import('./containers/NotFound/NotFound').then(m => m.default);
+  const getHome = () => import(/* webpackChunkName: "home" */ './containers/Home/Home').then(m => m.default);
+  const getRoverView = () => import(/* webpackChunkName: "roverView" */ './containers/RoverView/RoverView').then(m => m.default);
+  const getSolView = () => import(/* webpackChunkName: "solView" */ './containers/RoverView/Sol').then(m => m.default);
+  const getNotFound = () => import(/* webpackChunkName: "notFound" */ './containers/NotFound/NotFound').then(m => m.default);
 
   return (
     <Route path={PATHS.ROOT} component={App}>
