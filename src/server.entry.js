@@ -10,7 +10,7 @@ if (global.__DEVELOPMENT__) {
     if (!require('piping')(
       {
         hook: true,
-        ignore: /(\/\.|~$|\.json$)/i,
+        ignore: /(\/\.|~$|\.json$|\.\/node_modules\/$)/i,
       }
     )) {
       // return;
@@ -18,15 +18,16 @@ if (global.__DEVELOPMENT__) {
   })();
 }
 
-// const serverPath = './server/server';
-// error ...
 const serverAssets = getAssets({
   empty: global.__DEVELOPMENT__,
 });
 
+// const serverPath = './server/server;
+// error ...
+// webpack/issues/#2401
 const startServer = () =>
-  import('./server/server').then(server =>
-    server.default({ serverAssets }))
-    .catch(e => console.log(e));
+  import('./server/startServer').then(server =>
+    server.startServer({ serverAssets }))
+    .catch(e => console.log('serverError:', e));
 
 startServer();
