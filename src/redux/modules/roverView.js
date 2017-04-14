@@ -82,8 +82,16 @@ const getStats = (data) => {
 
 function roverView(state = initialState, action = {}) {
   switch (action.type) {
-    case 'redux-pouchdb/SET_REDUCER':
+    case '@@redux-pouchdb-plus/SET_REDUCER':
       if (action.reducer === 'roverView') {
+        if (!action.state.loaded && action.state.listToRender.length) {
+          return {
+            ...state,
+            loaded: true,
+            loading: false,
+            error: false,
+          };
+        }
         if (action.state.error) {
           return {
             ...state,
