@@ -37,7 +37,12 @@ module.exports = {
             loader: 'babel-loader',
             options: babelrc
           },
-          { loader: 'eslint-loader' }
+          {
+            loader: 'eslint-loader',
+            options: {
+              fix: true
+            }
+          }
         ]
       },
       {
@@ -145,9 +150,11 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.IgnorePlugin(/webpack-stats\.json$/),
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
+      names: ['vendor', 'manifest'],
       filename: '[name]-[hash].js',
       minChunks: Infinity
+      // async: '[name]-[hash].js'
+      // children: true
     }),
     new webpack.DefinePlugin({
       __CLIENT__: true,

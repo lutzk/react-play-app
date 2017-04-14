@@ -44,7 +44,12 @@ module.exports = {
             loader: 'babel-loader',
             options: babelrc
           },
-          { loader: 'eslint-loader' }
+          {
+            loader: 'eslint-loader',
+            options: {
+              fix: true
+            }
+          }
         ]
       },
       {
