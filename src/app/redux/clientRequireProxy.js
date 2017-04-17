@@ -1,6 +1,6 @@
 import PouchDB from 'pouchdb';
 import DevTools from '../containers/DevTools/DevTools';
-import { persistentStore } from '../redux-pouchdb-plus/src/index';
+import { persistentStore } from '../../redux-pouchdb-plus/src/index';
 
 const db = (reducerName, store) => {
   const state = store.getState();

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { login, signup } from '../../redux/modules/user';
-import PATHS from '../../config/pathsConfig';
+import PATHS from '../../../config/pathsConfig';
 import './Login.sass';
 
 const mapDispatchToProps = dispatch =>

@@ -11,7 +11,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import { Router, browserHistory, applyRouterMiddleware, match } from 'react-router';
 
 import getRoutes from './routes';
-import ApiClient from './helpers/ApiClient';
+import ApiClient from '../helpers/ApiClient';
 import createStore from './redux/create';
 
 const client = new ApiClient();

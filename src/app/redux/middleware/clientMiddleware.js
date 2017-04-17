@@ -1,4 +1,4 @@
-import { reinit } from '../../redux-pouchdb-plus/src/index';
+import { reinit } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
 import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
 

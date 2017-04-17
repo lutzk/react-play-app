@@ -40,7 +40,7 @@ function ApiClient(incomingReq) {
       result = await request;
 
     } catch (error) {
-
+      // console.log(error);
       if (error && error.code && !error.status) {
         result = { error: error.code };
       } else if (error && error.response) {

@@ -4,8 +4,8 @@ import { Provider } from 'react-redux';
 import { match, createMemoryHistory } from 'react-router';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
 import { ApiClient, Html, logJSON } from '../../helpers';
-import getRoutes from '../../routes';
-import createStore from '../../redux/create';
+import getRoutes from '../../app/routes';
+import createStore from '../../app/redux/create';
 import { timer } from '../../helpers/logTiming';
 
 const renderApp = ({ serverAssets } = {}) => (req, res, next) => { // eslint-disable-line

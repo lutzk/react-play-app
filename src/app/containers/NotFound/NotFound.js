@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import PATHS from '../../config/pathsConfig';
+import PATHS from '../../../config/pathsConfig';
 
 const NotFound = () => (
   <div className="page NotFound">

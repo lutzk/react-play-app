@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
-import PATHS from '../../config/pathsConfig';
+import PATHS from '../../../config/pathsConfig';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './roverViewStyles.sass';
 

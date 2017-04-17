@@ -1,4 +1,4 @@
-import getAssets from './server/serverAssets';
+import getAssets from './appServer/serverAssets';
 
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
@@ -22,11 +22,8 @@ const serverAssets = getAssets({
   empty: global.__DEVELOPMENT__,
 });
 
-// const serverPath = './server/server;
-// error ...
-// webpack/issues/#2401
 const startServer = () =>
-  import('./server/startServer').then(server =>
+  import('./appServer/startServer').then(server =>
     server.startServer({ serverAssets }))
     .catch(e => console.log('serverError:', e));
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import PATHS from '../../config/pathsConfig.js';
+import PATHS from '../../../config/pathsConfig.js';
 import './Home.sass';
 
 const Home = () => (

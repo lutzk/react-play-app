@@ -1,4 +1,4 @@
-import { persistentReducer } from '../../redux-pouchdb-plus/src/index';
+import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 import {
   sortList,
   _updateList,

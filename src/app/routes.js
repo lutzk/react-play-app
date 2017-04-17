@@ -5,7 +5,7 @@ import {
     Login,
   } from './containers';
 
-import PATHS from './config/pathsConfig';
+import PATHS from '../config/pathsConfig';
 import { loadAuth, isLoaded, killUser } from './redux/modules/user';// eslint-disable-line
 
 const getRoutes = (store) => {

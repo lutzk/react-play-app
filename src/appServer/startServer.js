@@ -39,6 +39,7 @@ export const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
     .use(renderApp({ serverAssets }))
     .listen(port, (err) => {
       if (err) {
+        console.log('__start app server error', err);
         throw Error(err);
       } else {
         console.info(`server up and running on: //${host}:${port}`);

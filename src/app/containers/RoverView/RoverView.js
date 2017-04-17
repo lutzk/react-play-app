@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getManifest, getManifest as refreshManifest, roverMatcher, updateList } from '../../redux/modules/roverView';
-import PATHS from '../../config/pathsConfig.js';
+import PATHS from '../../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
 import './roverViewStyles.sass';
