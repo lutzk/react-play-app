@@ -1,36 +1,32 @@
-import express from 'express';
 import fs from 'fs';
-import api from './api';
-// import { socket } from './config';
+import express from 'express';
 
-// if (!apiPort) {
-//   throw Error('No PORT environment variable has been specified');
-// }
-const socket = '/tmp/api.sock';
+import api from './api';
+import { socket } from './config';
+
+if (!socket) {
+  throw Error('No SOCKET environment variable has been specified');
+}
+
 const startServer = () => express()
-  .use((req, res, next) => {
-    console.log('HOLLLA____ req.url:', req.url);
-    next();
-  })
   .use(api())
   .listen(socket, (err) => {
     if (err) {
       throw Error(err);
     }
-    // console.info(`==>   api is up on: ${apiPath}`);
     console.info(`==>   api is up on: ${socket}`);
   });
 
-const checkSocket = (clb) => {
+// the socket file is not allways cleaned up
+// so we need to check before start
+const checkSocket = starter =>
   fs.stat(socket, (err) => {
     if (!err) {
       fs.unlinkSync(socket);
-      clb();
+      starter();
     } else {
-      clb();
+      starter();
     }
   });
-};
 
 checkSocket(startServer);
-// startServer();

@@ -12,8 +12,8 @@ const privateApiMount = `${privateApiRootMount}`;
 const nasaApiMount = `${privateApiMount}${nasaApi}`;
 const slMount = `${privateApiMount}${slApi}`;
 
-const socket = '%2Ftmp%2Fapi.sock';
-const serverPath = `http+unix://${socket}`;
+const socket = '/tmp/api.sock';
+const serverPath = `http+unix://${encodeURIComponent(socket)}`;
 // const serverPath = `${apiProtocol}${apiHost}:${apiPort}`;
 const apiPath = `${serverPath}${apiRootMount}`;
 
