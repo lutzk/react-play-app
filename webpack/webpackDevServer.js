@@ -1,8 +1,7 @@
 require('../setEnv');
 const Express = require('express');
 const webpack = require('webpack');
-const config = require('./webpackCommons').webpackCommons;
-const webpackConfig = require('./devClientConfig');
+const webpackConfig = require('./webpackConfig.js')('dev.client');
 const appConfig = require('../src/config/config');
 
 const compiler = webpack(webpackConfig);
@@ -17,7 +16,7 @@ const StatsToJsonConfig = {
   chunkModules: false,
   chunkOrigins: false,
   chunksSort: false,
-  context: config.context,
+  context: webpackConfig.context,
   colors: false,
   errors: false,
   errorDetails: false,
@@ -30,7 +29,7 @@ const StatsToJsonConfig = {
 };
 
 const serverOptions = {
-  contentBase: `http://${config.host}:${config.assetServerPort}`,
+  contentBase: `http://${appConfig.host}:${appConfig.devAssetServerPort}`,
   quiet: false,
   noInfo: false,
   hot: true,
@@ -56,12 +55,12 @@ app
     next();
   })
   .listen(
-    config.assetServerPort,
+    appConfig.devAssetServerPort,
     (err) => {
       if (err) {
         console.error(err);
       } else {
-        console.info('==> Webpack assets dev server listening on port %s', config.assetServerPort);
+        console.info('==> Webpack assets dev server listening on port %s', appConfig.devAssetServerPort);
       }
     }
 );

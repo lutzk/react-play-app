@@ -1,2 +1,2 @@
 require('dotenv').load();
-require('./bin/server');
+require('./bin/appServer');

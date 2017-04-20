@@ -29,6 +29,17 @@ const devPluginsServer = [
   }
 ];
 
+const babelConfigApiBase = {
+  ignore: '/node_modules/',
+  babelrc: false,
+  'presets': [['es2015', { modules: false }], 'stage-0'],
+  'plugins': [
+    'transform-runtime'
+  ]
+}
+
+const babelConfigApiServer = JSON.parse(JSON.stringify(babelConfigApiBase));
+
 const babelConfigClient = JSON.parse(JSON.stringify(babelConfigBase));
 const babelConfigProdClient = JSON.parse(JSON.stringify(babelConfigBase));
 
@@ -38,9 +49,10 @@ const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
 babelConfigClient.plugins.push(devPlugins);
 babelConfigServer.plugins.push(devPluginsServer);
 
-module.exports = {
-  babelConfigServer: babelConfigServer,
-  babelConfigClient: babelConfigClient,
-  babelConfigServerProd: babelConfigServerProd,
-  babelConfigProdClient: babelConfigProdClient
+export {
+  babelConfigServer,
+  babelConfigClient,
+  babelConfigApiServer,
+  babelConfigServerProd,
+  babelConfigProdClient,
 };
