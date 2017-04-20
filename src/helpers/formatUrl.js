@@ -1,4 +1,4 @@
-import { apiBase, apiPath } from '../config/appConfig';// eslint-disable-line
+import { host, port, apiBase } from '../config/appConfig';
 
 const lead = '/';
 
@@ -9,7 +9,7 @@ const prefix = path =>
 
 const formatUrl = path =>
   __SERVER__ ?
-    `localhost:3010/api/v1${prefix(path)}`
+    `${host}:${port}${apiBase}${prefix(path)}`
     : apiBase + prefix(path);
 
 export default formatUrl;
