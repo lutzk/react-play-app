@@ -3,7 +3,7 @@ import { baseConfig } from './common';
 const setRules = rules => ({ module: { rules } });
 const setPlugins = plugins => ({ plugins });
 
-const configBuilder = ({ entry, output, resolve, rules, plugins, target }) => ({
+const configBuilder = ({ entry, output, resolve, rules, plugins, target, devtool }) => ({
   entry,
   output,
   resolve,
@@ -11,6 +11,7 @@ const configBuilder = ({ entry, output, resolve, rules, plugins, target }) => ({
   ...setRules(rules),
   ...setPlugins(plugins),
   ...target,
+  devtool,
 });
 
 export { configBuilder };// eslint-disable-line
