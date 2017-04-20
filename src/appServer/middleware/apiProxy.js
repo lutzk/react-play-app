@@ -1,9 +1,9 @@
 import http from 'http';
-import { apiHost, apiSocket, apiBase } from '../../config/appConfig';
+import { apiSocket, apiBase } from '../../config/appConfig';
 
 /*
 
-  adapted / inspired from: https://github.com/nodejitsu/node-http-proxy.git
+  adapted / inspired from: https://github.com/nodejitsu/node-http-proxy.git - passes/web-incoming.js/#stream method
   unfortunatly its not suporting unix domain sockets
   but the undelying `http.request` does
 
@@ -24,7 +24,7 @@ function ProxyServer(options = {}, clb) {
     const headers = { ...req.headers };
     const reqOptions = {
       headers,
-      host: apiHost,
+      host: 'localhost',
       path: options.path + req.url,
       method: req.method,
       socketPath: options.socketPath,
