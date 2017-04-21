@@ -12,7 +12,7 @@
     "run-dev-app-server-watch": "npm-run-all --parallel check-app-server dev-app-server-watch",
     "run-dev-api-server-watch": "npm-run-all --parallel check-dev-api-server build-dev-api-server-watch",
     "build-prod-all": "npm-run-all --parallel prod-app-server prod-api-server prod-client",
-    "start-prod": "node ./startProdServer",
+    "start-prod": "node ./startProdServer"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
