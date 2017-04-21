@@ -51,7 +51,7 @@ const serverOutput = {
 const clientOutput = {
   path: assetsPath,
   publicPath: publicPathDev,
-  filename: '[name]-[hash].js',
+  filename: '[name]-[chunkhash].js',
   chunkFilename: '[name]-[chunkhash].js',
 };
 
