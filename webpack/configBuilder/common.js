@@ -13,19 +13,13 @@ import {
 // base
 const baseConfig = {
   context,
-  performance: {
-    hints: false,
-  },
+  performance: false,
+  // performance: { hints: true }
 };
 
-// entrys
-const appServerEntry = {
-  appServer: ['appServerEntry.js'],
-};
-
-const apiServerEntry = {
-  apiServer: ['apiServerEntry.js'],
-};
+const getServerEntry = kind => ({
+  [`${kind}Server`]: [`${kind}ServerEntry.js`],
+});
 
 const clientEntry = {
   vendor: vendorList,
@@ -93,10 +87,10 @@ const buildResolve = ({ api = false, prod = false } = {}) => api ?
   resolve
   : { ...resolve, extensions: [...extensions, ...assetsExtensions] };
 
-const buildEntry = ({ server = false, prod = false } = {}) => {
+const buildEntry = ({ server = false, prod = false, api = false } = {}) => {
   let entry;
   if (server) {
-    entry = appServerEntry;
+    entry = getServerEntry(api ? 'api' : 'app');
   } else {
     entry = prod ? clientEntry : { ...clientEntry, ...clientEntry.main.unshift(...clientDevHMR) };
   }
