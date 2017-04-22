@@ -6,13 +6,16 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import StatsPlugin from '../plugins/statsPlugin';
 import { rootPath, relativeAppServerBuildPath, relativeAssetsPath } from '../settings';
 
-const commonChunksPlugin = new webpack.optimize.CommonsChunkPlugin({
-  names: ['vendor', 'manifest'],
-  filename: '[name]-[hash].js',
-  minChunks: Infinity,
-  // async: '[name]-[hash].js'
-  // children: true
-});
+const buildCommonChunksPlugin = (prod) => {
+  const options = {
+    names: ['vendor', 'manifest'],
+    filename: prod ? '[name]-[chunkhash].js' : '[name].js',
+    minChunks: Infinity,
+    // async: '[name]-[hash].js'
+    // children: true
+  };
+  return new webpack.optimize.CommonsChunkPlugin(options);
+};
 
 const hmrPlugin = new webpack.HotModuleReplacementPlugin();
 const statsPlugin = new StatsPlugin();
@@ -23,7 +26,7 @@ const nodeEnvDev = { 'process.env.NODE_ENV': JSON.stringify('development') };
 const nodeEnvProd = { 'process.env.NODE_ENV': JSON.stringify('production') };
 
 const extractTextPlugin = new ExtractTextPlugin({
-  filename: '[name]-[chunkhash].css',
+  filename: '[name]-[hash].css',
   disable: false,
   allChunks: true,
 });
@@ -99,7 +102,7 @@ const buildServerPlugins = ({ prod = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
-    commonChunksPlugin,
+    buildCommonChunksPlugin(prod),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
   ];
@@ -115,7 +118,7 @@ const buildClientPlugins = ({ prod = false }) => {
   if (prod) {
     plugins = [...base, ...prodPlugins];
   } else {
-    plugins = [...base, hmrPlugin,];
+    plugins = [...base, hmrPlugin];
   }
   return plugins;
 };

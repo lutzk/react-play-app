@@ -55,6 +55,15 @@ const clientOutput = {
   chunkFilename: '[name]-[chunkhash].js',
 };
 
+const clientDevFilename = {
+  filename: '[name].js',
+  chunkFilename: '[name].js',
+};
+
+const getClientOutput = prod => prod ?
+  clientOutput
+  : { ...clientOutput, ...clientDevFilename };
+
 // server
 const targetNode = {
   target: 'node',
@@ -76,7 +85,7 @@ const resolve = {
 };
 
 const buildOutput = ({ server = false, prod = false } = {}) => ({
-  ...(() => server ? serverOutput : clientOutput)(),
+  ...(() => server ? serverOutput : getClientOutput(prod))(),
   publicPath: prod ? publicPathProd : publicPathDev,
 });
 
