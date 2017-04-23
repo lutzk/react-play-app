@@ -23,7 +23,7 @@ export function buildConfig(env) {
     rawConfig.target = targetNode;
   }
 
-  if (!envConfig.server && !envConfig.prod) {
+  if (!envConfig.prod) {
     rawConfig.devtool = 'eval';
   }
 

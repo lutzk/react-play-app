@@ -3,20 +3,26 @@ import { embedLimit, fileTests } from '../settings';
 import {
   babelConfigServer,
   babelConfigClient,
-  // babelConfigApiServer,
+  babelConfigApiServer,
   babelConfigServerProd,
   babelConfigProdClient,
 } from './babelConfig';
 
 const locals = '/locals';
+const urlLoader = 'url-loader';
 const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
 const styleLoader = 'style-loader';
+const babelLoader = 'babel-loader';
+const eslintLoader = 'eslint-loader';
 const cssLoaderLocal = cssLoader + locals;
+
+const setUse = (loader, options = false) =>
+  !options ? { loader } : { loader, options };
 
 const serverCssLoader = {
   test: fileTests.css,
-  use: [{ loader: cssLoaderLocal }],
+  use: [setUse(cssLoaderLocal)],
 };
 
 const cssLoaderOptions = {
@@ -37,23 +43,17 @@ const devSassLoaderOptions = {
   outputStyle: 'expanded',
 };
 
-const buildLoader = (loader, options = false) =>
-  !options ? { loader } : { loader, options };
-
 const buildExtractTextPluginLoader = ({ kind = 'css' }) => {
   const test = fileTests[kind];
-  const options = { use: [], fallback: styleLoader };
+  const options = { fallback: styleLoader };
 
   if (kind === 'css') {
-    options.use.push(...[styleLoader, cssLoader]);
+    options.use = [styleLoader, cssLoader];
   } else if (kind === 'sass') {
-    options.use.push(...[{
-      loader: cssLoader,
-      query: cssLoaderOptions,
-    }, {
-      loader: sassLoader,
-      query: sassLoaderOptions,
-    }]);
+    options.use = [
+      setUse(cssLoader, cssLoaderOptions),
+      setUse(sassLoader, sassLoaderOptions),
+    ];
   }
 
   return {
@@ -65,16 +65,8 @@ const buildExtractTextPluginLoader = ({ kind = 'css' }) => {
 const buildServerSassLoader = (prod = false) => ({
   test: fileTests.sass,
   use: [
-    buildLoader(cssLoaderLocal, prod ? cssLoaderOptions : devCssLoaderOptions),
-    buildLoader(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions),
-  // {
-  //   loader: cssLoaderLocal,
-  //   options: prod ? cssLoaderOptions : devCssLoaderOptions,
-  // },
-  // {
-  //   loader: sassLoader,
-  //   options: prod ? sassLoaderOptions : devSassLoaderOptions,
-  // }
+    setUse(cssLoaderLocal, prod ? cssLoaderOptions : devCssLoaderOptions),
+    setUse(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions),
   ],
 });
 
@@ -86,15 +78,9 @@ const buildClientSassLoader = (prod = false) => {
     conf = {
       ...test,
       use: [
-        { loader: styleLoader },
-        {
-          loader: cssLoader,
-          options: devCssLoaderOptions,
-        },
-        {
-          loader: sassLoader,
-          options: devSassLoaderOptions,
-        },
+        setUse(styleLoader),
+        setUse(cssLoader, devCssLoaderOptions),
+        setUse(sassLoader, devSassLoaderOptions),
       ],
     };
   } else {
@@ -110,11 +96,6 @@ const buildSassLoader = ({ server = false, prod = false } = {}) => {
   return buildClientSassLoader(prod);
 };
 
-// const buildServerCssLoader = () => ({
-//   test: fileTests.css,
-//   use: [{ loader: cssLoaderLocal }],
-// });
-
 const buildClientCssLoader = (prod = false) => {
   const test = { test: fileTests.css };
   let conf;
@@ -123,8 +104,8 @@ const buildClientCssLoader = (prod = false) => {
     conf = {
       ...test,
       use: [
-        { loader: styleLoader },
-        { loader: cssLoader },
+        setUse(styleLoader),
+        setUse(cssLoader),
       ],
     };
   } else {
@@ -140,7 +121,7 @@ const buildCssLoader = ({ server = false, prod = false } = {}) => {
   return buildClientCssLoader(prod);
 };
 
-const buildImageLoader = ({ server = false } = {}) => ({
+const buildImageLoader = ({ server = false, prod = false, api = false } = {}) => ({
   test: fileTests.img,
   use: [
     {
@@ -148,15 +129,17 @@ const buildImageLoader = ({ server = false } = {}) => ({
       options: {
         emitFile: !server,
         limit: embedLimit,
-        name: '[name]-[hash].[ext]',
+        name: prod ? '[name]-[hash].[ext]' : '[name].[ext]',
       },
     },
   ],
 });
 
-const getBabelConfig = ({ server = false, prod = false } = {}) => {
+const getBabelConfig = ({ server = false, prod = false, api = false } = {}) => {
   let babelConfig;
-  if (server) {
+  if (server && api) {
+    babelConfig = babelConfigApiServer;
+  } else if (server && !api) {
     babelConfig = prod ? babelConfigServerProd : babelConfigServer;
   } else {
     babelConfig = prod ? babelConfigProdClient : babelConfigClient;
@@ -166,20 +149,12 @@ const getBabelConfig = ({ server = false, prod = false } = {}) => {
 };
 
 const jsTest = { test: fileTests.js };
-const buildJsLoader = ({ server = false, prod = false } = {}) => ({
+const buildJsLoader = ({ server = false, prod = false, api = false } = {}) => ({
   ...jsTest,
   exclude: /node_modules/,
   use: [
-    {
-      loader: 'babel-loader',
-      options: getBabelConfig({ server, prod }),
-    },
-    {
-      loader: 'eslint-loader',
-      options: {
-        fix: true,
-      },
-    },
+    setUse(babelLoader, getBabelConfig({ server, prod, api })),
+    setUse(eslintLoader, { fix: true }),
   ],
 });
 
@@ -190,8 +165,10 @@ const loaders = [
   buildImageLoader,
 ];
 
-const buildLoaders = ({ server = false, prod = false } = {}) =>
-  loaders.map(loader => 
-    loader({ server, prod }));
+const buildLoaders = ({ server = false, prod = false, api = false } = {}) =>
+  api
+    ? [buildJsLoader({ server, prod, api })]
+    : loaders.map(loader => 
+        loader({ server, prod, api }));
 
 export { buildLoaders };

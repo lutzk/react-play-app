@@ -4,7 +4,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
-import { rootPath, relativeAppServerBuildPath, relativeAssetsPath } from '../settings';
+import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath } from '../settings';
 
 const buildCommonChunksPlugin = (prod) => {
   const options = {
@@ -77,13 +77,13 @@ const createCleanPlugin = path => new CleanPlugin([path], {
   root: rootPath,
 });
 
-const buildServerPlugins = ({ prod = false }) => {
+const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,
     buildEnvPlugin({ server: true, prod }),
-    createCleanPlugin(relativeAppServerBuildPath),
+    createCleanPlugin(api ? relativeApiServerBuildPath : relativeAppServerBuildPath),
   ];
 
   const prodPlugins = [
@@ -123,9 +123,9 @@ const buildClientPlugins = ({ prod = false }) => {
   return plugins;
 };
 
-const buildPlugins = ({ server = false, prod = false } = {}) =>
+const buildPlugins = ({ server = false, prod = false, api = false } = {}) =>
   server ?
-    buildServerPlugins({ prod })
+    buildServerPlugins({ prod, api })
     : buildClientPlugins({ prod });
 
 
