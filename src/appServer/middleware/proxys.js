@@ -1,5 +1,5 @@
 import http from 'http';
-import { apiSocket, apiBase } from '../../config/appConfig';
+import { apiSocket, apiBase, couchHost, couchProtocol, couchPort } from '../../config/appConfig';
 
 /*
 
@@ -11,9 +11,15 @@ import { apiSocket, apiBase } from '../../config/appConfig';
 
 */
 
-function ProxyServer(options = {}, clb) {
-  ProxyServer.prototype.middleware = (req, res) => {
+function ProxyCreator(options = {}, clb) {
+  this.options = options;
+  this.clb = clb;
+}
 
+ProxyCreator.prototype.proxy = function proxy() {
+  return (req, res) => {
+    const clb = this.clb;
+    const options = this.options;
     const createErrorHandler = proxyReq => (err) => {
       if (req.socket.destroyed && err.code === 'ECONNRESET') {
         return proxyReq.abort();
@@ -24,11 +30,20 @@ function ProxyServer(options = {}, clb) {
     const headers = { ...req.headers };
     const reqOptions = {
       headers,
-      host: 'localhost',
-      path: options.path + req.url,
+      path: options.path ? options.path + req.url : req.url,
       method: req.method,
-      socketPath: options.socketPath,
     };
+
+    if (options.host) {
+      reqOptions.host = options.host;
+      reqOptions.hostname = options.hostName;
+    }
+    if (options.port) {
+      reqOptions.port = options.port;
+    }
+    if (options.socketPath) {
+      reqOptions.socketPath = options.socketPath;
+    }
 
     const proxyReq = http.request(reqOptions);
     const proxyError = createErrorHandler(proxyReq);
@@ -53,23 +68,27 @@ function ProxyServer(options = {}, clb) {
       proxyRes.pipe(res);
     });
   };
-}
+};
 
-const proxyErrorHandler = () => (err, req, res) => {
+
+function errorHandler(err, req, res) {
   if (!res.headersSent) {
     res.writeHead(500, { 'content-type': 'application/json' });
   }
   const json = { error: 'proxy_error', reason: err };
   res.end(JSON.stringify(json));
-};
+}
 
-const proxy = new ProxyServer({
+const apiProxy = new ProxyCreator({
   path: apiBase,
   socketPath: apiSocket,
-}, proxyErrorHandler());
+}, errorHandler);
 
-const apiProxy = () => (req, res) => {
-  proxy.middleware(req, res);
-};
 
-export default apiProxy;
+const couchProxy = new ProxyCreator({
+  host: `${couchProtocol}${couchHost}`,
+  hostName: couchHost,
+  port: couchPort,
+}, errorHandler);
+
+export { apiProxy, couchProxy };

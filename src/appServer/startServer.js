@@ -1,17 +1,17 @@
 import path from 'path';
-import Express from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import { port, host, apiBase } from '../config/appConfig';
-import apiProxy from './middleware/apiProxy';
+import { port, host } from '../config/appConfig';
+import { proxyRouter } from './routers/proxyRouter';
 import renderApp from './middleware/renderApp';
 import devAssetsMiddleware from './middleware/devAssetsMiddleware';
 import { faviconReqKiller } from './middleware/faviconReqKiller';
 import { getCouchDocs } from './middleware/getCouchDocs';
 
-const app = new Express();
+const app = express();
 const staticDir = path.join(process.cwd(), './static');
 
 injectTapEventPlugin();
@@ -30,11 +30,11 @@ export const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
 
   app
     .use(compression())
-    .use(apiBase, apiProxy())
+    .use(proxyRouter)
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .use(faviconReqKiller())
-    .use(Express.static(staticDir))
+    .use(express.static(staticDir))
     .use(getCouchDocs())
     .use(renderApp({ serverAssets }))
     .listen(port, (err) => {
