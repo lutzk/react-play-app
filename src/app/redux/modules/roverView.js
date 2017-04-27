@@ -80,21 +80,10 @@ function roverView(state = initialState, action = {}) {
   switch (action.type) {
     case '@@redux-pouchdb-plus/SET_REDUCER':
       if (action.reducer === 'roverView') {
-        if (!action.state.loaded && action.state.listToRender.length) {
+        if (action.state.prefetched) {
           return {
             ...state,
-            loaded: true,
-            loading: false,
-            error: false,
-          };
-        }
-        if (action.state.error) {
-          return {
-            ...state,
-            loaded: true,
-            loading: false,
-            fromError: true,
-            error: false,
+            prefetched: false,
           };
         }
       }
