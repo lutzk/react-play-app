@@ -3,7 +3,7 @@ import { routerMiddleware } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk';
 import createMiddleware from './middleware/clientMiddleware';
 
-export function createStore({ history, client, preloadedState }) { // eslint-disable-line
+function createStore({ history, client, preloadedState }) { // eslint-disable-line
   let db;
   let DevTools;
   let persistentStore;
@@ -53,3 +53,6 @@ export function createStore({ history, client, preloadedState }) { // eslint-dis
 
   return store;
 }
+
+export { createStore };
+

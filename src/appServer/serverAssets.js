@@ -1,24 +1,3 @@
-import fs from 'fs';
-import { timer } from '../helpers/logTiming';
-
-const parseAssetsJson = (_path) => {
-
-  let json = false;
-  let jsonFile = null;
-
-  try {
-    jsonFile = fs.readFileSync(_path, 'utf-8');
-  } catch (e) {
-    console.error(`somethings wrong: ${e}`);
-  } finally {
-    if (jsonFile) {
-      json = JSON.parse(jsonFile);
-    }
-  }
-
-  return json;
-};
-
 const isExtension = (file, ext) => {
 
   if (ext === `${file}`.substr(parseInt(`-${ext.length}`, 10))) {
@@ -46,9 +25,7 @@ const getAssetExtension = (file) => {
 
 const defineUndefined = (def, what = {})  => def = def || what;// eslint-disable-line
 
-export const getAssetsFromStats = (stats) => {
-
-  const startTime = timer.start();
+const getAssetsFromStats = (stats) => {
 
   const assetsObj = {};
   const publicPath = stats.publicPath;
@@ -56,7 +33,7 @@ export const getAssetsFromStats = (stats) => {
   const assetsChunksKeys = Object.keys(assetsChunks);
   const assetsChunksLength = assetsChunksKeys.length;
 
-  for (let index = 0; index < assetsChunksLength; index += 1) {
+  const loopChunkKeys = (index) => {
     const assetsChunkKey = assetsChunksKeys[index];
     let assets = assetsChunks[assetsChunkKey];
 
@@ -77,7 +54,7 @@ export const getAssetsFromStats = (stats) => {
   return assetsObj;
 };
 
-export const formatAssets = (assetsObj) => {
+const formatAssets = (assetsObj) => {
 
   if (assetsObj.js !== undefined && assetsObj.js.vendor !== undefined && assetsObj.js.main !== undefined) {
     const formatedAssetsObj = JSON.parse(JSON.stringify(assetsObj));
@@ -92,24 +69,7 @@ export const formatAssets = (assetsObj) => {
   return assetsObj;
 };
 
-const getAssets = (options = { path: false, empty: false }) => {
-
-  const { path, empty } = options;
-
-  if (!empty) {
-    const _path = path || `${process.cwd()}/webpack-assets.json`;
-    const assets = parseAssetsJson(_path);
-
-    if (assets) {
-      return assets;
-    }
-
-    return {};
-  }
-
-  // in dev its served by webpack-dev-midleware
-  // so assetsFilePath is just present in prod
-  return {};
+export {
+  formatAssets,
+  getAssetsFromStats,
 };
-
-export default getAssets;
