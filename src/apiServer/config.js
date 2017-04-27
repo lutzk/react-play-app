@@ -1,5 +1,6 @@
-// const apiHost = 'localhost';
+const apiHost = 'localhost';
 const apiPort = 3040;
+const appPort = 3010;
 const apiProtocol = 'http://';
 
 const apiRootMount = '/api/v1';
@@ -12,6 +13,7 @@ const privateApiMount = `${privateApiRootMount}`;
 const nasaApiMount = `${privateApiMount}${nasaApi}`;
 const slMount = `${privateApiMount}${slApi}`;
 
+// make switchable
 const socket = '/tmp/api.sock';
 const serverPath = `http+unix://${encodeURIComponent(socket)}`;
 // const serverPath = `${apiProtocol}${apiHost}:${apiPort}`;
@@ -38,15 +40,18 @@ const offlineRoverRoute = `${offlineNasaPath}${roverRoute}`;
 const offlineSolPath = `${nasaApiPath}${offlineNasaPath}${solPath}`;
 const offlineRoverPath = `${nasaApiPath}${offlineNasaPath}${roverPath}`;
 
-const couchApi = '/user-couch';
+const couchApi = '/sl-users';
 const couchMount = `${privateApiMount}${couchApi}`;
 
 const couchDBHost = '127.0.0.1';
 const couchDBPort = 5984;
+const couchRoute = '/couch';
+const slCouchPath = `${couchDBHost}:${couchDBPort}`;
 const couchDBPath = `${apiProtocol}${couchDBHost}:${couchDBPort}`;
+const couchDBProxyPath = `${apiHost}:${appPort}${couchRoute}`;
 
-const usersCouch = '/userscouch';
-const usersCouchPath = `${apiProtocol}${couchDBHost}:${couchDBPort}${usersCouch}`;
+const usersCouch = '/sl_users';
+const usersCouchPath = `${couchDBPath}${usersCouch}`;
 
 const couchDBApiPath = `${privateApiPath}${couchApi}`;
 
@@ -95,15 +100,15 @@ const slConfig = {
     sessionLife: sessionTimeOut,
   },
   dbServer: {
-    protocol: 'http://',
-    host: '127.0.0.1:5984',
+    protocol: apiProtocol,
+    host: slCouchPath,
     user: 'test',
-    password: 'pass',
+    password: 'test',
     couchAuthDB: '_users',
   },
   userDBs: {
     defaultDBs: {
-      private: ['supertest'],
+      private: ['sl_user'],
     },
   },
 };
@@ -118,6 +123,7 @@ export {
   corsConfig,
   couchDBPath,
   slLoginPath,
+  slCouchPath,
   nasaApiMount,
   apiRootMount,
   authTokenKey,
@@ -128,4 +134,5 @@ export {
   slRegisterPath,
   couchDBApiPath,
   usersCouchPath,
+  couchDBProxyPath,
 };
