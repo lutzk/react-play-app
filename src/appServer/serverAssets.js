@@ -48,9 +48,12 @@ const getAssetsFromStats = (stats) => {
       assetsObj[type][assetsChunkKey].push(`${publicPath}${asset}`);
       return undefined;
     });
+  };
+
+  for (let index = 0; index < assetsChunksLength; index += 1) {
+    loopChunkKeys(index);
   }
 
-  timer.stop(startTime, 'getAssetsFromStats');
   return assetsObj;
 };
 
