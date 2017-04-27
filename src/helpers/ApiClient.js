@@ -1,46 +1,41 @@
 import superagent from 'superagent';
 import { camelizeKeys } from 'humps';
-import cookie from 'react-cookie';
 import formatUrl from './formatUrl';
-import { authTokenKey } from '../config/appConfig';
 
-const verbs = ['get', 'post'];
+const setReqData = ({ request, incomingReq, headers, params, data } = {}) => {
 
+  if (__SERVER__ && incomingReq && incomingReq.get('cookie')) {
+    request.set('cookie', incomingReq.get('cookie'));
+  }
 
-function ApiClient(incomingReq) {
+  if (headers) {
+    request.set(headers);
+  }
 
-  const client = verb => async (path, { params, data, headers } = {}) => {
+  if (params) {
+    request.query(params);
+  }
+
+  if (data) {
+    request.send(data);
+  }
+
+  return request;
+};
+
+function client(verb) {
+  return async (path, { params, data, headers } = {}) => {
+
     let request = null;
     let result = null;
+    const incomingReq = this.incomingReq || false;
 
     try {
-
       request = superagent[verb](formatUrl(path));
-
-      if (cookie && cookie.load('session')) {
-        request.set(authTokenKey, cookie.load('session'));
-      }
-
-      if (__SERVER__ && incomingReq.get('cookie')) {
-        request.set('cookie', incomingReq.get('cookie'));
-      }
-
-      if (headers) {
-        request.set(headers);
-      }
-
-      if (params) {
-        request.query(params);
-      }
-
-      if (data) {
-        request.send(data);
-      }
-
+      request = setReqData({ request, incomingReq, headers, params, data });
       result = await request;
 
     } catch (error) {
-      // console.log(error);
       if (error && error.code && !error.status) {
         result = { error: error.code };
       } else if (error && error.response) {
@@ -55,9 +50,14 @@ function ApiClient(incomingReq) {
     const camelizedBody = camelizeKeys(result.body || result);
     return camelizedBody;
   };
+}
 
-  verbs.map(verb =>
-    ApiClient.prototype[verb] = client(verb));
+const verbs = ['get', 'post'];
+
+function ApiClient(incomingReq) {
+  this.incomingReq = incomingReq;
+  verbs.map(verb =>// eslint-disable-line
+    ApiClient.prototype[verb] = client.apply(this, [verb]));
 }
 
 export { ApiClient };
