@@ -12,7 +12,8 @@ const startServer = () => express()
   .use(api())
   .listen(socket, (err) => {
     if (err) {
-      throw Error(err);
+      // throw Error(err);
+      console.error('SERVER START:', err);
     }
     console.info(`==>   api is up on: ${socket}`);
   });
