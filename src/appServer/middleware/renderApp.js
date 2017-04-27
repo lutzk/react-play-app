@@ -15,12 +15,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
   const client = new ApiClient(req);
   const history = createMemoryHistory(req.originalUrl);
   const preloadedState = res.preloadedState || {};
-  // console.log('preloadedState');
-  // console.log(preloadedState.roverView);
-  if (preloadedState.roverView) {
-    console.log('preloadedState 2');
-    preloadedState.roverView.prefetched = true;
-  }
+
   const store = createStore({
     client,
     history,
