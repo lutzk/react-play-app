@@ -1,6 +1,6 @@
 import { reinit } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
-import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
+import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
 
 const clientMiddleware = client => ({ dispatch, getState }) => next => async (action) => {
 
@@ -16,7 +16,7 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   let result = null;
   const [REQUEST, SUCCESS, FAILURE] = types;
-  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
+  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS];
   // const maybeReinitReducerTypes = [LOAD_AUTH_SUCCESS];
 
   next({ ...rest, type: REQUEST });
