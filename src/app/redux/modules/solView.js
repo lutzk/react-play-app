@@ -77,6 +77,19 @@ const cleanUpData = data =>
 
 function solView(state = initialState, action = {}) {
   switch (action.type) {
+    case '@@redux-pouchdb-plus/SET_REDUCER':
+      if (action.reducer === 'solView') {
+        if (action.state.prefetched) {
+          return {
+            ...state,
+            prefetched: false,
+          };
+        }
+      }
+      return {
+        ...state,
+      };
+
     case SORT_SOL_PHOTOS:
       return {
         ...state,
