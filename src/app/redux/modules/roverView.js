@@ -69,10 +69,6 @@ const initialState = {
   range: defaultRange,
 };
 
-// https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=1000&api_key=DEMO_KEY
-// https://api.nasa.gov/mars-photos/api/v1/manifests/Curiosity?api_key=DEMO_KEY
-// https://api.nasa.gov/mars-photos/api/v1/manifests/Spirit?api_key=DEMO_KEY
-
 const getStats = (data) => {
   const stats = { ...data };
   delete stats.name;
