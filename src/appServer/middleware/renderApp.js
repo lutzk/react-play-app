@@ -3,24 +3,30 @@ import ReactDOM from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { match, createMemoryHistory } from 'react-router';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
-import { ApiClient, Html, logJSON } from '../../helpers';
-import getRoutes from '../../app/routes';
-import createStore from '../../app/redux/create';
-import { timer } from '../../helpers/logTiming';
+import { Html, logJSON } from '../../helpers';
+import { asyncWrap as aw } from '../../helpers/utils';
+import { ApiClient } from '../../helpers/ApiClient';
+import { getRoutes } from '../../app/routes';
+import { createStore } from '../../app/redux/create';
 
-const renderApp = ({ serverAssets } = {}) => (req, res, next) => { // eslint-disable-line
+const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
   let assets = serverAssets;
   const client = new ApiClient(req);
   const history = createMemoryHistory(req.originalUrl);
   const preloadedState = res.preloadedState || {};
+  // console.log('preloadedState');
+  // console.log(preloadedState.roverView);
+  if (preloadedState.roverView) {
+    console.log('preloadedState 2');
+    preloadedState.roverView.prefetched = true;
+  }
   const store = createStore({
     client,
     history,
     preloadedState,
   });
 
-  const startTime = timer.start();
   const routes = getRoutes(store);
   const doctype = '<!doctype html>\n';
 
@@ -62,7 +68,7 @@ const renderApp = ({ serverAssets } = {}) => (req, res, next) => { // eslint-dis
 
       } else if (renderProps) {
 
-        loadOnServer({ ...renderProps, store, helpers: { client } })
+        loadOnServer({ ...renderProps, store /* , helpers: { client } */ })
         .then(() => {
           const component = (
             <Provider store={store} key="appProvider">
@@ -72,18 +78,15 @@ const renderApp = ({ serverAssets } = {}) => (req, res, next) => { // eslint-dis
           const html = `${doctype}${renderHtml(store, assets, component)}`;
           res.status(200);
           res.send(html);
-          timer.stop(startTime, 'renderApp');
-          next();
         })
-        .catch((err) => {
-          logJSON({ catchError: err }, 'error');
-          next();
-        });
+        // .catch((err) => {
+        //   logJSON({ catchError: err }, 'error');
+        // });
+        .catch(next);
       } else {
         res.status(404).send('Not found');
-        next();
       }
     });
-};
+});
 
-export default renderApp;
+export { renderApp };
