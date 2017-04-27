@@ -16,7 +16,7 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   let result = null;
   const [REQUEST, SUCCESS, FAILURE] = types;
-  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
+  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS];
   // const maybeReinitReducerTypes = [LOAD_AUTH_SUCCESS];
 
   next({ ...rest, type: REQUEST });
