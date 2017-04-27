@@ -15,7 +15,8 @@ export default function loadAuth(req) {
       .then((r) => {
         req.session.token = r.token;
         // return Promise.resolve(req.session.user);
-      }).catch(e => console.error('authRefreshError', e));
+      })
+      .catch(e => console.error('authRefreshError', e));
     return Promise.resolve(req.session.user);
   }
 

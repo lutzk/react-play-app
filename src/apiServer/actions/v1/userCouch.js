@@ -14,5 +14,5 @@ export default function couch(req) { // eslint-disable-line
   }
 
   const error = createErrorResponse();
-  return Promise.resolve(error);
+  return Promise.reject(error);
 }

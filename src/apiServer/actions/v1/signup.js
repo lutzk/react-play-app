@@ -1,16 +1,18 @@
 import Promise from 'bluebird';
 import ApiClient from '../../utils/ApiClient';
-import { slRegisterPath } from '../../config';
+import { slRegisterPath, slCouchPath, couchDBProxyPath } from '../../config';
 
 export default function signup(req) {
   const client = new ApiClient(req);
   return client
     .post(slRegisterPath, { data: req.body })
     .then((result) => {
+      const userDB = result.userDBs.sl_user.replace(slCouchPath, couchDBProxyPath);
+      delete result.userDBs;
       req.session.token = result.token;// eslint-disable-line
-      req.session.user = result;
-      // return just whats needed to frontend
-      const userAccount = Object.assign({}, result);
+      req.session.user = { ...result, userDB };
+      const userAccount = { ...result, userDB };
+
       return userAccount;
     })
     .catch((error) => {
