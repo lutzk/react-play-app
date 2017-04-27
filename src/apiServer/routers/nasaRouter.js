@@ -6,7 +6,7 @@ const getRoverManifestOffline = () => wrap(async (req, res, next) => {
   let rover = 'Spirit';
   if (req.params && req.params.rover) {
     rover = req.params.rover.toLowerCase();
-    const roverManifest = await getJsonData({ path: `./${rover}.json` });
+    const roverManifest = await getJsonData({ path: `./nasaJsons/${rover}.json` });
     if (roverManifest) {
       res.status(200);
       res.send(roverManifest);
