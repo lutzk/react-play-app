@@ -63,27 +63,26 @@ export default class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) { // eslint-disable-line
+    const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
     if (!this.props.user.user && nextProps.user.user) {
       const nextPathnameFromState = _.get(nextProps, 'location.state.nextPathname', false);
       const status = _.get(nextProps, 'routes[1].status', false);
       const status404 = status && status === 404;
 
       // check if it matches a route at all
-      if (nextPathnameFromState && nextPathnameFromState !== PATHS.ROOT) {
-        // console.log('nextPathnameFromState', nextPathnameFromState);
+      if (nextPathnameFromState && dontPushTo.indexOf(nextPathnameFromState) === -1) {
         return this.props.push(`${nextPathnameFromState}`);
       }
 
       if (!status404) {
         const nextPath = nextProps.user.user.savedPath || PATHS.ROVER_VIEW.ROOT;
-        // console.log('!status404', nextPath);
         return this.props.push(nextPath);
       }
 
     } else if (this.props.user.user && !nextProps.user.user) {
       return this.props.push({
         pathname: `/${PATHS.LOGIN}`,
-        state: { nextPathname: nextProps.location.pathname !== PATHS.ROOT ? nextProps.location.pathname : null },
+        state: { nextPathname: dontPushTo.indexOf(nextProps.location.pathname) === -1 ? nextProps.location.pathname : null },
       });
     }
   }
