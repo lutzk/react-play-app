@@ -1,4 +1,4 @@
-import getAssets from './appServer/serverAssets';
+import { getJsonData } from './helpers/utils';
 
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
@@ -18,7 +18,7 @@ if (global.__DEVELOPMENT__) {
   })();
 }
 
-const serverAssets = getAssets({
+const serverAssets = getJsonData({
   empty: global.__DEVELOPMENT__,
 });
 
