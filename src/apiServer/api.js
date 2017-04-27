@@ -1,4 +1,3 @@
-import cors from 'cors';
 import PouchDB from 'pouchdb';
 import express from 'express';
 import SuperLogin from 'superlogin';
@@ -11,7 +10,6 @@ import {
   slMount,
   slConfig,
   couchMount,
-  corsConfig,
   nasaApiMount,
   apiRootMount,
   usersCouchPath,
@@ -22,7 +20,6 @@ const superlogin = new SuperLogin(slConfig, false, userscouch);
 
 const api = () =>
   express()
-    .use(cors(corsConfig))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .use(redisSession)
