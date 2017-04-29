@@ -70,7 +70,7 @@ export const reset = () => {
   return { type: RESET };
 };
 
-export const persistentStore = (storeOptions = {}) => createStore => (reducer, initialState) => {
+const persistentStore = (storeOptions = {}) => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
 
   store.dispatch({
@@ -82,7 +82,7 @@ export const persistentStore = (storeOptions = {}) => createStore => (reducer, i
   return store;
 };
 
-export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
+const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
   let store;
   let changes;
@@ -289,4 +289,15 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
     }
     /* eslint-enable */
   };
+};
+
+export {
+  INIT,
+  REINIT,
+  RESET,
+  SET_REDUCER,
+  reinit,
+  reset,
+  persistentStore,
+  persistentReducer,
 };
