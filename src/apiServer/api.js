@@ -1,10 +1,16 @@
-import PouchDB from 'pouchdb';
 import express from 'express';
 import SuperLogin from 'superlogin';
 import bodyParser from 'body-parser';
 
 import { nasaRouter, apiRouter, publicApiRouter } from './routers';
-import { setAuth, checkAuth, errorHandler, getCouchDocs, redisSession, checkRedisSession } from './middleware';
+import {
+  setAuth,
+  checkAuth,
+  errorHandler,
+  getCouchDocs,
+  redisSession,
+  checkRedisSession,
+} from './middleware';
 
 import {
   slMount,
@@ -12,11 +18,9 @@ import {
   couchMount,
   nasaApiMount,
   apiRootMount,
-  usersCouchPath,
 } from './config';
 
-const userscouch = new PouchDB(usersCouchPath);
-const superlogin = new SuperLogin(slConfig, false, userscouch);
+const superlogin = new SuperLogin(slConfig);
 
 const api = () =>
   express()
