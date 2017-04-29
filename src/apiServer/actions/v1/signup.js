@@ -7,6 +7,10 @@ export default function signup(req) {
   return client
     .post(slRegisterPath, { data: req.body })
     .then((result) => {
+      if (result.error) {
+        req.session.user = null;
+        return Promise.reject(result.error);
+      }
       const userDB = result.userDBs.sl_user.replace(slCouchPath, couchDBProxyPath);
       delete result.userDBs;
       req.session.token = result.token;// eslint-disable-line
