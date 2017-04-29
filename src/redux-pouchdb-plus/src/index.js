@@ -210,27 +210,22 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
     let nextState;
     let isInitialized;
-    /* eslint-disable */
+
     switch (action.type) {
       case INIT:
         store = action.store;
         storeOptions = action.storeOptions;
 
-      case REINIT:
-        if ((!action.reducerName || action.reducerName === reducer.name) && isUserPresent(store)) {
-
-          // // original
-          // reinitReducer(initialState);
-          // return currentState = initialState;
-
-          // changed
+      case REINIT: // eslint-disable-line
+        if (isUserPresent(store)) {
           nextState = reducer(state, action);
           reinitReducer(nextState);
           // return nextState;
-          return currentState = nextState;
+          currentState = nextState;
+          return currentState;
         }
-        if (syncHandler && !isUserPresent(store)) {
-          synInit = false;
+        return state;
+
       case RESET:
         if (syncHandler && synInit) {
           syncHandler.cancel();
@@ -247,8 +242,8 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           return currentState;
         }
 
-      default:
-        nextState = reducer(state, action); 
+      default:// eslint-disable-line
+        nextState = reducer(state, action);
 
         if (!isUserPresent(store)) {
           return nextState;
@@ -273,7 +268,6 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
         return currentState;
     }
-    /* eslint-enable */
   };
 };
 
