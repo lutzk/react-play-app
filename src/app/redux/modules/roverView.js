@@ -91,6 +91,11 @@ function roverView(state = initialState, action = {}) {
         ...state,
       };
 
+    case '@@redux-pouchdb-plus/RESET':
+      return {
+        ...initialState,
+      };
+
     case SORT_SOLS:
       return {
         ...state,
