@@ -19,7 +19,7 @@ export const getCouchDocs = () => aw(async (req, res, next) => {
   }
 
   Object.keys(couch).map(key =>// eslint-disable-line
-    key.prefetched = true);
+    couch[key].prefetched = true);
 
   res.preloadedState = couch;
   return next();
