@@ -31,3 +31,8 @@ const checkSocket = starter =>
   });
 
 checkSocket(startServer);
+process.on('unhandledRejection', (a, b) => {
+  console.log('unhandledRejection');
+  console.dir(a);
+  console.dir(b);
+});
