@@ -23,27 +23,37 @@ const CLIENT_HASH = uuid.v1();
 
 const INIT = '@@redux-pouchdb-plus/INIT';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
+const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
 
+const uninitializeReducers = () =>
+  Object.keys(initializedReducers).map(name =>
+    initializedReducers[name] = false);
+
 export function reinit(reducerName) {
-  const reducerNames = Object.keys(initializedReducers);
+  // const reducerNames = Object.keys(initializedReducers);
+  uninitializeReducers()
+  // if (!reducerName) { // reinit all reducers
+  //   reducerNames.map(name =>
+  //     initializedReducers[name] = false);
 
-  if (!reducerName) { // reinit all reducers
-    reducerNames.map(name =>
-      initializedReducers[name] = false);
+  // } else { // reinit a specific reducer
+  //   if (reducerNames.indexOf(reducerName) === -1) {
+  //     throw Error(`Invalid persistent reducer to reinit: ${reducerName}`);
+  //   }
 
-  } else { // reinit a specific reducer
-    if (reducerNames.indexOf(reducerName) === -1) {
-      throw Error(`Invalid persistent reducer to reinit: ${reducerName}`);
-    }
+  //   initializedReducers[reducerName] = false;
+  // }
 
-    initializedReducers[reducerName] = false;
-  }
-
-  return { type: REINIT, reducerName };
+  return { type: REINIT };
 }
+
+export const reset = () => {
+  uninitializeReducers();
+  return { type: RESET };
+};
 
 export const persistentStore = (storeOptions = {}) => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
@@ -225,7 +235,15 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           return currentState = nextState;
         }
 
-        return state;
+      case RESET:
+        if (syncHandler && synInit) {
+          syncHandler.cancel();
+          synInit = false;
+        }
+
+        nextState = reducer(state, action);
+        currentState = nextState;
+        return nextState;
 
       case SET_REDUCER:
         if ((action.reducer === reducer.name && action.state) && isUserPresent(store)) {

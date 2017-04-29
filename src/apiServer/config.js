@@ -104,6 +104,7 @@ const slConfig = {
     host: slCouchPath,
     user: 'test',
     password: 'test',
+    userDB: 'sl_users',
     couchAuthDB: '_users',
   },
   userDBs: {
