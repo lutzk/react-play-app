@@ -89,21 +89,11 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
   initializedReducers[reducer.name] = false;
 
-  function toPouch(x) {
-    return _.cloneDeep(x);
-  }
-  function fromPouch(x) {
-    return _.cloneDeep(x);
-  }
-  function isEqual(x, y) {
-    return _.isEqual(x, y);
-  }
-
   // an action to update the current reducer state (used when
   // the state was fetched from the localDb)
   function setReducer(doc) {
     const { _id, _rev, state } = doc;
-    const _state = fromPouch(state);
+    const _state = _.cloneDeep(state);
 
     store.dispatch({
       type: SET_REDUCER,
@@ -151,10 +141,10 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         if (remoteDb) {
           remoteInitError = await initFromDB(remoteDb);
           if (remoteInitError && remoteInitError.status === 404) {
-            return saveReducer(reducer.name, toPouch(state));
+            return saveReducer(reducer.name, _.cloneDeep(state));
           }
         }
-        return saveReducer(reducer.name, toPouch(state));
+        return saveReducer(reducer.name, _.cloneDeep(state));
       }
       if (localInitError || remoteInitError) {
         throw Error(localInitError || remoteInitError);
@@ -165,7 +155,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
     // start
     if (prefetched) {
-      await saveReducer(reducer.name, toPouch(state));
+      await saveReducer(reducer.name, _.cloneDeep(state));
     } else {
       try {
         await setup();
@@ -207,8 +197,8 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
       .on('change', (change) => {
         if (change.doc.localId !== CLIENT_HASH) {
           if (!change.doc.state) {
-            saveReducer(change.doc._id, toPouch(currentState));
-          } else if (!isEqual(fromPouch(change.doc.state), currentState)) {
+            saveReducer(change.doc._id, _.cloneDeep(currentState));
+          } else if (!_.isEqual(_.cloneDeep(change.doc.state), currentState)) {
             setReducer(change.doc);
           }
         }
@@ -269,10 +259,10 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         }
 
         isInitialized = initializedReducers[reducer.name];
-        if (isInitialized && !isEqual(nextState, currentState)) {
+        if (isInitialized && !_.isEqual(nextState, currentState)) {
           currentState = nextState;
           try {
-            saveReducer(reducer.name, toPouch(currentState));
+            saveReducer(reducer.name, _.cloneDeep(currentState));
           } catch (e) {
             console.log('saveReducerError::', e);
           }
