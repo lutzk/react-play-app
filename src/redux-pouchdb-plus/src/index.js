@@ -51,26 +51,15 @@ const initSync = (localDb, remoteDb, reducerNames) =>
     // .on('complete', () => console.log('__COMPLETE'))
     // .on('error', e => console.log('__ERROR', e));
 
-export function reinit(reducerName) {
-  const reducerNames = Object.keys(initializedReducers);
 const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
     initializedReducers[name] = false);
 
-  if (!reducerName) { // reinit all reducers
-    reducerNames.map(name =>
-      initializedReducers[name] = false);
+const reinit = () => {
+  uninitializeReducers();
+  return { type: REINIT };
+};
 
-  } else { // reinit a specific reducer
-    if (reducerNames.indexOf(reducerName) === -1) {
-      throw Error(`Invalid persistent reducer to reinit: ${reducerName}`);
-    }
-
-    initializedReducers[reducerName] = false;
-  }
-
-  return { type: REINIT, reducerName };
-}
 const reset = () => {
   uninitializeReducers();
   return { type: RESET };
