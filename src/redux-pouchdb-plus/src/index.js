@@ -191,7 +191,6 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         include_docs: true,
         live: true,
         since: 'now',
-        conflicts: true,
         doc_ids: [reducer.name],
       })
       .on('change', (change) => {
