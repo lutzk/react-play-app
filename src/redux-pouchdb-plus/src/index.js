@@ -23,6 +23,7 @@ const CLIENT_HASH = uuid.v1();
 
 const INIT = '@@redux-pouchdb-plus/INIT';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
+const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
@@ -52,6 +53,9 @@ const initSync = (localDb, remoteDb, reducerNames) =>
 
 export function reinit(reducerName) {
   const reducerNames = Object.keys(initializedReducers);
+const uninitializeReducers = () =>
+  Object.keys(initializedReducers).map(name =>
+    initializedReducers[name] = false);
 
   if (!reducerName) { // reinit all reducers
     reducerNames.map(name =>
@@ -67,6 +71,10 @@ export function reinit(reducerName) {
 
   return { type: REINIT, reducerName };
 }
+const reset = () => {
+  uninitializeReducers();
+  return { type: RESET };
+};
 
 export const persistentStore = (storeOptions = {}) => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
@@ -244,10 +252,15 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         }
         if (syncHandler && !isUserPresent(store)) {
           synInit = false;
+      case RESET:
+        if (syncHandler && synInit) {
           syncHandler.cancel();
+          synInit = false;
         }
-        // reinitReducer(state);
-        return state;
+
+        nextState = reducer(state, action);
+        currentState = nextState;
+        return nextState;
 
       case SET_REDUCER:
         if ((action.reducer === reducer.name && action.state) && isUserPresent(store)) {
