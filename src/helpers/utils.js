@@ -28,6 +28,15 @@ const getJsonData = (options = { path: false, empty: true }) => {
   return Promise.resolve(false);
 };
 
+const toHex = (string) => {
+  let hex = '';
+  const itterations = string.length;
+  for (let i = 0; i < itterations; i += i) {
+    hex += `${string.charCodeAt(i).toString(16)}`;
+  }
+  return hex;
+};
+
 // const createErrorResponse = ({ status = 404, text = 'not found' } = {}) => ({
 //   error: {
 //     status,
@@ -47,6 +56,7 @@ const getJsonData = (options = { path: false, empty: true }) => {
 // };
 
 export {
+  toHex,
   asyncWrap,
   getJsonData,
   // filterParams,
