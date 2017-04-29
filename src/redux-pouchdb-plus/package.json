@@ -1,0 +1,56 @@
+{
+  "name": "redux-pouchdb-plus",
+  "version": "0.8.1",
+  "description": "Synchronize Redux store with PouchDB to have a persistent store.",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "rimraf lib && babel src --out-dir lib",
+    "test": "babel-tape-runner tests/*.js",
+    "deploy:patch": "npm version patch; npm run deploy",
+    "deploy:minor": "npm version minor; npm run deploy",
+    "deploy:major": "npm version major; npm run deploy",
+    "deploy": "git push origin master; npm publish"
+  },
+  "files": [
+    "lib/",
+    "package.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medihack/redux-pouchdb-plus.git"
+  },
+  "keywords": [
+    "redux",
+    "react",
+    "pouchdb"
+  ],
+  "author": "Kai Schlamp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/medihack/redux-pouchdb-plus/issues"
+  },
+  "homepage": "https://github.com/medihack/redux-pouchdb-plus#readme",
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-core": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-tape-runner": "^2.0.0",
+    "memdown": "^1.1.1",
+    "redux": "^3.0.5",
+    "rimraf": "^2.5.1",
+    "tape": "^4.4.0",
+    "timeout-then": "^1.0.0"
+  },
+  "peerDependencies": {
+    "pouchdb": "^5.2.0",
+    "immutable": "^3.7.6"
+  },
+  "dependencies": {
+    "lodash.clonedeep": "^4.1.0",
+    "lodash.isequal": "^4.0.0",
+    "transit-immutable-js": "^0.5.2",
+    "transit-js": "^0.8.846",
+    "uuid": "^3.0.0"
+  }
+}
