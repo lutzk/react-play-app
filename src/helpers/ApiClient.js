@@ -60,4 +60,4 @@ function ApiClient(incomingReq) {
     ApiClient.prototype[verb] = client(verb));
 }
 
-export default ApiClient;
+export { ApiClient };

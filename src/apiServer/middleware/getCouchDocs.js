@@ -36,7 +36,7 @@ const getUserCouch = db =>
 
 export const getCouchDocs = () => wrap(async (req, res, next) => { // eslint-disable-line
   // console.log('getting couch docs bro ...');
-  const couch = await getUserCouch(req.session.user.userDBs.supertest);
+  const couch = await getUserCouch(req.session.user.userDB);
 
   if (!couch) {
     return next();

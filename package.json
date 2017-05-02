@@ -10,7 +10,7 @@
     "prod-api-server": "webpack --env prod.apiServer --progress --profile --colors --sort-modules-by size --display-error-details --config webpack/webpackConfig.js",
     "prod-client": "webpack --env prod.client --progress --profile --colors --sort-modules-by size --display-error-details --config webpack/webpackConfig.js",
     "run-dev-app-server-watch": "npm-run-all --parallel check-app-server dev-app-server-watch",
-    "run-dev-api-server-watch": "npm-run-all --parallel check-dev-api-server build-dev-api-server-watch",
+    "run-dev-api-server-watch": "npm-run-all --parallel check-api-server dev-api-server-watch",
     "build-prod-all": "npm-run-all --parallel prod-app-server prod-api-server prod-client",
     "start-prod": "node ./startProdServer"
   },

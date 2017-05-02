@@ -49,4 +49,4 @@ const getRoutes = (store) => {
   );
 };
 
-export default getRoutes;
+export { getRoutes };
