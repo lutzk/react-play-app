@@ -27,29 +27,6 @@ const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
-let synInit = false;
-let syncHandler;
-
-const isUserPresent = (store) => {
-  const userState = store ? store.getState().user : false;
-  return (userState && userState.user && userState.user.userId);
-};
-
-const initSync = (localDb, remoteDb, reducerNames) =>
-  localDb
-    .sync(remoteDb, {
-      live: true,
-      retry: true,
-      doc_ids: reducerNames, // pass array
-      since: 'now',
-      // conflicts: true,
-      // batch_size: 20,
-      // heartbeat: 10000,
-    });
-    // .on('active', () => console.log('__ACTIVE'))
-    // .on('change', () => console.log('__CHANGE'));
-    // .on('complete', () => console.log('__COMPLETE'))
-    // .on('error', e => console.log('__ERROR', e));
 
 const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
@@ -65,22 +42,38 @@ const reset = () => {
   return { type: RESET };
 };
 
-export const reset = () => {
-  uninitializeReducers();
-  return { type: RESET };
-};
-
 const persistentStore = (storeOptions = {}) => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
-
+  const state = store.getState();
   store.dispatch({
     type: INIT,
     store,
+    state,
     storeOptions,
   });
 
   return store;
 };
+
+const isUserPresent = (store) => { // eslint-disable-line
+  const userState = store ? store.getState().user : false;
+  return (userState && userState.user && userState.user.userId);
+};
+
+const initSync = (localDb, remoteDb, reducerNames) =>
+  localDb
+    .sync(remoteDb, {
+      live: true,
+      retry: true,
+      doc_ids: reducerNames,
+      // batch_size: 20,
+      heartbeat: 10000,
+    });
+    // .on('active', () => console.log('__ACTIVE'))
+    // .on('change', () => console.log('__CHANGE', inSync()));
+    // .on('complete', () => console.log('__COMPLETE'))
+    // .on('error', e => console.log('__ERROR', e));
+    // bla
 
 const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
@@ -91,122 +84,112 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   let currentState;
   let storeOptions;
   let prefetched;
+  let syncHandler;
+  let syncInit;
+
+  const reducerName = reducer.name;
 
   initializedReducers[reducer.name] = false;
 
-  // an action to update the current reducer state (used when
-  // the state was fetched from the localDb)
-  function setReducer(doc) {
-    const { _id, _rev, state } = doc;
-    const _state = _.cloneDeep(state);
+  const setReducer = (doc) => {
+    const { _rev, _id: reducer, state: dbState } = doc;// eslint-disable-line
+    const state = _.cloneDeep(dbState);
 
     store.dispatch({
-      type: SET_REDUCER,
-      reducer: _id,
-      state: _state,
       _rev,
+      state,
+      reducer,
+      type: SET_REDUCER,
     });
-  }
+  };
 
-  // get the current db connector and initialize the state of this
-  // reducer by loading it from the db or by saving it
-  // to the db (if it is not already persisted there)
-  async function reinitReducer(state) {
-    const user = isUserPresent(store);
-    prefetched = state.prefetched || false;
-    if (!user) {
-      // console.log('__RETRURN !user');
-      return;
+  const initFromDB = (db, reducerName) =>// eslint-disable-line
+    db
+      .get(reducerName)
+      .then(doc =>
+        setReducer(doc))
+      .catch(err => err);
+
+  const initDBState = async (state, localDb, remoteDb, reducerName, _saveReducer) => {// eslint-disable-line
+    let remoteInitError;
+    const localInitError = await initFromDB(localDb, reducerName);
+
+    if (localInitError && localInitError.status === 404) {
+      if (remoteDb) {
+        remoteInitError = await initFromDB(remoteDb, reducerName);
+        if (remoteInitError && remoteInitError.status === 404) {
+          return _saveReducer(reducerName, _.cloneDeep(state));
+        }
+        return;// eslint-disable-line
+      }
+      return _saveReducer(reducerName, _.cloneDeep(state));
     }
+    if (localInitError || remoteInitError) {
+      throw Error(localInitError || remoteInitError);
+    }
+  };
+
+  const initChanges = (db, reducerName, _saveReducer, _currentState) =>// eslint-disable-line
+    db
+      .changes({
+        live: true,
+        since: 'now',
+        doc_ids: [reducerName],
+        include_docs: true,
+      })
+      .on('change', (change) => {
+        if (change.doc.localId !== CLIENT_HASH) {
+          if (!change.doc.state) {
+            _saveReducer(change.doc._id, _.cloneDeep(_currentState));
+          } else if (!_.isEqual(_.cloneDeep(change.doc.state), _currentState)) {
+            setReducer(change.doc);
+          }
+        }
+      });
+
+  const checkReady = (keys, reducers) => {
+    let ready = true;
+    keys.map((reducerName) => { // eslint-disable-line
+      let exit = false;
+      if (!reducers[reducerName] && !exit) {
+        ready = false;
+        exit = true;
+      }
+    });
+    return ready;
+  };
+
+  async function reinitReducer(state) {
+
+    const dbs = storeOptions.db(reducerName, store);
+    const prefetched = state.prefetched || false;
+    const localDb = dbs.local || false;
+    const remoteDb = dbs.remote || false;
 
     if (changes) {
       changes.cancel();
     }
 
-    const dbs = storeOptions.db(reducer.name, store);
-
-    const localDb = dbs.local || false;
-    const remoteDb = dbs.remote || false;
-
-    if (!localDb) {
-      // throw Error('no local db provided');
-    }
-
-    const initFromDB = db =>
-      db
-        .get(reducer.name)
-        .then(doc =>
-          setReducer(doc))
-        .catch(err => err);
-
-    const setup = async () => {// eslint-disable-line
-      let remoteInitError;
-      const localInitError = await initFromDB(localDb);
-      if (localInitError && localInitError.status === 404) {
-        if (remoteDb) {
-          remoteInitError = await initFromDB(remoteDb);
-          if (remoteInitError && remoteInitError.status === 404) {
-            return saveReducer(reducer.name, _.cloneDeep(state));
-          }
-        }
-        return saveReducer(reducer.name, _.cloneDeep(state));
-      }
-      if (localInitError || remoteInitError) {
-        throw Error(localInitError || remoteInitError);
-      }
-    };
-
     saveReducer = save(localDb, CLIENT_HASH);
 
-    // start
     if (prefetched) {
-      await saveReducer(reducer.name, _.cloneDeep(state));
+      saveReducer(reducerName, _.cloneDeep(state));
     } else {
-      try {
-        await setup();
-      } catch (e) {
-        // handle error
-        console.log('setupError', e);
-      }
+      await initDBState(state, localDb, remoteDb, reducerName, saveReducer);
     }
 
     // from here on the reducer was loaded from localDb or saved to localDb
     initializedReducers[reducer.name] = true;
+    const initializedReducerKeys = Object.keys(initializedReducers);
 
-    let ready = true; // eslint-disable-line
-    Object.keys(initializedReducers).map((reducerName) => { // eslint-disable-line
-      let exit = false;
-      if (!initializedReducers[reducerName] && !exit) {
-        ready = false;
-        exit = true;
-      }
-    });
+    const ready = checkReady(initializedReducerKeys, initializedReducers);
 
-    // move out
-    if (remoteDb && !synInit) {
-      synInit = true;
-      syncHandler = initSync(localDb, remoteDb, Object.keys(initializedReducers));
-      // syncHandler.on('complete', info => console.log('sync canceled', info));
+    if (ready && remoteDb && !syncInit) {
+      syncHandler = initSync(localDb, remoteDb, initializedReducerKeys);
+      syncInit = true;
     }
 
-    // listen to changes in the localDb (e.g. when a replication occurs)
-    // and update the reducer state when it happens
-    changes = localDb
-      .changes({
-        include_docs: true,
-        live: true,
-        since: 'now',
-        doc_ids: [reducer.name],
-      })
-      .on('change', (change) => {
-        if (change.doc.localId !== CLIENT_HASH) {
-          if (!change.doc.state) {
-            saveReducer(change.doc._id, _.cloneDeep(currentState));
-          } else if (!_.isEqual(_.cloneDeep(change.doc.state), currentState)) {
-            setReducer(change.doc);
-          }
-        }
-      });
+    changes = initChanges(localDb, reducerName, saveReducer, currentState);
   }
 
   // the proxy function that wraps the real reducer
@@ -220,29 +203,26 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         store = action.store;
         storeOptions = action.storeOptions;
 
-      case REINIT: // eslint-disable-line
+      case REINIT:// eslint-disable-line
         if (isUserPresent(store)) {
           nextState = reducer(state, action);
           reinitReducer(nextState);
-          // return nextState;
-          currentState = nextState;
-          return currentState;
+          return currentState = nextState;
         }
 
         return state;
 
       case RESET:
-        if (syncHandler && synInit) {
+        if (syncHandler && syncInit) {
           syncHandler.cancel();
-          synInit = false;
+          syncInit = false;
         }
 
         nextState = reducer(state, action);
-        currentState = nextState;
-        return nextState;
+        return currentState = nextState;
 
       case SET_REDUCER:
-        if ((action.reducer === reducer.name && action.state) && isUserPresent(store)) {
+        if ((action.reducer === reducerName && action.state) && isUserPresent(store)) {
           currentState = reducer(action.state, action);
           return currentState;
         }
@@ -258,11 +238,11 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           initialState = nextState;
         }
 
-        isInitialized = initializedReducers[reducer.name];
+        isInitialized = initializedReducers[reducerName];
         if (isInitialized && !_.isEqual(nextState, currentState)) {
           currentState = nextState;
           try {
-            saveReducer(reducer.name, _.cloneDeep(currentState));
+            saveReducer(reducerName, _.cloneDeep(currentState));
           } catch (e) {
             console.log('saveReducerError::', e);
           }
@@ -278,11 +258,11 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
 export {
   INIT,
-  REINIT,
   RESET,
+  REINIT,
   SET_REDUCER,
-  reinit,
   reset,
+  reinit,
   persistentStore,
   persistentReducer,
 };

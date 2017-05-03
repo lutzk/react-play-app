@@ -78,6 +78,11 @@ const getStats = (data) => {
 
 function roverView(state = initialState, action = {}) {
   switch (action.type) {
+    case '@@redux-pouchdb-plus/RESET':
+      return {
+        ...initialState,
+      };
+
     case '@@redux-pouchdb-plus/SET_REDUCER':
       if (action.reducer === 'roverView') {
         if (action.state.prefetched) {
@@ -91,9 +96,16 @@ function roverView(state = initialState, action = {}) {
         ...state,
       };
 
-    case '@@redux-pouchdb-plus/RESET':
+    case '@@redux-pouchdb-plus/INIT':
+      if (action.state.roverView.prefetched) {
+        return {
+          ...state,
+          prefetched: false,
+        };
+      }
+
       return {
-        ...initialState,
+        ...state,
       };
 
     case SORT_SOLS:

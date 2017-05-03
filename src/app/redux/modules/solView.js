@@ -77,6 +77,11 @@ const cleanUpData = data =>
 
 function solView(state = initialState, action = {}) {
   switch (action.type) {
+    case '@@redux-pouchdb-plus/RESET':
+      return {
+        ...initialState,
+      };
+
     case '@@redux-pouchdb-plus/SET_REDUCER':
       if (action.reducer === 'solView') {
         if (action.state.prefetched) {
@@ -85,6 +90,17 @@ function solView(state = initialState, action = {}) {
             prefetched: false,
           };
         }
+      }
+      return {
+        ...state,
+      };
+
+    case '@@redux-pouchdb-plus/INIT':
+      if (action.state.solView.prefetched) {
+        return {
+          ...state,
+          prefetched: false,
+        };
       }
       return {
         ...state,
