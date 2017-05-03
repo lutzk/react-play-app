@@ -83,7 +83,6 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   let initialState;
   let currentState;
   let storeOptions;
-  let prefetched;
   let syncHandler;
   let syncInit;
 
