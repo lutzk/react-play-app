@@ -55,10 +55,10 @@ const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
     initializedReducers[name] = false);
 
-export function reinit(reducerName) {
+const reinit = () => {
   uninitializeReducers();
   return { type: REINIT };
-}
+};
 
 const reset = () => {
   uninitializeReducers();
@@ -244,12 +244,7 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           // return nextState;
           return currentState = nextState;
         }
-<<<<<<< 87e8567fbca74487d57f02a990dfaeb8579c2aed
 
-=======
-        if (syncHandler && !isUserPresent(store)) {
-          synInit = false;
->>>>>>> add reset action
       case RESET:
         if (syncHandler && synInit) {
           syncHandler.cancel();
