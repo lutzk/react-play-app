@@ -3,7 +3,14 @@ import SuperLogin from 'superlogin';
 import bodyParser from 'body-parser';
 
 import { nasaRouter, apiRouter, publicApiRouter } from './routers';
-import { setAuth, checkAuth, errorHandler, getCouchDocs, redisSession, checkRedisSession } from './middleware';
+import {
+  setAuth,
+  checkAuth,
+  errorHandler,
+  getCouchDocs,
+  redisSession,
+  checkRedisSession,
+} from './middleware';
 
 import {
   slMount,
