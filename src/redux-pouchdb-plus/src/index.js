@@ -56,22 +56,14 @@ const uninitializeReducers = () =>
     initializedReducers[name] = false);
 
 export function reinit(reducerName) {
-  // const reducerNames = Object.keys(initializedReducers);
-  uninitializeReducers()
-  // if (!reducerName) { // reinit all reducers
-  //   reducerNames.map(name =>
-  //     initializedReducers[name] = false);
-
-  // } else { // reinit a specific reducer
-  //   if (reducerNames.indexOf(reducerName) === -1) {
-  //     throw Error(`Invalid persistent reducer to reinit: ${reducerName}`);
-  //   }
-
-  //   initializedReducers[reducerName] = false;
-  // }
-
+  uninitializeReducers();
   return { type: REINIT };
 }
+
+const reset = () => {
+  uninitializeReducers();
+  return { type: RESET };
+};
 
 export const reset = () => {
   uninitializeReducers();
@@ -252,7 +244,12 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           // return nextState;
           return currentState = nextState;
         }
+<<<<<<< 87e8567fbca74487d57f02a990dfaeb8579c2aed
 
+=======
+        if (syncHandler && !isUserPresent(store)) {
+          synInit = false;
+>>>>>>> add reset action
       case RESET:
         if (syncHandler && synInit) {
           syncHandler.cancel();
