@@ -27,6 +27,29 @@ const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
+let synInit = false;
+let syncHandler;
+
+const isUserPresent = (store) => {
+  const userState = store ? store.getState().user : false;
+  return (userState && userState.user && userState.user.userId);
+};
+
+const initSync = (localDb, remoteDb, reducerNames) =>
+  localDb
+    .sync(remoteDb, {
+      live: true,
+      retry: true,
+      doc_ids: reducerNames, // pass array
+      since: 'now',
+      // conflicts: true,
+      // batch_size: 20,
+      // heartbeat: 10000,
+    });
+    // .on('active', () => console.log('__ACTIVE'))
+    // .on('change', () => console.log('__CHANGE'));
+    // .on('complete', () => console.log('__COMPLETE'))
+    // .on('error', e => console.log('__ERROR', e));
 
 const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
@@ -75,28 +98,9 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   let initialState;
   let currentState;
   let storeOptions;
+  let prefetched;
 
   initializedReducers[reducer.name] = false;
-
-  const isUserPresent = (store) => { // eslint-disable-line
-    const userState = store ? store.getState().user : false;
-    return (userState && userState.user && userState.user.userId);
-  };
-
-  const initSync = (localDb, remoteDb) =>
-    localDb
-      .sync(remoteDb, {
-        live: true,
-        retry: true,
-        // doc_ids: [reducer.name]
-        // batch_size: 20,
-        heartbeat: 10000,
-      });
-      // .on('active', () => console.log('__ACTIVE'))
-      // .on('change', () => console.log('__CHANGE', inSync()));
-      // .on('complete', () => console.log('__COMPLETE'))
-      // .on('error', e => console.log('__ERROR', e));
-      // bla
 
   function toPouch(x) {
     return _.cloneDeep(x);
@@ -125,88 +129,102 @@ export const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   // get the current db connector and initialize the state of this
   // reducer by loading it from the db or by saving it
   // to the db (if it is not already persisted there)
-  function reinitReducer(state) {
-    if (changes) {
-      changes.cancel();
-    }
-    // let dbs = reducerOptions.dbs || storeOptions.dbs;
-    let localDb;
-    let remoteDb = false;
-    const dbs = storeOptions.db(reducer.name, store);
-
-    if (!isUserPresent(store)) {
-      console.log('no user return');
+  async function reinitReducer(state) {
+    const user = isUserPresent(store);
+    prefetched = state.prefetched || false;
+    if (!user) {
+      // console.log('__RETRURN !user');
       return;
     }
 
-    if (dbs.local) {
-      localDb = dbs.local;
+    if (changes) {
+      changes.cancel();
     }
-    if (dbs.remote) {
-      remoteDb = dbs.remote;
+
+    const dbs = storeOptions.db(reducer.name, store);
+
+    const localDb = dbs.local || false;
+    const remoteDb = dbs.remote || false;
+
+    if (!localDb) {
+      // throw Error('no local db provided');
     }
+
+    const initFromDB = db =>
+      db
+        .get(reducer.name)
+        .then(doc =>
+          setReducer(doc))
+        .catch(err => err);
+
+    const setup = async () => {// eslint-disable-line
+      let remoteInitError;
+      const localInitError = await initFromDB(localDb);
+      if (localInitError && localInitError.status === 404) {
+        if (remoteDb) {
+          remoteInitError = await initFromDB(remoteDb);
+          if (remoteInitError && remoteInitError.status === 404) {
+            return saveReducer(reducer.name, toPouch(state));
+          }
+        }
+        return saveReducer(reducer.name, toPouch(state));
+      }
+      if (localInitError || remoteInitError) {
+        throw Error(localInitError || remoteInitError);
+      }
+    };
 
     saveReducer = save(localDb, CLIENT_HASH);
 
-    localDb
-      .get(reducer.name)
-      .then(doc =>
-        setReducer(doc))
-      .catch((err) => { // eslint-disable-line
-        if (err.status === 404) {
-          if (remoteDb) {
-            remoteDb
-              .get(reducer.name)
-              .then(remoteDoc =>
-                setReducer(remoteDoc))
-              .catch((remoteErr) => {
-                if (err.status === 404) {
-                  return saveReducer(reducer.name, toPouch(state));
-                }
-                throw remoteErr;
-              });
-          } else {
-            return saveReducer(reducer.name, toPouch(state));
+    // start
+    if (prefetched) {
+      await saveReducer(reducer.name, toPouch(state));
+    } else {
+      try {
+        await setup();
+      } catch (e) {
+        // handle error
+        console.log('setupError', e);
+      }
+    }
+
+    // from here on the reducer was loaded from localDb or saved to localDb
+    initializedReducers[reducer.name] = true;
+
+    let ready = true; // eslint-disable-line
+    Object.keys(initializedReducers).map((reducerName) => { // eslint-disable-line
+      let exit = false;
+      if (!initializedReducers[reducerName] && !exit) {
+        ready = false;
+        exit = true;
+      }
+    });
+
+    // move out
+    if (remoteDb && !synInit) {
+      synInit = true;
+      syncHandler = initSync(localDb, remoteDb, Object.keys(initializedReducers));
+      // syncHandler.on('complete', info => console.log('sync canceled', info));
+    }
+
+    // listen to changes in the localDb (e.g. when a replication occurs)
+    // and update the reducer state when it happens
+    changes = localDb
+      .changes({
+        include_docs: true,
+        live: true,
+        since: 'now',
+        conflicts: true,
+        doc_ids: [reducer.name],
+      })
+      .on('change', (change) => {
+        if (change.doc.localId !== CLIENT_HASH) {
+          if (!change.doc.state) {
+            saveReducer(change.doc._id, toPouch(currentState));
+          } else if (!isEqual(fromPouch(change.doc.state), currentState)) {
+            setReducer(change.doc);
           }
-        } else {
-          throw err;
         }
-      }).then(() => {
-        // from here on the reducer was loaded from localDb or saved to localDb
-        initializedReducers[reducer.name] = true;
-
-        let ready = true; // eslint-disable-line
-        Object.keys(initializedReducers).map((reducerName) => { // eslint-disable-line
-          let exit = false;
-          if (!initializedReducers[reducerName] && !exit) {
-            ready = false;
-            exit = true;
-          }
-        });
-
-
-        if (remoteDb) {
-          initSync(localDb, remoteDb);
-        }
-
-        // listen to changes in the localDb (e.g. when a replication occurs)
-        // and update the reducer state when it happens
-        return changes = localDb
-          .changes({
-            include_docs: true,
-            live: true,
-            since: 'now',
-            doc_ids: [reducer.name],
-          })
-          .on('change', (change) => {
-            if (change.doc.localId !== CLIENT_HASH) {
-              if (!change.doc.state) {
-                saveReducer(change.doc._id, toPouch(currentState));
-              } else if (!isEqual(fromPouch(change.doc.state), currentState)) {
-                setReducer(change.doc);
-              }
-            }
-          });
       });
   }
 
