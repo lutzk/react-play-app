@@ -37,8 +37,7 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reinit()))
-      .then(() => dispatch(endLoading()));
+      .then(() => dispatch(reinit()));
   }
 
   if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
