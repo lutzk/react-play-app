@@ -13,7 +13,7 @@ parser:
 
 rules:
   no-unused-vars:
-    - 2
+    - 1
     -
       args: none
 
