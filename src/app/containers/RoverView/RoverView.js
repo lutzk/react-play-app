@@ -67,8 +67,8 @@ const mapStateToProps = state => ({
   listLength: state.roverView.listLength,
   missionStats: state.roverView.missionStats,
   solsToRender: state.roverView.listToRender,
-  manifestLoaded: state.roverView.loaded,
-  manifestLoading: state.roverView.loading,
+  loaded: state.roverView.loaded,
+  loading: state.roverView.loading,
   initialSolCount: state.roverView.initialCount,
   manifestLoadError: state.roverView.error,
 });
@@ -96,9 +96,9 @@ export default class RoverView extends Component {
     listLength: PropTypes.number,
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
-    manifestLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
     refreshManifest: PropTypes.func,
-    manifestLoading: PropTypes.bool,
+    loading: PropTypes.bool,
     initialSolCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
   }
@@ -166,8 +166,8 @@ export default class RoverView extends Component {
   render() {
 
     const {
-      manifestLoaded,
-      manifestLoading,
+      loaded,
+      loading,
       manifestLoadError,
     } = this.props;
 
@@ -304,8 +304,8 @@ export default class RoverView extends Component {
 
           {loadPane}
 
-          {manifestLoading && !manifestLoadError &&
-            <div className="pageContent manifestLoading"><h3>loading ...</h3></div>
+          {loading && !manifestLoadError &&
+            <div className="pageContent loading"><h3>loading ...</h3></div>
           }
 
           {manifestLoadError &&
@@ -315,7 +315,7 @@ export default class RoverView extends Component {
           }
         </div>
 
-        {manifestLoaded && !manifestLoadError &&
+        {loaded && !manifestLoadError &&
           <div className="pageContent">
             <RoverMissionStats {...missionStatsProps} />
             {buttonPane}
