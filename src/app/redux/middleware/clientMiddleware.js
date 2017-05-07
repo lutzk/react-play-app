@@ -20,11 +20,13 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
   result = await promise(client);
 
   if (result.error) {
-    console.log('_ERROR_RE');
-    console.log(result);
     if (result.error.status === 401) {
       dispatch(endLoading(true));
-      return next({ ...rest, result: { savedPath: getState().router.locationBeforeTransitions.pathname }, type: KILL_USER });
+      return next({
+        ...rest,
+        result: { savedPath: getState().router.locationBeforeTransitions.pathname },
+        type: KILL_USER,
+      });
     }
 
     if (result.error.status === 500) {
