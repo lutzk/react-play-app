@@ -11,6 +11,7 @@ import {
 export const GET_MANIFEST = 'roverView/GET_MANIFEST';
 export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
+
 export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
@@ -83,29 +84,34 @@ function roverView(state = initialState, action = {}) {
         ...initialState,
       };
 
-    case '@@redux-pouchdb-plus/SET_REDUCER':
-      if (action.reducer === 'roverView') {
-        if (action.state.prefetched) {
-          return {
-            ...state,
-            prefetched: false,
-          };
-        }
+    case '@@redux-pouchdb-plus/REDUCER_READY':
+      if (action.reducerName === 'roverView') {
+        return {
+          ...state,
+          ready: true,
+          initFrom: action.initFrom,
+          prefetched: false,
+          reinitializing: false,
+        };
       }
       return {
         ...state,
       };
 
-    case '@@redux-pouchdb-plus/INIT':
-      if (action.state.roverView.prefetched) {
-        return {
-          ...state,
-          prefetched: false,
-        };
-      }
+    // case '@@redux-pouchdb-plus/INIT':
+    //   if (action.state.roverView.prefetched) {
+    //     return {
+    //       ...state,
+    //     };
+    //   }
+    //   return {
+    //     ...state,
+    //   };
 
+    case '@@redux-pouchdb-plus/REINIT':
       return {
         ...state,
+        reinitializing: true,
       };
 
     case SORT_SOLS:
