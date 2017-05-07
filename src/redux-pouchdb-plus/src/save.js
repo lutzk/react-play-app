@@ -1,4 +1,5 @@
 /* eslint-disable */
+import _ from 'lodash';
 const unpersistedQueue = {};
 let isSaving = {};
 
@@ -13,7 +14,7 @@ export function inSync() {
 }
 
 export default (db, localId) => {
-  const saveReducer = (reducerName, reducerState) => {
+  const _saveReducer = (reducerName, reducerState) => {
     if (isSaving[reducerName]) {
       // enqueue promise
       unpersistedQueue[reducerName] = unpersistedQueue[reducerName] || [];
@@ -50,7 +51,8 @@ export default (db, localId) => {
       console.error(err);
     });
   };
-
+  
+  const saveReducer = _.debounce(_saveReducer, 250, { 'maxWait': 1000 });
   return saveReducer;
 };
 /* eslint-enable */
