@@ -10,9 +10,9 @@ function createStore({ history, client, preloadedState }) { // eslint-disable-li
   let finalCreateStore;
   const reduxRouterMiddleware = routerMiddleware(history);
   const middleware = [
-    createMiddleware(client),
-    reduxRouterMiddleware,
     thunkMiddleware,
+    reduxRouterMiddleware,
+    createMiddleware(client),
   ];
 
   if (__CLIENT__) {
