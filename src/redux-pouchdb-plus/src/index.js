@@ -32,8 +32,6 @@ const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
-let synInit = false;
-let syncHandler;
 
 const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
