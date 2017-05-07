@@ -23,13 +23,17 @@ const CLIENT_HASH = uuid.v1();
 
 const INIT = '@@redux-pouchdb-plus/INIT';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
+
 const REINIT_SUCCESS = '@@redux-pouchdb-plus/REINIT_SUCCESS';
 const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
 const REDUCER_READY = '@@redux-pouchdb-plus/REDUCER_READY';
+
 const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 
 const initializedReducers = {};
+let synInit = false;
+let syncHandler;
 
 const uninitializeReducers = () =>
   Object.keys(initializedReducers).map(name =>
@@ -234,7 +238,6 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
           reinitReducer(nextState);
           return currentState = nextState;
         }
-
         return state;
 
       case RESET:
@@ -282,7 +285,6 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 };
 
 export {
-  INIT,
   RESET,
   REINIT,
   SET_REDUCER,

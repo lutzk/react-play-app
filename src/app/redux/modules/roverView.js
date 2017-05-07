@@ -79,6 +79,7 @@ const getStats = (data) => {
 
 function roverView(state = initialState, action = {}) {
   switch (action.type) {
+
     case '@@redux-pouchdb-plus/RESET':
       return {
         ...initialState,

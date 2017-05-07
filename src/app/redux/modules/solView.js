@@ -77,6 +77,7 @@ const cleanUpData = data =>
 
 function solView(state = initialState, action = {}) {
   switch (action.type) {
+
     case '@@redux-pouchdb-plus/RESET':
       return {
         ...initialState,
