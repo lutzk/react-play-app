@@ -4,10 +4,6 @@ import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS /* , LOAD_AUTH
 
 const clientMiddleware = client => ({ dispatch, getState }) => next => async (action) => {
 
-  if (typeof action === 'function') {
-    return action(dispatch, getState);
-  }
-
   const { promise, types, ...rest } = action;
 
   if (!promise) {
