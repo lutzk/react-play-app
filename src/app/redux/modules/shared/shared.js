@@ -183,20 +183,19 @@ export const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
       }),
     });
 
-/* eslint-disable */
-export const getManifestFor = ({ rover, sol, types, offline } = {}) => {
+export const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch, getState) => {
 
-  const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
+  // const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
   const params = { rover, sol, offline };
   const requestPath = '/nasa';
   const request = client => client.get(requestPath, { params });
 
-  return {
+  return dispatch({
     types,
     promise: request,
-  };
+  });
 };
-/* eslint-enable */
+
 export const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
   (dispatch, getState) => {
     const {
