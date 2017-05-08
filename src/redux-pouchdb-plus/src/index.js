@@ -12,6 +12,7 @@
 
 import uuid from 'uuid';
 import _ from 'lodash'; // eslint-disable-line
+import { save } from './save.js';
 
 // export { inSync } from './save.js';
 
@@ -21,14 +22,13 @@ import _ from 'lodash'; // eslint-disable-line
 const CLIENT_HASH = uuid.v1();
 
 const INIT = '@@redux-pouchdb-plus/INIT';
+const RESET = '@@redux-pouchdb-plus/RESET';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
-
 const REINIT_SUCCESS = '@@redux-pouchdb-plus/REINIT_SUCCESS';
 const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
-const REDUCER_READY = '@@redux-pouchdb-plus/REDUCER_READY';
 
-const RESET = '@@redux-pouchdb-plus/RESET';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
+const REDUCER_READY = '@@redux-pouchdb-plus/REDUCER_READY';
 
 const initializedReducers = {};
 
@@ -43,9 +43,9 @@ const reinit = () => (dispatch, getState) => {
   });
 };
 
-const reset = () => {
+const reset = () => (dispatch, getState) => {
   uninitializeReducers();
-  return { type: RESET };
+  return dispatch({ type: RESET });
 };
 
 // const requestReinit = () => dispatch => dispatch({ type: REQUEST_REINIT });
@@ -75,7 +75,7 @@ const initSync = (localDb, remoteDb, reducerNames) =>
       retry: true,
       doc_ids: reducerNames,
       // batch_size: 20,
-      heartbeat: 10000,
+      // heartbeat: 10000,
     });
     // .on('active', () => console.log('__ACTIVE'))
     // .on('change', () => console.log('__CHANGE', inSync()));
@@ -97,7 +97,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
   const reducerName = reducer.name;
 
-  initializedReducers[reducer.name] = false;
+  initializedReducers[reducerName] = false;
 
   const setReducer = (doc) => {
     const { _rev, _id: reducer, state: dbState } = doc;// eslint-disable-line
@@ -197,7 +197,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
       await initDBState(state, localDb, remoteDb, reducerName, saveReducer);
     }
 
-    initializedReducers[reducer.name] = true;
+    initializedReducers[reducerName] = true;
     const initializedReducerKeys = Object.keys(initializedReducers);
     const ready = checkReady(initializedReducerKeys, initializedReducers);
 
@@ -282,9 +282,9 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 };
 
 export {
-  RESET,
-  REINIT,
-  SET_REDUCER,
+  // RESET,
+  // REINIT,
+  // SET_REDUCER,
   reset,
   reinit,
   persistentStore,
