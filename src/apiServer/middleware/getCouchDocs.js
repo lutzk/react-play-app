@@ -14,10 +14,10 @@ const fetchDoc = async (db, docName) => {
   return doc;
 };
 
-const fetchStatesFromCouch = (db) => {
+const fetchDocsFromCouch = (db) => {
 
-  const statesKeysToFetch = ['roverView', 'solView'];
-  const statesFromCouch = statesKeysToFetch.map(key =>
+  const docsToFetch = ['roverView', 'solView'];
+  const docs = docsToFetch.map(key =>
     // doc = await fetchDoc(db, key);
     fetchDoc(db, key).then((doc) => {
       if (doc._id) {
@@ -29,14 +29,14 @@ const fetchStatesFromCouch = (db) => {
       return false;
     })
   );
-  return Promise.all(statesFromCouch);
+  return Promise.all(docs);
 };
 
 const getUserCouch = db =>
   Promise.resolve(
     new PouchDB(db, { skip_setup: true }));
 
-export const getCouchDocs = () => wrap(async (req, res, next) => { // eslint-disable-line
+const getCouchDocs = () => wrap(async (req, res, next) => {
 
   if (!req.session.user) {
     return next();
@@ -49,13 +49,15 @@ export const getCouchDocs = () => wrap(async (req, res, next) => { // eslint-dis
   }
 
   const preloadedState = {};
-  const states = await fetchStatesFromCouch(couch);
+  const docs = await fetchDocsFromCouch(couch);
 
-  states
-    .filter(state =>
-      (state && state !== 'undefined' && typeof state === 'object'))
-    .map(state =>
-      preloadedState[state.name] = state.state);
+  docs
+    .filter(doc =>
+      (doc && doc !== 'undefined' && typeof doc === 'object'))
+    .map(doc =>
+      preloadedState[doc.name] = doc.state);
 
   return res.status(200).json(preloadedState);
 });
+
+export { getCouchDocs };
