@@ -12,7 +12,6 @@
 
 import uuid from 'uuid';
 import _ from 'lodash'; // eslint-disable-line
-import save from './save.js';
 
 // export { inSync } from './save.js';
 

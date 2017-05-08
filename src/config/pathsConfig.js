@@ -10,4 +10,4 @@ const PATHS = {
   NOT_FOUND: '*',
 };
 
-export default PATHS;
+export { PATHS };

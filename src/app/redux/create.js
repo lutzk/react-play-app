@@ -1,7 +1,7 @@
 import { createStore as _createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk';
-import createMiddleware from './middleware/clientMiddleware';
+import { clientMiddleware } from './middleware/clientMiddleware';
 
 function createStore({ history, client, preloadedState }) { // eslint-disable-line
   let db;
@@ -42,12 +42,12 @@ function createStore({ history, client, preloadedState }) { // eslint-disable-li
     )(_createStore);
   }
 
-  const reducer = require('./modules/reducer').default;
+  const reducer = require('./modules/reducer').rootReducer;
   const store = finalCreateStore(reducer, preloadedState);
 
   if (__DEVELOPMENT__ && module.hot) {
     module.hot.accept('./modules/reducer', () => {
-      store.replaceReducer(require('./modules/reducer').default);
+      store.replaceReducer(require('./modules/reducer').rootReducer);
     });
   }
 

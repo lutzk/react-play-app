@@ -1,7 +1,7 @@
-export const LOADING = 'pageLoadBar/LOADING';
-export const END_LOADING = 'pageLoadBar/END_LOADING';
-export const RESET_LOADING = 'pageLoadBar/RESET_LOADING';
-export const END_LOADING_FROM_ERROR = 'pageLoadBar/END_LOADING_FROM_ERROR';
+const LOADING = 'pageLoadBar/LOADING';
+const END_LOADING = 'pageLoadBar/END_LOADING';
+const RESET_LOADING = 'pageLoadBar/RESET_LOADING';
+const END_LOADING_FROM_ERROR = 'pageLoadBar/END_LOADING_FROM_ERROR';
 
 const initialState = {
   loading: false,
@@ -9,7 +9,7 @@ const initialState = {
   error: false,
 };
 
-export default function reducer(state = initialState, action = {}) {
+function pageLoadBar(state = initialState, action = {}) {
   switch (action.type) {
     case LOADING:
       return {
@@ -43,7 +43,7 @@ export default function reducer(state = initialState, action = {}) {
   }
 }
 
-export function startLoading() {
+function startLoading() {
   return (dispatch, getState) => {
     if (!getState().pageLoadBar.loading) {
       dispatch({ type: LOADING });
@@ -51,7 +51,7 @@ export function startLoading() {
   };
 }
 
-export function endLoading(fromError = false, rewindOnError = true) {
+function endLoading(fromError = false, rewindOnError = true) {
   const resetDelay = 3000;
   const rewindDelay = 1400;
 
@@ -84,3 +84,13 @@ export function endLoading(fromError = false, rewindOnError = true) {
     }
   };
 }
+
+export {
+  endLoading,
+  pageLoadBar,
+  startLoading,
+  // LOADING
+  // END_LOADING
+  // RESET_LOADING
+  // END_LOADING_FROM_ERROR
+};

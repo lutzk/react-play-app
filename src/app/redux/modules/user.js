@@ -1,20 +1,20 @@
-export const LOGIN = 'user/LOGIN';
-export const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
-export const LOGIN_FAIL = 'user/LOGIN_FAIL';
+const LOGIN = 'user/LOGIN';
+const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
+const LOGIN_FAIL = 'user/LOGIN_FAIL';
 
-export const SIGNUP = 'user/SIGNUP';
-export const SIGNUP_SUCCESS = 'user/SIGNUP_SUCCESS';
-export const SIGNUP_FAIL = 'user/SIGNUP_FAIL';
+const SIGNUP = 'user/SIGNUP';
+const SIGNUP_SUCCESS = 'user/SIGNUP_SUCCESS';
+const SIGNUP_FAIL = 'user/SIGNUP_FAIL';
 
-export const LOAD_AUTH = 'user/LOAD_AUTH';
-export const LOAD_AUTH_SUCCESS = 'user/LOAD_AUTH_SUCCESS';
-export const LOAD_AUTH_FAIL = 'user/LOAD_AUTH_FAIL';
+const LOAD_AUTH = 'user/LOAD_AUTH';
+const LOAD_AUTH_SUCCESS = 'user/LOAD_AUTH_SUCCESS';
+const LOAD_AUTH_FAIL = 'user/LOAD_AUTH_FAIL';
 
-export const LOGOUT = 'user/LOGOUT';
-export const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
-export const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
+const LOGOUT = 'user/LOGOUT';
+const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
+const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
 
-export const KILL_USER = 'user/KILL_USER';
+const KILL_USER = 'user/KILL_USER';
 
 const initialState = {
   loggedIn: false,
@@ -23,7 +23,7 @@ const initialState = {
   lastLoaded: null,
 };
 
-export default function user(state = initialState, action = {}) {
+function user(state = initialState, action = {}) {
   switch (action.type) {
     case KILL_USER:
       return {
@@ -118,7 +118,7 @@ export default function user(state = initialState, action = {}) {
   }
 }
 
-export function login(username, password) {
+function login(username, password) {
 
   const types = [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL];
   const request = client => client.post('/login', { data: { username, password } });
@@ -129,7 +129,7 @@ export function login(username, password) {
   };
 }
 
-export const loadAuth = () => (dispatch, getState) => {
+const loadAuth = () => (dispatch, getState) => {
   const timeNow = new Date().getTime();
   const lastLoaded = getState().user.lastLoaded;
   if (lastLoaded) {
@@ -145,24 +145,24 @@ export const loadAuth = () => (dispatch, getState) => {
   });
 };
 
-export function killUser() {
+function killUser() {
   return {
     type: [KILL_USER],
   };
 }
 
-export function isLoaded(state) {
+function isLoaded(state) {
   return state.user && state.user.loaded;
 }
 
-export function logout() {
+function logout() {
   return {
     types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
     promise: client => client.get('/logout'),
   };
 }
 
-export function signup(name, username, email, password, confirmPassword) {
+function signup(name, username, email, password, confirmPassword) {
 
   const types = [SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAIL];
   const request = client => client.post('/signup', { data: { name, username, email, password, confirmPassword } });
@@ -172,3 +172,17 @@ export function signup(name, username, email, password, confirmPassword) {
     promise: request,
   };
 }
+
+export {
+  user,
+  login,
+  logout,
+  signup,
+  loadAuth,
+  killUser,
+  isLoaded,
+  KILL_USER,
+  LOGIN_SUCCESS,
+  SIGNUP_SUCCESS,
+  LOGOUT_SUCCESS,
+};

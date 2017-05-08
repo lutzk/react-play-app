@@ -8,16 +8,16 @@ import {
   getManifestFor,
 } from './shared/shared';
 
-export const GET_MANIFEST = 'roverView/GET_MANIFEST';
-export const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
-export const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
+const GET_MANIFEST = 'roverView/GET_MANIFEST';
+const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
+const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 
-export const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
-export const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
+// const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
+// const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
-export const SORT_SOLS = 'roverView/SORT_SOLS';
+const SORT_SOLS = 'roverView/SORT_SOLS';
 
-export const roverMatcher = roverToMatch =>
+const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
 
 const availableSorts = { fields: ['sol', 'totalPhotos', 'cameras'], orders: ['asc', 'desc'] };
@@ -164,7 +164,7 @@ function roverView(state = initialState, action = {}) {
   }
 }
 
-export const getManifest = (_rover, offline) => {
+const getManifest = (_rover, offline) => {
 
   const rover = _rover || initialState.defaultRover;
   const types = [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL];
@@ -176,10 +176,17 @@ export const getManifest = (_rover, offline) => {
   });
 };
 
-export const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range } = {}) => {
   const type = SORT_SOLS;
   const stateKey = 'roverView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-export default persistentReducer(roverView);
+const roverViewReducer = persistentReducer(roverView);
+
+export {
+  updateList,
+  getManifest,
+  roverMatcher,
+  roverViewReducer,
+};

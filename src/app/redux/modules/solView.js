@@ -5,12 +5,12 @@ import {
   getManifestFor,
 } from './shared/shared';
 
-export const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
-export const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
-export const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
+const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
+const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
+const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 
-export const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
-export const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
+const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
+// const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
 
 const availableSorts = { fields: ['id', 'earth_date', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
@@ -152,16 +152,22 @@ function solView(state = initialState, action = {}) {
   }
 }
 
-export const getSolManifest = (rover, sol, offline) => {
+const getSolManifest = (rover, sol, offline) => {
   const types = [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL];
 
   return getManifestFor({ sol, rover, types, offline });
 };
 
-export const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range } = {}) => {
   const type = SORT_SOL_PHOTOS;
   const stateKey = 'solView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-export default persistentReducer(solView);
+const solViewReducer = persistentReducer(solView);
+
+export {
+  updateList,
+  getSolManifest,
+  solViewReducer,
+};

@@ -5,7 +5,7 @@ import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { startLoading, endLoading } from '../../redux/modules/pageLoadBar';
 import { getManifest, getManifest as refreshManifest, roverMatcher, updateList } from '../../redux/modules/roverView';
-import PATHS from '../../../config/pathsConfig.js';
+import { PATHS } from '../../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
 import { Deferred } from '../../../helpers/deferred';

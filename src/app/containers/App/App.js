@@ -5,7 +5,7 @@ import { asyncConnect } from 'redux-connect';
 import _ from 'lodash'; // eslint-disable-line
 import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
-import PATHS from '../../../config/pathsConfig';
+import { PATHS } from '../../../config/pathsConfig';
 import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';

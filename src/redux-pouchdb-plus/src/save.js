@@ -13,8 +13,8 @@ export function inSync() {
   return true;
 }
 
-export default (db, localId) => {
-  const _saveReducer = (reducerName, reducerState) => {
+const save = (db, localId) => {
+  const saveReducer = (reducerName, reducerState) => {
     if (isSaving[reducerName]) {
       // enqueue promise
       unpersistedQueue[reducerName] = unpersistedQueue[reducerName] || [];
@@ -56,4 +56,6 @@ export default (db, localId) => {
   return saveReducer;
 };
 /* eslint-enable */
-
+export {
+  save,
+};

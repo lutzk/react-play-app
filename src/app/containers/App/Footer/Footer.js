@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import PATHS from '../../../../config/pathsConfig.js';
+import { PATHS } from '../../../../config/pathsConfig.js';
 import './Footer.sass';
 
 const Footer = (_props) => {
@@ -14,8 +14,10 @@ const Footer = (_props) => {
   const footer = (
     <div className="footer">
       <p>
-        Footer&nbsp;
+        Footer
+        &nbsp;
         <Link to={`/${PATHS.HOME}`}>home</Link>
+        &nbsp;
         <span onClick={handleLogout}>logout</span>
       </p>
     </div>);
@@ -24,4 +26,4 @@ const Footer = (_props) => {
 
 };
 
-export default Footer;
+export { Footer };

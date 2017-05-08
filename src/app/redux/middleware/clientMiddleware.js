@@ -58,4 +58,4 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
   return next({ ...rest, result, type: SUCCESS });
 };
 
-export default clientMiddleware;
+export { clientMiddleware };

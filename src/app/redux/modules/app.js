@@ -1,6 +1,6 @@
 const initialState = {};
 
-export default function reducer(state = initialState, action = {}) {
+export function app(state = initialState, action = {}) {
   switch (action.type) {
     default:
       return state;
