@@ -70,7 +70,7 @@ const isUserPresent = (store) => { // eslint-disable-line
 
 const initSync = (localDb, remoteDb, reducerNames) =>
   localDb
-    .sync(remoteDb, {
+    .replicate.to(remoteDb, {
       live: true,
       retry: true,
       doc_ids: reducerNames,
