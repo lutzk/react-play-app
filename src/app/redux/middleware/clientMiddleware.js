@@ -39,19 +39,19 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reinit()));
+      .then(dispatch(reinit()));
   }
 
   if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reset()))
-      .then(() => dispatch(endLoading()));
+      .then(dispatch(reset()))
+      .then(dispatch(endLoading()));
   }
 
   if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reset()))
-      .then(() => dispatch(endLoading()));
+      .then(dispatch(reset()))
+      .then(dispatch(endLoading()));
   }
 
   dispatch(endLoading());
