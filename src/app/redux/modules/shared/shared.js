@@ -1,20 +1,16 @@
 import _ from 'lodash'; // eslint-disable-line
-export const apiKey = 'DEMO_KEY';
-export const apiBasePath = 'https://api.nasa.gov/mars-photos/api/v1/';
-export const apiManifestsPath = 'manifests/';
-export const offlineManifestBasePath = 'http://localhost:3010/roverManifest';
 
-export const spirit = { name: 'Spirit', label: 'spirit' };
-export const curiosity = { name: 'Curiosity', label: 'curiosity' };
-export const opportunity = { name: 'Opportunity', label: 'opportunity' };
+const spirit = { name: 'Spirit', label: 'spirit' };
+const curiosity = { name: 'Curiosity', label: 'curiosity' };
+const opportunity = { name: 'Opportunity', label: 'opportunity' };
 
-export const rovers = {
+const rovers = {
   [spirit.label]: spirit.name,
   [curiosity.label]: curiosity.name,
   [opportunity.label]: opportunity.name,
 };
 
-export const filterByFieldValue = (list, filter) => {
+const filterByFieldValue = (list, filter) => {
   const newList = [];
   list.map(listItem => { // eslint-disable-line
     const combinedFilterMatrix = [];
@@ -35,7 +31,7 @@ export const filterByFieldValue = (list, filter) => {
   return newList;
 };
 
-export const filterList = ({ list, range } = {}) => {
+const filterList = ({ list, range } = {}) => {
   const maxListLength = list.length;
   let start = null;
   let end = null;
@@ -80,7 +76,7 @@ const isFilterOn = (filter) => {
   return globalOn && on;
 };
 
-export const updateRange = (range, stateRange, listLength) => {
+const updateRange = (range, stateRange, listLength) => {
   const newRange = { ...stateRange };
   const rangeLength = newRange.end - newRange.start;
 
@@ -116,7 +112,7 @@ export const updateRange = (range, stateRange, listLength) => {
   return newRange;
 };
 
-export const updateFilter = (filter, currentFilter) => {
+const updateFilter = (filter, currentFilter) => {
 
   const newFilter = { ...currentFilter };
   const filterKeys = Object.keys(filter);
@@ -151,7 +147,7 @@ export const updateFilter = (filter, currentFilter) => {
   return newFilter;
 };
 
-export const sortList = ({ list, sorts, filter, range } = {}) => {
+const sortList = ({ list, sorts, filter, range } = {}) => {
   let sortedList = list;
   const { fields, orders } = sorts;
 
@@ -168,7 +164,7 @@ export const sortList = ({ list, sorts, filter, range } = {}) => {
   return sortedList;
 };
 
-export const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
+const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
   dispatch =>
     dispatch({
       type,
@@ -176,14 +172,11 @@ export const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
       filter,
       range,
       list: sortList({
-        list,
-        sorts,
-        filter,
-        range,
+        list, sorts, filter, range,
       }),
     });
 
-export const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch, getState) => {
+const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch, getState) => {
 
   // const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
   const params = { rover, sol, offline };
@@ -196,7 +189,7 @@ export const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch
   });
 };
 
-export const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
+const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
   (dispatch, getState) => {
     const {
       list: stateList,
@@ -227,3 +220,19 @@ export const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}
 
     return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
   };
+
+export {
+  rovers,
+  spirit,
+  sortList,
+  curiosity,
+  filterList,
+  opportunity,
+  updateRange,
+  _updateList,
+  updateFilter,
+  sortListAction,
+  getManifestFor,
+  filterByFieldValue,
+};
+
