@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
-import { startLoading, endLoading } from '../../redux/modules/pageLoadBar';
-import { getManifest, getManifest as refreshManifest, roverMatcher, updateList } from '../../redux/modules/roverView';
+import { initPage, getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
 import { PATHS } from '../../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
@@ -15,7 +14,7 @@ const waiter = new Deferred();
 const NAME = 'RoverView';
 
 const selector = state => state.roverView.ready;
-const handler = store => () => {// eslint-disable-line
+const readyListener = store => () => {// eslint-disable-line
   if (selector(store.getState())) {
     waiter.resolve(NAME);
   }
@@ -25,36 +24,13 @@ const asyncInfo = {
   key: NAME,
   promise: (options) => {
     const {
-      store: { dispatch, getState },
+      store: { dispatch },
       params: { rover },
     } = options;
 
-    const roverViewState = getState().roverView;
-
-    if (roverViewState.loaded) {
-      return NAME;
-
-    } else if (roverViewState.reinitializing) {
-      dispatch(startLoading());
-      const store = options.store;
-      const unsubscribe = store.subscribe(handler(store));
-
-      return waiter.then((name) => {
-        unsubscribe();
-
-        if (!getState().roverView.loaded) {
-          const _rover = roverMatcher(rover) ? rover : roverViewState.defaultRover;// || getState().roverView.rover;
-          return dispatch(getManifest(_rover, true))
-            .then(dispatch(endLoading()))
-            .then(NAME);
-        }
-
-        dispatch(endLoading());
-        return name;
-      });
-    }
-    const _rover = roverMatcher(rover) ? rover : roverViewState.defaultRover;// || getState().roverView.rover;
-    return dispatch(getManifest(_rover, true)).then(NAME);
+    const store = options.store;
+    return dispatch(initPage({ waiter, store, rover, readyListener }))
+      .then(name => name);
   },
 };
 

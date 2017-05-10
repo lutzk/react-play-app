@@ -1,4 +1,5 @@
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
+import { startLoading, endLoading } from './pageLoadBar';
 
 import {
   rovers,
@@ -90,7 +91,6 @@ function roverView(state = initialState, action = {}) {
         return {
           ...state,
           ready: true,
-          initFrom: action.initFrom,
           prefetched: false,
           reinitializing: false,
         };
@@ -113,6 +113,15 @@ function roverView(state = initialState, action = {}) {
       return {
         ...state,
         reinitializing: true,
+        reinitRequested: false,
+        ready: false,
+      };
+
+    case '@@redux-pouchdb-plus/REQUEST_REINIT':
+      return {
+        ...state,
+        reinitRequested: true,
+        ready: false,
       };
 
     case SORT_SOLS:
@@ -182,9 +191,41 @@ const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
+const initPage = ({ waiter, store, rover, readyListener }) => (dispatch) => {
+  const NAME = 'RoverView';
+  const roverViewState = store.getState().roverView;
+  const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
+
+  if (roverViewState.loaded) {
+    return NAME;
+
+  } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
+    dispatch(startLoading());
+    const unsubscribe = store.subscribe(readyListener(store));
+
+    return waiter.then((name) => {
+      unsubscribe();
+      if (!store.getState().roverView.loaded) {
+        const _rover = getRover();
+        return dispatch(getManifest(_rover, true))
+          .then(dispatch(endLoading()))
+          .then(NAME);
+      }
+
+      return dispatch(endLoading())
+        .then(() => name);
+    });
+  }
+
+  const _rover = getRover();
+  return dispatch(getManifest(_rover, true)).then(NAME);
+};
+
+
 const roverViewReducer = persistentReducer(roverView);
 
 export {
+  initPage,
   updateList,
   getManifest,
   roverMatcher,
