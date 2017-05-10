@@ -1,4 +1,4 @@
-import { reinit, reset } from '../../../redux-pouchdb-plus/src/index';
+import { reinit, reset, requestReinit } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
 import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
 
@@ -39,19 +39,24 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
 
   if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(dispatch(reinit()));
+      .then(() => dispatch(requestReinit()))
+      .then(() => {
+        const dbs = require('../clientRequireProxy').db(getState());
+        return dbs.remote.replicate.to(dbs.local, { live: false });
+      })
+      .then(() => dispatch(reinit()));
   }
 
   if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(dispatch(reset()))
-      .then(dispatch(endLoading()));
+      .then(() => dispatch(reset()))
+      .then(() => dispatch(endLoading()));
   }
 
   if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(dispatch(reset()))
-      .then(dispatch(endLoading()));
+      .then(() => dispatch(reset()))
+      .then(() => dispatch(endLoading()));
   }
 
   dispatch(endLoading());
