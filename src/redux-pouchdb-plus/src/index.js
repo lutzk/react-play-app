@@ -83,6 +83,7 @@ const initSync = (localDb, remoteDb, reducerNames) =>
     // .on('error', e => console.log('__ERROR', e));
     // bla
 
+let DBS;
 const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
   let store;
@@ -179,7 +180,8 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   };
 
   async function reinitReducer(state) {
-    const dbs = storeOptions.db(reducerName, store);
+
+    const dbs = DBS;
     const localDb = dbs.local || false;
     const remoteDb = dbs.remote || false;
     const prefetched = state.prefetched || false;
@@ -231,6 +233,10 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
       case REINIT: // eslint-disable-line
         if (isUserPresent(store)) {
+          if (!DBS) {
+            const dbs = require('../../app/redux/clientRequireProxy').db;
+            DBS = dbs(store.getState());
+          }
           nextState = reducer(state, action);
           reinitReducer(nextState);
           return currentState = nextState;

@@ -4,7 +4,6 @@ import thunkMiddleware from 'redux-thunk';
 import { clientMiddleware } from './middleware/clientMiddleware';
 
 function createStore({ history, client, preloadedState }) { // eslint-disable-line
-  let db;
   let DevTools;
   let persistentStore;
   let finalCreateStore;
@@ -19,21 +18,20 @@ function createStore({ history, client, preloadedState }) { // eslint-disable-li
     if (__DEVELOPMENT__ && __DEVTOOLS__) {
       DevTools = require('./clientRequireProxy').DevTools;
     }
-    db = require('./clientRequireProxy').db;
     persistentStore = require('./clientRequireProxy').persistentStore;
   }
 
   if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
     finalCreateStore = compose(
       applyMiddleware(...middleware),
-      persistentStore({ db }),
+      persistentStore(),
       DevTools.instrument()
     )(_createStore);
 
   } else if (__CLIENT__) {
     finalCreateStore = compose(
       applyMiddleware(...middleware),
-      persistentStore({ db })
+      persistentStore()
     )(_createStore);
 
   } else {
