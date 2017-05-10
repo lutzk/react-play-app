@@ -16,7 +16,6 @@ const db = (reducerName, store) => {
 
 export {
   db,
-  PouchDB,
   DevTools,
   persistentStore,
 };
