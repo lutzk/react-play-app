@@ -51,9 +51,9 @@ const save = (db, localId) => {
       console.error(err);
     });
   };
-  
-  const saveReducer = _.debounce(_saveReducer, 250, { 'maxWait': 1000 });
-  return saveReducer;
+
+  const debouncedSaveReducer = _.debounce(saveReducer, 250 /* , { leading: true } */);
+  return debouncedSaveReducer;
 };
 /* eslint-enable */
 export {
