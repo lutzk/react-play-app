@@ -4,14 +4,14 @@ const unpersistedQueue = {};
 let isSaving = {};
 
 // checks if there is some state saving in progress
-export function inSync() {
-  const reducerNames = Object.keys(isSaving);
-  for (let n of reducerNames) {
-    if (isSaving[n])
-      return false;
-  }
-  return true;
-}
+// export function inSync() {
+//   const reducerNames = Object.keys(isSaving);
+//   for (let n of reducerNames) {
+//     if (isSaving[n])
+//       return false;
+//   }
+//   return true;
+// }
 
 const save = (db, localId) => {
   const saveReducer = (reducerName, reducerState) => {
@@ -31,15 +31,14 @@ const save = (db, localId) => {
       } else {
         throw err;
       }
-    }).catch(err => {
-      console.error(err);
-    }).then(doc => {
+    }).catch(err => console.error(err))
+    .then(doc => {
       doc.localId = localId;
       doc.state = reducerState;
       return doc;
-    }).then(doc => {
-      return db.put(doc);
-    }).then(() => {
+    })
+    .then(doc => db.put(doc))
+    .then(() => {
       delete isSaving[reducerName];
 
       if (unpersistedQueue[reducerName] &&
@@ -47,9 +46,7 @@ const save = (db, localId) => {
         const next = unpersistedQueue[reducerName].shift();
         return saveReducer(reducerName, next);
       }
-    }).catch(err => {
-      console.error(err);
-    });
+    }).catch(err => console.error(err));
   };
 
   const debouncedSaveReducer = _.debounce(saveReducer, 250 /* , { leading: true } */);
