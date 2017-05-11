@@ -1,8 +1,7 @@
-/* eslint-disable */
-import _ from 'lodash';
 import { debounce } from 'lodash';// eslint-disable-line
+
 const unpersistedQueue = {};
-let isSaving = {};
+const isSaving = {};
 
 // checks if there is some state saving in progress
 // export function inSync() {
@@ -26,20 +25,19 @@ const save = (db, localId) => {
 
     isSaving[reducerName] = true;
 
-    return db.get(reducerName).catch(err => {
+    return db.get(reducerName).catch((err) => {
       if (err.status === 404) {
-        return {_id: reducerName};
-      } else {
-        throw err;
+        return { _id: reducerName };
       }
+      throw err;
     }).catch(err => console.error(err))
-    .then(doc => {
+    .then((doc) => {
       doc.localId = localId;
       doc.state = reducerState;
       return doc;
     })
     .then(doc => db.put(doc))
-    .then(() => {
+    .then(() => { // eslint-disable-line
       delete isSaving[reducerName];
 
       if (unpersistedQueue[reducerName] &&
@@ -47,13 +45,12 @@ const save = (db, localId) => {
         const next = unpersistedQueue[reducerName].shift();
         return saveReducer(reducerName, next);
       }
-    }).catch(err => console.error(err));
+    })
+    .catch(err => console.error(err));
   };
 
   const debouncedSaveReducer = debounce(saveReducer, 250, { leading: true });
   return debouncedSaveReducer;
 };
-/* eslint-enable */
-export {
-  save,
-};
+
+export { save };
