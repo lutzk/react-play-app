@@ -1,5 +1,6 @@
 /* eslint-disable */
 import _ from 'lodash';
+import { debounce } from 'lodash';// eslint-disable-line
 const unpersistedQueue = {};
 let isSaving = {};
 
@@ -49,7 +50,7 @@ const save = (db, localId) => {
     }).catch(err => console.error(err));
   };
 
-  const debouncedSaveReducer = _.debounce(saveReducer, 250 /* , { leading: true } */);
+  const debouncedSaveReducer = debounce(saveReducer, 250, { leading: true });
   return debouncedSaveReducer;
 };
 /* eslint-enable */

@@ -11,7 +11,7 @@
 */
 
 import uuid from 'uuid';
-import _ from 'lodash'; // eslint-disable-line
+import { cloneDeep, isEqual } from 'lodash'; // eslint-disable-line
 import { save } from './save.js';
 
 // export { inSync } from './save.js';
@@ -104,7 +104,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
 
   const setReducer = (doc) => {
     const { _rev, _id: reducer, state: dbState } = doc;// eslint-disable-line
-    const state = _.cloneDeep(dbState);
+    const state = cloneDeep(dbState);
 
     store.dispatch({
       _rev,
@@ -138,12 +138,12 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
       if (remoteDb) {
         remoteInitError = await initFromDB(remoteDb, reducerName);
         if (remoteInitError && remoteInitError.status === 404) {
-          return _saveReducer(reducerName, _.cloneDeep(state));
+          return _saveReducer(reducerName, cloneDeep(state));
         }
         return;// eslint-disable-line
       }
 
-      return _saveReducer(reducerName, _.cloneDeep(state));
+      return _saveReducer(reducerName, cloneDeep(state));
     }
     if (localInitError || remoteInitError) {
       throw Error(localInitError || remoteInitError);
@@ -161,8 +161,8 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
       .on('change', (change) => {
         if (change.doc.localId !== CLIENT_HASH) {
           if (!change.doc.state) {
-            _saveReducer(change.doc._id, _.cloneDeep(_currentState));
-          } else if (!_.isEqual(_.cloneDeep(change.doc.state), _currentState)) {
+            _saveReducer(change.doc._id, cloneDeep(_currentState));
+          } else if (!isEqual(cloneDeep(change.doc.state), _currentState)) {
             setReducer(change.doc);
           }
         }
@@ -194,7 +194,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
     saveReducer = save(localDb, CLIENT_HASH);
 
     if (prefetched) {
-      await saveReducer(reducerName, _.cloneDeep(state));
+      await saveReducer(reducerName, cloneDeep(state));
     } else {
       await initDBState(state, localDb, remoteDb, reducerName, saveReducer);
     }
@@ -276,10 +276,10 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
         }
 
         isInitialized = initializedReducers[reducerName];
-        if (isInitialized && !_.isEqual(nextState, currentState)) {
+        if (isInitialized && !isEqual(nextState, currentState)) {
           currentState = nextState;
           try {
-            saveReducer(reducerName, _.cloneDeep(currentState));
+            saveReducer(reducerName, cloneDeep(currentState));
           } catch (e) {
             console.log('saveReducerError::', e);
           }

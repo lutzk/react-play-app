@@ -1,4 +1,4 @@
-import _ from 'lodash'; // eslint-disable-line
+import { get, orderBy } from 'lodash'; // eslint-disable-line
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
@@ -16,7 +16,7 @@ const filterByFieldValue = (list, filter) => {
     const combinedFilterMatrix = [];
     filter.map((filterItem) => { // eslint-disable-line
       if (filterItem !== undefined) {
-        if (_.get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
+        if (get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
           return combinedFilterMatrix.push(1);
         }
         return combinedFilterMatrix.push(0);
@@ -158,7 +158,7 @@ const sortList = ({ list, sorts, filter, range } = {}) => {
 
   sortedList = filterList({
     range,
-    list: _.orderBy(sortedList, fields, orders),
+    list: orderBy(sortedList, fields, orders),
   });
 
   return sortedList;

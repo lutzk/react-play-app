@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { asyncConnect } from 'redux-connect';
 // import cn from 'classnames';
-import _ from 'lodash'; // eslint-disable-line
+import { get } from 'lodash'; // eslint-disable-line
 import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 import { PATHS } from '../../../config/pathsConfig';
@@ -65,8 +65,8 @@ export default class App extends Component {
   componentWillReceiveProps(nextProps) { // eslint-disable-line
     const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
     if (!this.props.user.user && nextProps.user.user) {
-      const nextPathnameFromState = _.get(nextProps, 'location.state.nextPathname', false);
-      const status = _.get(nextProps, 'routes[1].status', false);
+      const nextPathnameFromState = get(nextProps, 'location.state.nextPathname', false);
+      const status = get(nextProps, 'routes[1].status', false);
       const status404 = status && status === 404;
 
       // check if it matches a route at all
