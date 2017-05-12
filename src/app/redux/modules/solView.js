@@ -15,6 +15,8 @@ const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
 const availableSorts = { fields: ['id', 'earth_date', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
 
+const reducerName = 'SolView';
+
 const defaultFilter = {
   fields: {
     id: {
@@ -84,7 +86,7 @@ function solView(state = initialState, action = {}) {
       };
 
     case '@@redux-pouchdb-plus/SET_REDUCER':
-      if (action.reducer === 'solView') {
+      if (action.reducer === reducerName) {
         if (action.state.prefetched) {
           return {
             ...state,
@@ -164,7 +166,7 @@ const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-const solViewReducer = persistentReducer(solView);
+const solViewReducer = persistentReducer(solView, reducerName);
 
 export {
   updateList,

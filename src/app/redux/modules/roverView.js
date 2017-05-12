@@ -13,6 +13,8 @@ const GET_MANIFEST = 'roverView/GET_MANIFEST';
 const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 
+const reducerName = 'RoverView';
+
 // const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
 // const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
 
@@ -87,7 +89,7 @@ function roverView(state = initialState, action = {}) {
       };
 
     case '@@redux-pouchdb-plus/REDUCER_READY':
-      if (action.reducerName === 'roverView') {
+      if (action.reducerName === reducerName) {
         return {
           ...state,
           ready: true,
@@ -192,7 +194,7 @@ const updateList = ({ sorts, filter, range } = {}) => {
 };
 
 const initPage = ({ waiter, store, rover, readyListener }) => (dispatch) => {
-  const NAME = 'RoverView';
+  const NAME = reducerName;
   const roverViewState = store.getState().roverView;
   const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
 
@@ -222,7 +224,7 @@ const initPage = ({ waiter, store, rover, readyListener }) => (dispatch) => {
 };
 
 
-const roverViewReducer = persistentReducer(roverView);
+const roverViewReducer = persistentReducer(roverView, reducerName);
 
 export {
   initPage,

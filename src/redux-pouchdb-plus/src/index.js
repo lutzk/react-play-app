@@ -88,7 +88,7 @@ let syncInit;
 let syncHandler;
 let dbsDestroyd;
 
-const persistentReducer = (reducer/* , reducerOptions = {} */) => {
+const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
 
   let store;
   let changes;
@@ -98,7 +98,7 @@ const persistentReducer = (reducer/* , reducerOptions = {} */) => {
   // let syncHandler;
   // let syncInit;
 
-  const reducerName = reducer.name;
+  const reducerName = name;
 
   initializedReducers[reducerName] = false;
 
