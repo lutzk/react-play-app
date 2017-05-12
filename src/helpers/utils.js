@@ -20,7 +20,7 @@ const parseJsonFile = _path => promisedReadFile(_path, 'utf8')
 
 const getJsonData = (options = { path: false, empty: true }) => {
   const { path, empty } = options;
-  if (!empty) {
+  if (!empty && path) {
     return parseJsonFile(path)
       .then(assets => assets ? assets : false);// eslint-disable-line
   }
@@ -37,30 +37,8 @@ const toHex = (string) => {
   return hex;
 };
 
-// const createErrorResponse = ({ status = 404, text = 'not found' } = {}) => ({
-//   error: {
-//     status,
-//     response: { text },
-//   },
-// });
-
-// const filterParams = (params) => {
-//   const filtered = {};
-//   Object.keys(params).map((key) => { // eslint-disable-line
-//     if (params[key] !== undefined && params[key] !== 'false') {
-//       filtered[key] = params[key];
-//     }
-//   });
-
-//   return filtered;
-// };
-
 export {
   toHex,
   asyncWrap,
   getJsonData,
-  // filterParams,
-  // promisedReadFile,
-  // promisedJsonParse,
-  // createErrorResponse,
 };

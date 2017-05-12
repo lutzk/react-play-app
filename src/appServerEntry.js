@@ -18,13 +18,18 @@ if (global.__DEVELOPMENT__) {
   })();
 }
 
-const serverAssets = getJsonData({
-  empty: global.__DEVELOPMENT__,
-});
+const dev = global.__DEVELOPMENT__;
+const options = {
+  ...(dev ?
+      { empty: true }
+      : { path: './webpack-assets.json' }),
+};
 
-const startServer = () =>
-  import('./appServer/startServer').then(server =>
-    server.startServer({ serverAssets }))
-    .catch(e => console.log('serverError:', e));
+const startServer = async () => {
+  const serverAssets = await getJsonData(options);
+  const server = await import('./appServer/startServer');
+
+  server.startServer({ serverAssets });
+};
 
 startServer();
