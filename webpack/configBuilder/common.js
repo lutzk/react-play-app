@@ -2,7 +2,6 @@ import nodeExternals from 'webpack-node-externals';
 import {
   host,
   context,
-  vendorList,
   assetsPath,
   publicPathDev,
   publicPathProd,
@@ -22,7 +21,6 @@ const getServerEntry = kind => ({
 });
 
 const clientEntry = {
-  vendor: vendorList,
   main: [
     'app/theme/styles/main.sass',
     'app/client.js',

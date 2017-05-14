@@ -22,22 +22,6 @@ const apiServer = 'apiServer.js';
 const relativeAppServerBuildPath = `${relativeServerBuildPath}${appServer}`;
 const relativeApiServerBuildPath = `${relativeServerBuildPath}${apiServer}`;
 
-const vendorList = [
-  'react',
-  'react-dom',
-  'redux',
-  'react-redux',
-  'react-router',
-  'react-router-redux',
-  'react-router-scroll',
-  'react-tap-event-plugin',
-  'redux-connect',
-  'redux-thunk',
-  'superagent',
-  'classnames',
-  'pouchdb',
-];
-
 const fileTests = {
   js: /\.js$/,
   css: /\.css$/,
@@ -51,7 +35,6 @@ export {
   rootPath,
   fileTests,
   embedLimit,
-  vendorList,
   assetsPath,
   publicPathDev,
   publicPathProd,

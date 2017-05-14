@@ -8,13 +8,39 @@ import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relat
 
 const buildCommonChunksPlugin = (prod) => {
   const options = {
-    names: ['vendor', 'manifest'],
+    name: 'vendor',
     filename: prod ? '[name]-[chunkhash].js' : '[name].js',
-    minChunks: Infinity,
-    // async: '[name]-[hash].js'
-    // children: true
+    minChunks(module, count) {
+      const ctx = module.context;
+      if (ctx.indexOf('redux-connect') > -1) {
+        console.log('___BPF__MODULE__', module.context);
+      }
+      return ctx && ctx.indexOf('node_modules') >= 0;
+    },
+    // minChunks: Infinity,
   };
-  return new webpack.optimize.CommonsChunkPlugin(options);
+
+  const manifestOptions = {
+    name: 'manifest',
+  };
+
+  const asyncOptions = {
+    async: true,
+    children: true,
+    // minChunks: 1,
+    minChunks: Infinity,
+    // minChunks(module, count) {
+    //   const ctx = module.context;
+    //   // node_modules/core-js
+    //   return ctx && ctx.indexOf('redux-connect') >= 0 && ctx.indexOf('node_modules') >= 0;
+    // },
+  };
+
+  return [
+    new webpack.optimize.CommonsChunkPlugin(options),
+    new webpack.optimize.CommonsChunkPlugin(asyncOptions),
+    new webpack.optimize.CommonsChunkPlugin(manifestOptions),
+  ];
 };
 
 const namedModulesPlugin = new webpack.NamedModulesPlugin();
@@ -105,7 +131,7 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
-    buildCommonChunksPlugin(prod),
+    ...buildCommonChunksPlugin(prod),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
   ];
