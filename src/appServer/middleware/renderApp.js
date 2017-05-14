@@ -47,11 +47,6 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     assets = res.locals.devAssets;
   }
 
-  if (global.__DISABLE_SSR__) {
-    hydrateOnClient(assets);
-    return;
-  }
-
   match(
     { history, routes, location: req.originalUrl },
     (error, redirectLocation, renderProps) => {
