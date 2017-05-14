@@ -17,6 +17,7 @@ const buildCommonChunksPlugin = (prod) => {
   return new webpack.optimize.CommonsChunkPlugin(options);
 };
 
+const namedModulesPlugin = new webpack.NamedModulesPlugin();
 const hmrPlugin = new webpack.HotModuleReplacementPlugin();
 const statsPlugin = new StatsPlugin();
 const caseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
@@ -80,6 +81,8 @@ const createCleanPlugin = path => new CleanPlugin([path], {
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
+    namedModulesPlugin,
+    ...(prod ? [] : [hmrPlugin]),
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,
     buildEnvPlugin({ server: true, prod }),

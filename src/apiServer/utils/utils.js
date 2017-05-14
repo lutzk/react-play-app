@@ -3,6 +3,7 @@ import Promise from 'bluebird';
 
 const asyncWrap = fn => (...args) => fn(...args).catch(args[2]);
 const promisedReadFile = Promise.promisify(fs.readFile);
+const promisedStat = Promise.promisify(fs.stat);
 const promisedJsonParse = json => new Promise((resolve, reject) => {
   try {
     resolve(JSON.parse(json));
@@ -48,6 +49,7 @@ export { isCouchDBUp } from './checkConnectivity';
 export {
   asyncWrap,
   getJsonData,
+  promisedStat,
   filterParams,
   promisedReadFile,
   promisedJsonParse,

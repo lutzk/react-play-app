@@ -18,7 +18,7 @@ const baseConfig = {
 };
 
 const getServerEntry = kind => ({
-  [`${kind}Server`]: [`${kind}ServerEntry.js`],
+  [`${kind}Server`]: ['webpack/hot/poll?1000', `${kind}ServerEntry.js`],
 });
 
 const clientEntry = {
@@ -65,7 +65,9 @@ const targetNode = {
     __dirname: false,
     __filename: false,
   },
-  externals: [nodeExternals()],
+  externals: [nodeExternals({
+    whitelist: [/^webpack\/hot/]
+  })],
 };
 
 const extensions = ['.js'];

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { match, createMemoryHistory } from 'react-router';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
 import { Html, logJSON } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { ApiClient } from '../../helpers/ApiClient';
@@ -63,20 +65,18 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
       } else if (renderProps) {
 
-        loadOnServer({ ...renderProps, store /* , helpers: { client } */ })
+        loadOnServer({ ...renderProps, store })
         .then(() => {
           const component = (
             <Provider store={store} key="appProvider">
               <ReduxAsyncConnect { ...renderProps } />
             </Provider>
           );
+          injectTapEventPlugin();
           const html = `${doctype}${renderHtml(store, assets, component)}`;
           res.status(200);
           res.send(html);
         })
-        // .catch((err) => {
-        //   logJSON({ catchError: err }, 'error');
-        // });
         .catch(next);
       } else {
         res.status(404).send('Not found');
