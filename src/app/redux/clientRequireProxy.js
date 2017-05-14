@@ -1,4 +1,5 @@
-import PouchDB from 'pouchdb';
+// import PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb-browser';
 import DevTools from '../containers/DevTools/DevTools';
 import { persistentStore } from '../../redux-pouchdb-plus/src/index';
 
