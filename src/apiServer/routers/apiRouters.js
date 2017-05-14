@@ -8,12 +8,6 @@ const apiRouter = express.Router();// eslint-disable-line
 const publicApiRouter = express.Router();// eslint-disable-line
 
 const apiActions = { logout, nasa, userCouch };
-// const publicActions = { login, signup, loadAuth };
-
-// const publicActionsMap = [
-//   { login: { verb: 'post' } },
-//   { signup: { verb: 'post' } },
-//   { loadAuth: { verb: 'get' } }];
 
 const handler = ({ action, params } = {}) => aw(async (req, res, next) => {
   const result = await action(req, params);
@@ -40,7 +34,6 @@ const handler = ({ action, params } = {}) => aw(async (req, res, next) => {
 
   return res.json(result);
 });
-    // }).catch(next));
 
 const apiHandler = () => (req, res, next) => {
   let pathsInUrl;
