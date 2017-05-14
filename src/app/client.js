@@ -29,7 +29,7 @@ const asyncConnectRender = applyRouterMiddleware(useScroll());
 const renderRouter = props =>
   <ReduxAsyncConnect
     { ...props }
-    filter={ item => !item.deferred }
+    // filter={ item => !item.deferred }
     render={ asyncConnectRender } />;
 
 const render = (_routes, renderProps) => {
