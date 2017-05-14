@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { match, createMemoryHistory } from 'react-router';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import { Html, logJSON } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { ApiClient } from '../../helpers/ApiClient';
 import { getRoutes } from '../../app/routes';
 import { createStore } from '../../app/redux/create';
+
+require('../../helpers/reactTapEventPlugin');
+
 
 const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
@@ -72,7 +74,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
               <ReduxAsyncConnect { ...renderProps } />
             </Provider>
           );
-          injectTapEventPlugin();
+
           const html = `${doctype}${renderHtml(store, assets, component)}`;
           res.status(200);
           res.send(html);
