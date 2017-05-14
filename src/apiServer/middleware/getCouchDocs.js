@@ -14,12 +14,11 @@ const fetchDoc = async (db, docName) => {
   return doc;
 };
 
-const fetchDocsFromCouch = (db) => {
+const fetchDocsFromCouch = (couch) => {
 
-  const docsToFetch = ['roverView', 'solView'];
-  const docs = docsToFetch.map(key =>
-    // doc = await fetchDoc(db, key);
-    fetchDoc(db, key).then((doc) => {
+  const docsToFetch = ['RoverView', 'SolView'];
+  const docs = docsToFetch.map(docKey =>
+    fetchDoc(couch, docKey).then((doc) => {
       if (doc._id) {
         return {
           name: doc._id,
