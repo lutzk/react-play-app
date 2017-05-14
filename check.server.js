@@ -3,6 +3,9 @@
 (function () {
   require('./setEnv');
   let filePath;
+  let found = false;
+  let checker = null;
+  const fs = require('fs');
   const keys = ['app', 'api'];
   const checKey = key => (key && keys.indexOf(key) > -1);
   const getFilePath = (key = 'app') => `./bin/${key}Server.js`;
@@ -12,10 +15,6 @@
   } else {
     filePath = getFilePath();
   }
-
-  const fs = require('fs');
-  let found = false;
-  let checker = null;
 
   const check = () => {
     let file = null;
