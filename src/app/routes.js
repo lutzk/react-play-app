@@ -14,7 +14,7 @@ const getRoutes = (store) => {
     function checkAuth() {
       const { user: { user } } = store.getState();
       if (!user) {
-        const target = nextState.location.pathname.substring(0, 6) !== PATHS.LOGIN ? `/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`;
+        const target = nextState.location.pathname.substring(0, 6) !== `/${PATHS.LOGIN}` ? `/${PATHS.LOGIN}` : `/${PATHS.LOGIN}`;
         replace({
           pathname: target,
           state: { nextPathname: nextState.location.pathname },
