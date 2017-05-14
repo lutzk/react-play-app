@@ -3,8 +3,8 @@
   "scripts": {
     "check-app-server": "node ./check.server app",
     "check-api-server": "node ./check.server api",
-    "dev-app-server-watch": "webpack --env dev.appServer --progress --profile --colors --sort-modules-by size --display-error-details --config webpack/webpackConfig.js --watch",
-    "dev-api-server-watch": "webpack --env dev.apiServer --progress --profile --colors --sort-modules-by size --display-error-details --config webpack/webpackConfig.js --watch",
+    "dev-app-server-watch": "webpack --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
+    "dev-api-server-watch": "webpack --env dev.apiServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-client-watch-server": "node webpack/webpackDevServer.js",
     "prod-app-server": "webpack --env prod.appServer --display-used-exports --display-error-details --config webpack/webpackConfig.js",
     "prod-api-server": "webpack --env prod.apiServer --display-used-exports --display-error-details --config webpack/webpackConfig.js",
@@ -88,7 +88,6 @@
     "superagent": "^3.5.0",
     "superlogin": "^0.6.1",
     "uuid": "^3.0.1",
-    "webpack-bundle-analyzer": "^2.7.0",
-    "webpack-shell-plugin": "^0.5.0"
+    "webpack-bundle-analyzer": "^2.7.0"
   }
 }
