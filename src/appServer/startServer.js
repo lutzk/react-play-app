@@ -39,10 +39,10 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
 
   return app.listen(port, (err) => {
     if (err) {
-      console.log('__start app server error', err);
+      console.log('start app server error', err);
       throw Error(err);
     } else {
-      console.info(`server is up and runns on: //${host}:${port}`);
+      console.info(`server is up and runs on: //${host}:${port}`);
     }
   });
 };
