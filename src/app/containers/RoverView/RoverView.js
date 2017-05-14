@@ -35,6 +35,8 @@ const asyncInfo = {
 };
 
 const mapStateToProps = state => ({
+  syncing: state.app.syncing,
+  savedData: state.app.savedData,
   sorts: state.roverView.sorts,
   range: state.roverView.range,
   maxSol: state.roverView.maxSol,
@@ -62,6 +64,8 @@ const mapDispatchToProps = dispatch =>
 export default class RoverView extends Component {
 
   static propTypes = {
+    syncing: PropTypes.bool,
+    savedData: PropTypes.object,
     range: PropTypes.object,
     sorts: PropTypes.object,
     filter: PropTypes.object,
@@ -144,6 +148,8 @@ export default class RoverView extends Component {
     const {
       loaded,
       loading,
+      syncing,
+      savedData,
       manifestLoadError,
     } = this.props;
 
@@ -276,6 +282,8 @@ export default class RoverView extends Component {
       <div className="page roverView">
         <div className="pageHeader">
           <h1>RoverView</h1>
+          {syncing && <div>...SAVING DATA ...</div>}
+          {savedData && !syncing && <div>...SAVED!</div>}
           <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
 
           {loadPane}

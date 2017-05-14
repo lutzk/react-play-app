@@ -25,10 +25,19 @@ const INIT = '@@redux-pouchdb-plus/INIT';
 const RESET = '@@redux-pouchdb-plus/RESET';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
 const REINIT_SUCCESS = '@@redux-pouchdb-plus/REINIT_SUCCESS';
-const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
+// const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
 const REQUEST_REINIT = '@@redux-pouchdb-plus/REQUEST_REINIT';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 const REDUCER_READY = '@@redux-pouchdb-plus/REDUCER_READY';
+
+const SYNC = '@@redux-pouchdb-plus/START_SYNC';
+const SYNC_SUCCESS = '@@redux-pouchdb-plus/SYNC_SUCCESS';
+const SYNC_FAIL = '@@redux-pouchdb-plus/SYNC_FAIL';
+
+let DBS;
+let syncInit;
+let syncHandler;
+let dbsDestroyd;
 
 const initializedReducers = {};
 
@@ -68,7 +77,11 @@ const isUserPresent = (store) => { // eslint-disable-line
   return (userState && userState.user && userState.user.userId);
 };
 
-const initSync = (localDb, remoteDb, reducerNames) =>
+const setSyncing = reducerName => dispatch => dispatch({ type: SYNC, reducerName });
+const setSyncSuccess = (reducerName, data) => dispatch => dispatch({ type: SYNC_SUCCESS, reducerName, data });
+const setSyncError = (reducerName, error) => dispatch => dispatch({ type: SYNC_FAIL, reducerName, error });
+
+const initSync = (localDb, remoteDb, reducerNames, store) =>// eslint-disable-line
   localDb
     .replicate.to(remoteDb, {
       live: true,
@@ -76,17 +89,26 @@ const initSync = (localDb, remoteDb, reducerNames) =>
       doc_ids: reducerNames,
       // batch_size: 20,
       // heartbeat: 10000,
+      conflicts: true,
+    })
+    .on('active', () => {
+      console.log('__ACTIVE');
+      if (syncInit) {// eslint-disable-line
+        setSyncing('RoverView')(store.dispatch);
+      }
+    })
+    .on('change', (b) => {
+      console.log('__CHANGE', b);
+      setSyncSuccess('RoverView', b)(store.dispatch);
+    })
+    .on('complete', (d) => {
+      console.log('__COMPLETE', d);
+    })
+    .on('error', (e) => {
+      console.log('__ERROR', e);
+      setSyncError(e)(store.dispatch);
     });
-    // .on('active', () => console.log('__ACTIVE'))
-    // .on('change', () => console.log('__CHANGE', inSync()));
-    // .on('complete', () => console.log('__COMPLETE'))
-    // .on('error', e => console.log('__ERROR', e));
     // bla
-
-let DBS;
-let syncInit;
-let syncHandler;
-let dbsDestroyd;
 
 const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
 
@@ -95,8 +117,6 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
   let saveReducer;
   let initialState;
   let currentState;
-  // let syncHandler;
-  // let syncInit;
 
   const reducerName = name;
 
@@ -157,8 +177,10 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
         since: 'now',
         doc_ids: [reducerName],
         include_docs: true,
+        conflicts: true,
       })
       .on('change', (change) => {
+        console.log('__CHANGES___', change);
         if (change.doc.localId !== CLIENT_HASH) {
           if (!change.doc.state) {
             _saveReducer(change.doc._id, cloneDeep(_currentState));
@@ -204,7 +226,7 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
     const ready = checkReady(initializedReducerKeys, initializedReducers);
 
     if (ready && remoteDb && !syncInit) {
-      syncHandler = initSync(localDb, remoteDb, initializedReducerKeys);
+      syncHandler = initSync(localDb, remoteDb, initializedReducerKeys, store);
       syncInit = true;
       setReady();
     }
@@ -299,4 +321,7 @@ export {
   requestReinit,
   persistentStore,
   persistentReducer,
+  SYNC,
+  SYNC_SUCCESS,
+  SYNC_FAIL,
 };
