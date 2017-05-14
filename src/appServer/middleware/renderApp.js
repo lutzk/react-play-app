@@ -43,7 +43,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     );
 
   // in dev
-  if (global.__DEVELOPMENT__ && res.locals.devAssets) {
+  if (__DEVELOPMENT__ && res.locals.devAssets) {
     assets = res.locals.devAssets;
   }
 

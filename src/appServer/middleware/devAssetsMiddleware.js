@@ -4,7 +4,7 @@ import { devAssetServerPath } from '../../config/appConfig';
 import { asyncWrap as aw } from '../../helpers/utils';
 
 const devAssetsMiddleware = () => aw(async (req, res, next) => {
-  if (!global.__DEVELOPMENT__) {
+  if (!__DEVELOPMENT__) {
     return next();
   }
 

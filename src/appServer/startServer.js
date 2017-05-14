@@ -20,7 +20,7 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
     throw Error('ERROR: No PORT environment variable has been specified');
   }
 
-  if (global.__DEVELOPMENT__) {
+  if (__DEVELOPMENT__) {
     app
       .use(faviconReqKiller())
       .use(devAssetsMiddleware());
