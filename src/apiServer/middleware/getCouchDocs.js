@@ -1,4 +1,4 @@
-import PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb'; // eslint-disable-line
 import { asyncWrap as wrap } from '../utils/utils';
 import { slCouchPath, couchDBProxyPath } from '../config';
 
