@@ -30,11 +30,23 @@ const getRoutes = (store) => {
     }
   };
 
-  const routesPath = __DEVELOPMENT__ ? 'dev' : 'prod';
-  const HomeRoute = require(`./${routesPath}Routes`).HomeRoute;// eslint-disable-line
-  const RoverViewRoute = require(`./${routesPath}Routes`).RoverViewRoute;// eslint-disable-line
-  const SolViewRoute = require(`./${routesPath}Routes`).SolViewRoute;// eslint-disable-line
-  const NotFoundRoute = require(`./${routesPath}Routes`).NotFoundRoute;// eslint-disable-line
+  let HomeRoute;
+  let RoverViewRoute;
+  let SolViewRoute;
+  let NotFoundRoute;
+
+  if (__DEVELOPMENT__) {
+    HomeRoute = require('./devRoutes').HomeRoute;
+    RoverViewRoute = require('./devRoutes').RoverViewRoute;
+    SolViewRoute = require('./devRoutes').SolViewRoute;
+    NotFoundRoute = require('./devRoutes').NotFoundRoute;
+
+  } else {
+    HomeRoute = require('./prodRoutes').HomeRoute;
+    RoverViewRoute = require('./prodRoutes').RoverViewRoute;
+    SolViewRoute = require('./prodRoutes').SolViewRoute;
+    NotFoundRoute = require('./prodRoutes').NotFoundRoute;
+  }
 
   return (
     <Route path={PATHS.ROOT} component={App}>
