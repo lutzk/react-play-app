@@ -1,4 +1,4 @@
-import { SYNC, SYNC_SUCCESS, SYNC_FAIL } from '../../../redux-pouchdb-plus/src/index';
+import { SYNC, SYNC_SUCCESS /* , SYNC_FAIL */ } from '../../../redux-pouchdb-plus/src/index';
 
 const initialState = {};
 
