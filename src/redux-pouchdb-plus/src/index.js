@@ -79,7 +79,7 @@ const isUserPresent = (store) => { // eslint-disable-line
 
 const setSyncing = reducerName => dispatch => dispatch({ type: SYNC, reducerName });
 const setSyncSuccess = (reducerName, data) => dispatch => dispatch({ type: SYNC_SUCCESS, reducerName, data });
-const setSyncError = (reducerName, error) => dispatch => dispatch({ type: SYNC_FAIL, reducerName, error });
+const setSyncfail = (reducerName, error) => dispatch => dispatch({ type: SYNC_FAIL, reducerName, error });
 
 const initSync = (localDb, remoteDb, reducerNames, store) =>// eslint-disable-line
   localDb
@@ -89,7 +89,6 @@ const initSync = (localDb, remoteDb, reducerNames, store) =>// eslint-disable-li
       doc_ids: reducerNames,
       // batch_size: 20,
       // heartbeat: 10000,
-      conflicts: true,
     })
     .on('active', () => {
       console.log('__ACTIVE');
@@ -106,7 +105,7 @@ const initSync = (localDb, remoteDb, reducerNames, store) =>// eslint-disable-li
     })
     .on('error', (e) => {
       console.log('__ERROR', e);
-      setSyncError(e)(store.dispatch);
+      setSyncfail(e)(store.dispatch);
     });
     // bla
 
