@@ -19,11 +19,31 @@ const getRoverManifestOffline = () => wrap(async (req, res, next) => {
   return res.end();
 });
 
+const getSolManifestOffline = () => wrap(async (req, res, next) => {
+  console.log('__here 2');
+  let sol = 55;
+  let rover = 'spirit';
+  if (req.params && req.params.sol && req.params.rover) {
+    sol = Math.round(Math.random()) ? 55 : 1000;// req.params.sol;
+    rover = req.params.rover.toLowerCase();
+    const solManifest = await getJsonData({ path: `./nasaJsons/${rover}_sol_${sol}.json` });
+    if (solManifest) {
+      res.status(200);
+      res.send(solManifest);
+      return res.end();
+    }
+  }
+
+  res.status(404);
+  res.send({ error: 'NOT FOUND' });
+  return res.end();
+});
+
 const roverRouter = express.Router();// eslint-disable-line
 const { offlineSolRoute, offlineRoverRoute } = nasaApiConfig;
 
 roverRouter
-  .use(offlineRoverRoute, getRoverManifestOffline())
-  .use(offlineSolRoute, getRoverManifestOffline());
+  .use(offlineSolRoute, getSolManifestOffline())
+  .use(offlineRoverRoute, getRoverManifestOffline());
 
 export default roverRouter;

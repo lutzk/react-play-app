@@ -34,10 +34,10 @@ const roverPath = '/rover';
 const solRoute = `${solPath}/:sol`;
 const roverRoute = `${roverPath}/:rover`;
 
-const offlineSolRoute = `${offlineNasaPath}${solRoute}`;
+const offlineSolRoute = `${offlineNasaPath}${roverRoute}${solRoute}`;
 const offlineRoverRoute = `${offlineNasaPath}${roverRoute}`;
 
-const offlineSolPath = `${nasaApiPath}${offlineNasaPath}${solPath}`;
+const offlineSolPath = `${nasaApiPath}${offlineNasaPath}`;
 const offlineRoverPath = `${nasaApiPath}${offlineNasaPath}${roverPath}`;
 
 const couchApi = '/sl-users';
