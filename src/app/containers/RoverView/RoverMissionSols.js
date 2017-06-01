@@ -22,8 +22,8 @@ const RoverMissionSols = (input) => {
 
   const solsCards = sols.map((sol, index) => (
     <Link key={index} data-sol={sol.sol} className="solCard" to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}/${PATHS.SOL}/${sol.sol}`}>
-      <span className={'sol_card_sol'}>sol:&nbsp;{sol.sol}</span>;
-      <span className={'sol_card_sol'}>totalPhotos:&nbsp;{sol.totalPhotos}</span>;
+      <span className={'sol_card_sol'}>sol:&nbsp;{sol.sol}</span>
+      <span className={'sol_card_totalPhotos'}>totalPhotos:&nbsp;{sol.totalPhotos}</span>
       <span className={'sol_card_cameras'}>
         cams:&nbsp;
         {sol.cameras.map((cam, j) => (
