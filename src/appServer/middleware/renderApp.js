@@ -39,8 +39,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
   const hydrateOnClient = _assets =>
     res.send(
       `${doctype}${ReactDOM.renderToString(
-        <Html store={store} assets={_assets} />)}`
-    );
+        <Html store={store} assets={_assets} />)}`);
 
   // in dev
   if (__DEVELOPMENT__ && res.locals.devAssets) {
@@ -54,14 +53,11 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
         logJSON(error, 'error');
         res.status(500);
         hydrateOnClient(assets);
-        next();
 
       } else if (redirectLocation) {
         res.redirect(`${redirectLocation.pathname}${redirectLocation.search}`);
-        next();
 
       } else if (renderProps) {
-
         loadOnServer({ ...renderProps, store })
         .then(() => {
           const component = (
@@ -76,6 +72,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
         })
         .catch(next);
       } else {
+        // res.redirect('/404');
         res.status(404).send('Not found');
       }
     });
