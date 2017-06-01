@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import ApiClient from '../../utils/ApiClient';
 import { slLogoutPath } from '../../config';
 

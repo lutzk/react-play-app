@@ -1,9 +1,9 @@
 import fs from 'fs';
-import Promise from 'bluebird';
+import { promisify } from 'util';
 
 const asyncWrap = fn => (...args) => fn(...args).catch(args[2]);
-const promisedReadFile = Promise.promisify(fs.readFile);
-const promisedStat = Promise.promisify(fs.stat);
+const promisedReadFile = promisify(fs.readFile);
+const promisedStat = promisify(fs.stat);
 const promisedJsonParse = json => new Promise((resolve, reject) => {
   try {
     resolve(JSON.parse(json));
