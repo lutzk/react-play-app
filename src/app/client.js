@@ -13,6 +13,7 @@ import { Router, browserHistory, applyRouterMiddleware, match } from 'react-rout
 import { getRoutes } from './routes';
 import { ApiClient } from '../helpers/ApiClient';
 import { createStore } from './redux/create';
+import { initCacheWorker } from './workers/utils';
 
 const client = new ApiClient();
 const store = createStore({
@@ -27,12 +28,10 @@ const routes = getRoutes(store);
 const asyncConnectRender = applyRouterMiddleware(useScroll());
 
 const renderRouter = props =>
-  <ReduxAsyncConnect
-    { ...props }
-    // filter={ item => !item.deferred }
-    render={ asyncConnectRender } />;
+  <ReduxAsyncConnect { ...props } render={ asyncConnectRender } />;
 
 const render = (_routes, renderProps) => {
+  let dom = null;
   const App = (
     <Provider store={store} key="appProvider">
       <Router
@@ -43,8 +42,6 @@ const render = (_routes, renderProps) => {
       </Router>
     </Provider>);
 
-  let dom = null;
-
   if (__DEVELOPMENT__) {
     dom = ReactDOM.render(
       <HotReloader>
@@ -52,6 +49,7 @@ const render = (_routes, renderProps) => {
       </HotReloader>,
       rootDomNode
     );
+
   } else {
     dom = ReactDOM.render(App, rootDomNode);
   }
@@ -85,19 +83,21 @@ const renderDevStuff = () => {
 
 injectTapEventPlugin();
 FastClick.attach(document.body);
-
+const t = '/worker.cache.js';
 match(
-  { history, routes },
-  (error, redirectLocation, renderProps) => {
-    render(routes, renderProps);
-
-    if (__DEVELOPMENT__) {
-      renderDevStuff();
-
-      if (module.hot) {
-        module.hot.accept('./routes',
-          () => render(getRoutes(store), renderProps));
-      }
-    }
-  }
-);
+   { history, routes },
+   (error, redirectLocation, renderProps) => {
+     console.log('__match');
+     render(routes, renderProps);
+     initCacheWorker(t).then((a) => {
+       console.log('__worker', t, 'set up', a, t);
+     });
+     if (__DEVELOPMENT__) {
+       renderDevStuff();
+       if (module.hot) {
+         module.hot.accept('./routes',
+           () => render(getRoutes(store), renderProps));
+       }
+     }
+   }
+ );
