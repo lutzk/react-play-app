@@ -1,6 +1,7 @@
 import { reinit, reset, requestReinit } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
 import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
+import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
 
 const clientMiddleware = client => ({ dispatch, getState }) => next => async (action) => {
 
@@ -19,8 +20,11 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
   dispatch(startLoading());
   result = await promise(client);
 
-  if (result.error) {
-    if (result.error.status === 401) {
+  const { error } = result;
+
+  if (error) {
+    const { status } = error;
+    if (status === 401) {
       dispatch(endLoading(true));
       return next({
         ...rest,
@@ -29,34 +33,32 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => async (ac
       });
     }
 
-    if (result.error.status === 500) {
+    if (status === 500) {
       dispatch(endLoading(true));
-      return next({ ...rest, error: result.error, type: FAILURE });
+      return next({ ...rest, error, type: FAILURE });
     }
     dispatch(endLoading(true));
-    return next({ ...rest, error: result.error, type: FAILURE });
+    return next({ ...rest, error, type: FAILURE });
   }
 
   if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
     return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(requestReinit()))
+      .then(async () => {
+        dispatch(requestReinit());
+        const state = getState();
+        const msg = { user: state.user, ...SYNC_INITIAL };
+        const sendMsg = state.app.sendMsgToWorker;
+        await sendMsg(msg);
+        return dispatch(reinit());
+      });
+  }
+
+  if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
+    return dispatch({ ...rest, result, type: SUCCESS })
       .then(() => {
-        const dbs = require('../clientRequireProxy').db(getState());
-        return dbs.remote.replicate.to(dbs.local, { live: false });
-      })
-      .then(() => dispatch(reinit()));
-  }
-
-  if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
-    return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reset()))
-      .then(() => dispatch(endLoading()));
-  }
-
-  if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
-    return dispatch({ ...rest, result, type: SUCCESS })
-      .then(() => dispatch(reset()))
-      .then(() => dispatch(endLoading()));
+        dispatch(reset());
+        dispatch(endLoading());
+      });
   }
 
   dispatch(endLoading());

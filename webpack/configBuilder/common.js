@@ -16,8 +16,11 @@ const baseConfig = {
   // performance: { hints: true }
 };
 
-const getServerEntry = kind => ({
-  [`${kind}Server`]: ['webpack/hot/poll?1000', `${kind}ServerEntry.js`],
+const getServerEntry = ({ kind, prod }) => ({ // eslint-disable-line
+  [`${kind}Server`]: [
+    ...(!prod ? ['webpack/hot/poll?1000'] : []),
+    `${kind}ServerEntry.js`,
+  ],
 });
 
 const clientEntry = {
@@ -33,6 +36,11 @@ const clientDevHMR = [
   hmrSource,
 ];
 
+const getWorkerEntry = ({ prod, worker }) => ({
+  worker: `app/workers/${worker}Worker`,
+  ...(!prod ? [hmrSource] : []),
+});
+
 // output
 const serverOutput = {
   path: serverBuildPath,
@@ -43,9 +51,20 @@ const serverOutput = {
 const clientOutput = {
   path: assetsPath,
   publicPath: publicPathDev,
-  filename: '[name]-[chunkhash].js',
-  chunkFilename: '[name]-[chunkhash].js',
+  filename: '[name].js',
+  chunkFilename: '[name].js',
+  // filename: '[name]-[chunkhash].js',
+  // chunkFilename: '[name]-[chunkhash].js',
 };
+
+const getWorkerOutput = worker => ({
+  path: `${context}/static/`,
+  publicPath: publicPathDev,
+  filename: `[name].${worker}.js`,
+  chunkFilename: `[name].${worker}.js`,
+  // filename: '[name]-[chunkhash].js',
+  // chunkFilename: '[name]-[chunkhash].js',
+});
 
 const clientDevFilename = {
   filename: '[name].js',
@@ -64,8 +83,12 @@ const targetNode = {
     __filename: false,
   },
   externals: [nodeExternals({
-    whitelist: [/^webpack\/hot/]
+    whitelist: [/^webpack\/hot/],
   })],
+};
+
+const targetWebworker = {
+  target: 'webworker',
 };
 
 const extensions = ['.js'];
@@ -78,19 +101,26 @@ const resolve = {
   extensions,
 };
 
-const buildOutput = ({ server = false, prod = false } = {}) => ({
-  ...(() => server ? serverOutput : getClientOutput(prod))(),
+const buildOutput = ({ server = false, prod = false, worker = false } = {}) => ({
+  ...(() => {
+    if (worker) {
+      return getWorkerOutput(worker);
+    }
+    return server ? serverOutput : getClientOutput(prod);
+  })(),
   publicPath: prod ? publicPathProd : publicPathDev,
 });
 
-const buildResolve = ({ api = false, prod = false } = {}) => api ?
+const buildResolve = ({ api = false, prod = false, worker = false } = {}) => (api || worker) ?
   resolve
   : { ...resolve, extensions: [...extensions, ...assetsExtensions] };
 
-const buildEntry = ({ server = false, prod = false, api = false } = {}) => {
+const buildEntry = ({ server = false, prod = false, api = false, worker = false } = {}) => {
   let entry;
-  if (server) {
-    entry = getServerEntry(api ? 'api' : 'app');
+  if (worker) {
+    entry = getWorkerEntry({ prod, worker });
+  } else if (server) {
+    entry = getServerEntry({ kind: api ? 'api' : 'app', prod });
   } else {
     entry = prod ? clientEntry : { ...clientEntry, ...clientEntry.main.unshift(...clientDevHMR) };
   }
@@ -98,6 +128,7 @@ const buildEntry = ({ server = false, prod = false, api = false } = {}) => {
 };
 
 export {
+  targetWebworker,
   baseConfig,
   targetNode,
   buildEntry,

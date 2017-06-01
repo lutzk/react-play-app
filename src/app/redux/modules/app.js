@@ -4,6 +4,12 @@ const initialState = {};
 
 export function app(state = initialState, action = {}) {
   switch (action.type) {
+    case '@@redux-pouchdb-plus/INIT':
+      return {
+        pouchWorker: action.pouchWorker,
+        sendMsgToWorker: action.sendMsgToWorker,
+        ...state,
+      };
     case SYNC:
       console.log('___SYNC_ACTION___', action);
       return {

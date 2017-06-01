@@ -1,11 +1,11 @@
 const babelConfigBase = {
   ignore: '/node_modules/',
   babelrc: false,
-  presets: ['react', ['es2015', { modules: false }], 'stage-0'],
+  presets: ['react', ['es2015', { modules: false }], 'stage-0-without-async'],
   plugins: [
     'transform-runtime',
-    'transform-decorators-legacy'
-  ]
+    'transform-decorators-legacy',
+  ],
 };
 
 const devPlugins = [
@@ -32,7 +32,7 @@ const devPluginsServer = [
 const babelConfigApiBase = {
   ignore: '/node_modules/',
   babelrc: false,
-  'presets': [['es2015', { modules: false }], 'stage-0'],
+  'presets': [['es2015', { modules: false }], 'stage-0-without-async'],
   'plugins': [
     'transform-runtime'
   ]

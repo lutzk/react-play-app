@@ -135,9 +135,9 @@ const buildImageLoader = ({ server = false, prod = false, api = false } = {}) =>
   ],
 });
 
-const getBabelConfig = ({ server = false, prod = false, api = false } = {}) => {
+const getBabelConfig = ({ server = false, prod = false, api = false, worker = false } = {}) => {
   let babelConfig;
-  if (server && api) {
+  if ((server && api) || worker) {
     babelConfig = babelConfigApiServer;
   } else if (server && !api) {
     babelConfig = prod ? babelConfigServerProd : babelConfigServer;
@@ -149,11 +149,11 @@ const getBabelConfig = ({ server = false, prod = false, api = false } = {}) => {
 };
 
 const jsTest = { test: fileTests.js };
-const buildJsLoader = ({ server = false, prod = false, api = false } = {}) => ({
+const buildJsLoader = ({ server = false, prod = false, api = false, worker = false } = {}) => ({
   ...jsTest,
   exclude: /node_modules/,
   use: [
-    setUse(babelLoader, getBabelConfig({ server, prod, api })),
+    setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
     setUse(eslintLoader, { fix: true }),
   ],
 });
@@ -165,10 +165,10 @@ const loaders = [
   buildImageLoader,
 ];
 
-const buildLoaders = ({ server = false, prod = false, api = false } = {}) =>
-  api
-    ? [buildJsLoader({ server, prod, api })]
-    : loaders.map(loader => 
+const buildLoaders = ({ server = false, prod = false, api = false, worker = false } = {}) =>
+  (api || worker)
+    ? [buildJsLoader({ server, prod, api, worker })]
+    : loaders.map(loader =>
         loader({ server, prod, api }));
 
 export { buildLoaders };

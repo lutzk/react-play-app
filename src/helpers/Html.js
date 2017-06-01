@@ -69,6 +69,7 @@ const Html = (_props) => {
     <html>
       <head>
         {css}
+      <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
         {htmlContent}

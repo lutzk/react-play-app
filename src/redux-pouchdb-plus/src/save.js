@@ -30,7 +30,7 @@ const save = (db, localId) => {
         return { _id: reducerName };
       }
       throw err;
-    }).catch(err => console.error(err))
+    }).catch(err => console.error('SAVE_ERROR:', err))
     .then((doc) => {
       doc.localId = localId;
       doc.state = reducerState;

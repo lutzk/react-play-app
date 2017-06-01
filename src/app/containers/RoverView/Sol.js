@@ -168,8 +168,6 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
       const { listLength, range: { start, end } } = this.props;
       const currentRange = end - start;
       // maxSol
-      console.log('end');
-      console.log(end, listLength, end < listLength);
       if (this.props.list && this.props.list.length) {
         return (
           <div className="rangePane">

@@ -1,0 +1,14 @@
+{
+  "name": "spirit",
+  "short_name": "spirit",
+  "display": "standalone",
+  "start_url": ".",
+  "theme_color": "red",
+  "icons": [
+    {
+      "src": "./spirit.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

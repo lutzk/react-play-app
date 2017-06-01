@@ -1,5 +1,6 @@
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from './pageLoadBar';
+import { Deferred } from '../../../helpers/deferred';
 
 import {
   rovers,
@@ -9,16 +10,12 @@ import {
   getManifestFor,
 } from './shared/shared';
 
+const reducerName = 'RoverView';
+
+const SORT_SOLS = 'roverView/SORT_SOLS';
 const GET_MANIFEST = 'roverView/GET_MANIFEST';
 const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
-
-const reducerName = 'RoverView';
-
-// const SHOW_MORE_SOLS = 'roverView/SHOW_MORE_SOLS';
-// const SHOW_LESS_SOLS = 'roverView/SHOW_LESS_SOLS';
-
-const SORT_SOLS = 'roverView/SORT_SOLS';
 
 const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
@@ -83,6 +80,20 @@ const getStats = (data) => {
 function roverView(state = initialState, action = {}) {
   switch (action.type) {
 
+    // case '@@redux-pouchdb-plus/INIT':
+    //   // if (action.state.solView.prefetched) {
+    //   //   return {
+    //   //     ...state,
+    //   //     prefetched: false,
+    //   //   };
+    //   // }
+    //   console.log('_ACTION_', action);
+    //   return {
+    //     pouchWorker: action.pouchWorker,
+    //     sendMsgToWorker: action.sendMsgToWorker,
+    //     ...state,
+    //   };
+
     case '@@redux-pouchdb-plus/RESET':
       return {
         ...initialState,
@@ -101,38 +112,28 @@ function roverView(state = initialState, action = {}) {
         ...state,
       };
 
-    // case '@@redux-pouchdb-plus/INIT':
-    //   if (action.state.roverView.prefetched) {
-    //     return {
-    //       ...state,
-    //     };
-    //   }
-    //   return {
-    //     ...state,
-    //   };
-
     case '@@redux-pouchdb-plus/REINIT':
       return {
         ...state,
+        ready: false,
         reinitializing: true,
         reinitRequested: false,
-        ready: false,
       };
 
     case '@@redux-pouchdb-plus/REQUEST_REINIT':
       return {
         ...state,
-        reinitRequested: true,
         ready: false,
+        reinitRequested: true,
       };
 
     case SORT_SOLS:
       return {
         ...state,
-        listToRender: action.list,
+        range: action.range,
         sorts: action.sorts,
         filter: action.filter,
-        range: action.range,
+        listToRender: action.list,
       };
 
     case GET_MANIFEST:
@@ -193,7 +194,15 @@ const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-const initPage = ({ waiter, store, rover, readyListener }) => (dispatch) => {
+const subscribeWaiter = (waiter, store, selector, result) =>
+  store => () => {// eslint-disable-line
+    if (selector(store.getState())) {
+      waiter.resolve(result);
+    }
+  };
+
+const initPage = ({ store, rover }) => (dispatch) => {
+
   const NAME = reducerName;
   const roverViewState = store.getState().roverView;
   const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
@@ -202,18 +211,22 @@ const initPage = ({ waiter, store, rover, readyListener }) => (dispatch) => {
     return NAME;
 
   } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
+    const waiter = new Deferred();
+    const selector = state => state.roverView.ready;
+    const unsubscribe = store.subscribe(
+      subscribeWaiter(waiter, store, selector, NAME)(store));
+
     dispatch(startLoading());
-    const unsubscribe = store.subscribe(readyListener(store));
 
     return waiter.then((name) => {
       unsubscribe();
+
       if (!store.getState().roverView.loaded) {
         const _rover = getRover();
         return dispatch(getManifest(_rover, true))
           .then(dispatch(endLoading()))
           .then(NAME);
       }
-
       return dispatch(endLoading())
         .then(() => name);
     });

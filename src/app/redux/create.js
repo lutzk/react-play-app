@@ -16,22 +16,13 @@ function createStore({ history, client, preloadedState }) { // eslint-disable-li
 
   if (__CLIENT__) {
     if (__DEVELOPMENT__ && __DEVTOOLS__) {
-      DevTools = require('./clientRequireProxy').DevTools;
+      DevTools = require('../containers/DevTools/DevTools').default;
     }
-    persistentStore = require('./clientRequireProxy').persistentStore;
-  }
-
-  if (__DEVELOPMENT__ && __CLIENT__ && __DEVTOOLS__) {
+    persistentStore = require('../../redux-pouchdb-plus/src/index').persistentStore;
     finalCreateStore = compose(
       applyMiddleware(...middleware),
       persistentStore(),
-      DevTools.instrument()
-    )(_createStore);
-
-  } else if (__CLIENT__) {
-    finalCreateStore = compose(
-      applyMiddleware(...middleware),
-      persistentStore()
+      (() => (__DEVELOPMENT__ && __DEVTOOLS__) ? DevTools.instrument() : undefined)()
     )(_createStore);
 
   } else {

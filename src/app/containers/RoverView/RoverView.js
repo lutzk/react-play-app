@@ -7,18 +7,9 @@ import { initPage, getManifest as refreshManifest, updateList } from '../../redu
 import { PATHS } from '../../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
-import { Deferred } from '../../../helpers/deferred';
 import './roverViewStyles.sass';
 
-const waiter = new Deferred();
 const NAME = 'RoverView';
-
-const selector = state => state.roverView.ready;
-const readyListener = store => () => {// eslint-disable-line
-  if (selector(store.getState())) {
-    waiter.resolve(NAME);
-  }
-};
 
 const asyncInfo = {
   key: NAME,
@@ -29,7 +20,7 @@ const asyncInfo = {
     } = options;
 
     const store = options.store;
-    return dispatch(initPage({ waiter, store, rover, readyListener }))
+    return dispatch(initPage({ store, rover }))
       .then(name => name);
   },
 };
