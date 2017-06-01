@@ -10,6 +10,6 @@ npm-debug.log
 .env
 bin/*
 
-static/report.html
+report.html
 
 static/*.hot-update.*
