@@ -12,4 +12,4 @@ bin/*
 
 report.html
 
-static/*.hot-update.*
+*.hot-update.*
