@@ -97,7 +97,7 @@ const slConfig = {
   },
   security: {
     loginOnRegistration: true,
-    sessionLife: sessionTimeOut,
+    sessionLife: sessionTimeOut / 1000,
   },
   dbServer: {
     protocol: apiProtocol,
