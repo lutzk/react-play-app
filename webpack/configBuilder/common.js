@@ -13,7 +13,6 @@ import {
 const baseConfig = {
   context,
   performance: false,
-  // performance: { hints: true }
 };
 
 const getServerEntry = ({ kind, prod }) => ({ // eslint-disable-line
@@ -53,8 +52,6 @@ const clientOutput = {
   publicPath: publicPathDev,
   filename: '[name].js',
   chunkFilename: '[name].js',
-  // filename: '[name]-[chunkhash].js',
-  // chunkFilename: '[name]-[chunkhash].js',
 };
 
 const getWorkerOutput = worker => ({
@@ -83,7 +80,7 @@ const targetNode = {
     __filename: false,
   },
   externals: [nodeExternals({
-    whitelist: [/^webpack\/hot/],
+    whitelist: [/^webpack\/hot/, /^react-universal-component/, /^require-universal-module/, /^react-universal-module/, /^webpack-flush-chunks/]
   })],
 };
 
@@ -93,11 +90,13 @@ const targetWebworker = {
 
 const extensions = ['.js'];
 const assetsExtensions = ['.css', '.scss', '.sass'];
+
 const resolve = {
   modules: [
     'src',
     'node_modules',
   ],
+  mainFields: ['esnext', 'jsnext', 'browser', 'module', 'main'],
   extensions,
 };
 
@@ -122,7 +121,8 @@ const buildEntry = ({ server = false, prod = false, api = false, worker = false 
   } else if (server) {
     entry = getServerEntry({ kind: api ? 'api' : 'app', prod });
   } else {
-    entry = prod ? clientEntry : { ...clientEntry, ...clientEntry.main.unshift(...clientDevHMR) };
+    // entry = prod ? clientEntry : { ...clientEntry, ...clientEntry.main.unshift(...clientDevHMR) };
+    entry = { ...clientEntry, ...clientEntry.main.unshift(...clientDevHMR) };
   }
   return entry;
 };

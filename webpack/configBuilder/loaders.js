@@ -1,5 +1,9 @@
+import fs from 'fs';
+import path from 'path';
+import pathIsInside from 'path-is-inside';
+import findRoot from 'find-root';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import { embedLimit, fileTests } from '../settings';
+import { embedLimit, fileTests, context, ExtractCssChunks } from '../settings';
 import {
   babelConfigServer,
   babelConfigClient,
@@ -26,7 +30,9 @@ const serverCssLoader = {
 };
 
 const cssLoaderOptions = {
-  importLoaders: 1,
+  importLoaders: 2,
+  // modules: true,
+  // localIdentName: '[name]__[local]--[hash:base64:5]'
 };
 const sassLoaderOptions = {
   outputStyle: 'compressed',
@@ -35,6 +41,8 @@ const sassLoaderOptions = {
 const devCssLoaderOptions = {
   ...cssLoaderOptions,
   sourceMap: true,
+  // modules: true,
+  // localIdentName: '[name]__[local]--[hash:base64:5]'
 };
 
 const devSassLoaderOptions = {
@@ -62,6 +70,26 @@ const buildExtractTextPluginLoader = ({ kind = 'css' }) => {
   };
 };
 
+const buildExtractCssChunksLoader = ({ kind = 'css' }) => {
+  const test = fileTests[kind];
+  const options = { /* fallback: styleLoader */ };
+
+  if (kind === 'css') {
+    options.use = [/* styleLoader, */ setUse(cssLoader, devCssLoaderOptions)];
+  } else if (kind === 'sass') {
+    options.use = [
+      // styleLoader,
+      setUse(cssLoader, devCssLoaderOptions),
+      setUse(sassLoader, devSassLoaderOptions),
+    ];
+  }
+
+  return {
+    test,
+    loader: ExtractCssChunks.extract(options),
+  };
+};
+
 const buildServerSassLoader = (prod = false) => ({
   test: fileTests.sass,
   use: [
@@ -75,16 +103,18 @@ const buildClientSassLoader = (prod = false) => {
   let conf;
 
   if (!prod) {
-    conf = {
-      ...test,
-      use: [
-        setUse(styleLoader),
-        setUse(cssLoader, devCssLoaderOptions),
-        setUse(sassLoader, devSassLoaderOptions),
-      ],
-    };
+    conf = buildExtractCssChunksLoader({ kind: 'sass' });
+    // conf = {
+    //   ...test,
+    //   use: [
+    //     setUse(styleLoader, { sourceMap: true }),
+    //     setUse(cssLoader, devCssLoaderOptions),
+    //     setUse(sassLoader, devSassLoaderOptions),
+    //   ],
+    // };
   } else {
-    conf = buildExtractTextPluginLoader({ kind: 'sass' });
+    // conf = buildExtractTextPluginLoader({ kind: 'sass' });
+    conf = buildExtractCssChunksLoader({ kind: 'sass' });
   }
   return conf;
 };
@@ -101,15 +131,17 @@ const buildClientCssLoader = (prod = false) => {
   let conf;
 
   if (!prod) {
-    conf = {
-      ...test,
-      use: [
-        setUse(styleLoader),
-        setUse(cssLoader),
-      ],
-    };
+    conf = buildExtractCssChunksLoader({ kind: 'css' });
+    // conf = {
+    //   ...test,
+    //   use: [
+    //     setUse(styleLoader, { sourceMap: true }),
+    //     setUse(cssLoader, devCssLoaderOptions),
+    //   ],
+    // };
   } else {
-    conf = buildExtractTextPluginLoader({ kind: 'css' });
+    // conf = buildExtractTextPluginLoader({ kind: 'css' });
+    conf = buildExtractCssChunksLoader({ kind: 'css' });
   }
   return conf;
 };
@@ -148,10 +180,36 @@ const getBabelConfig = ({ server = false, prod = false, api = false, worker = fa
   return babelConfig;
 };
 
+/*
+
+  http://2ality.com/2017/04/transpiling-dependencies-babel.html
+  
+*/
 const jsTest = { test: fileTests.js };
+const dirJs = path.resolve(process.cwd(), 'src');
+const dirNodeModules = path.resolve(process.cwd(), 'node_modules');
+/**
+ * Find package.json for file at `filepath`.
+ * Return `true` if it has a property whose key is `PROPKEY_ESNEXT`.
+ */
+function hasPkgEsnext(filepath) {
+  const pkgRoot = findRoot(filepath);
+  const packageJsonPath = path.resolve(pkgRoot, 'package.json');
+  const packageJsonText = fs.readFileSync(packageJsonPath,
+      {encoding: 'utf-8'});
+  const packageJson = JSON.parse(packageJsonText);
+  return {}.hasOwnProperty.call(packageJson, 'esnext')
+    || {}.hasOwnProperty.call(packageJson, 'jsnext')
+    || {}.hasOwnProperty.call(packageJson, 'module');
+}
 const buildJsLoader = ({ server = false, prod = false, api = false, worker = false } = {}) => ({
   ...jsTest,
-  exclude: /node_modules/,
+  // exclude: /node_modules/,
+  include: (filepath) => {
+    return pathIsInside(filepath, dirJs) ||
+      (pathIsInside(filepath, dirNodeModules) &&
+      hasPkgEsnext(filepath));
+  },
   use: [
     setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
     setUse(eslintLoader, { fix: true }),

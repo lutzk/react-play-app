@@ -1,11 +1,15 @@
 require('../setEnv');
 const Express = require('express');
 const webpack = require('webpack');
-const webpackConfig = require('./webpackConfig.js')('dev.client');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+
 const appConfig = require('../src/config/config');
+const webpackConfig = require('./webpackConfig.js');
 
-const compiler = webpack(webpackConfig);
-
+const clientConfig = webpackConfig('dev.client');
+const webpackConfigServer = webpackConfig('dev.appServer');
+const compiler = webpack(clientConfig);
 const StatsToJsonConfig = {
   assets: true,
   entrypoints: false,
@@ -16,7 +20,7 @@ const StatsToJsonConfig = {
   chunkModules: false,
   chunkOrigins: false,
   chunksSort: false,
-  context: webpackConfig.context,
+  context: clientConfig.context,
   colors: false,
   errors: false,
   errorDetails: false,
@@ -35,8 +39,10 @@ const serverOptions = {
   hot: true,
   inline: true,
   lazy: false,
-  publicPath: webpackConfig.output.publicPath,
-  headers: { 'Access-Control-Allow-Origin': '*' },
+  publicPath: clientConfig.output.publicPath,
+  headers: {
+    'Access-Control-Allow-Origin': 'http://localhost:3010',
+  },
   stats: { chunks: false, colors: true },
   serverSideRender: true
 };
@@ -44,8 +50,8 @@ const serverOptions = {
 const app = new Express();
 
 app
-  .use(require('webpack-dev-middleware')(compiler, serverOptions))
-  .use(require('webpack-hot-middleware')(compiler))
+  .use(webpackDevMiddleware(compiler, serverOptions))
+  .use(webpackHotMiddleware(compiler))
   .get(appConfig.ssrAssetsRoute, (req, res, next) => {
     const json = res.locals.webpackStats.toJson(StatsToJsonConfig);
     res.send({

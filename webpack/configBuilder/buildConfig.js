@@ -22,17 +22,30 @@ export function buildConfig(env) {
 
   if (envConfig.worker) {
     rawConfig.target = targetWebworker;
-  }
-  if (envConfig.server) {
+    // to fix https://github.com/webpack/webpack/issues/4998
+    // as otherwise there would be no global obj available
+    rawConfig.node = {
+      Buffer: false,
+      __dirname: false,
+      __filename: false,
+      console: false,
+      global: true,
+      process: false,
+    };
+
+  } else if (envConfig.server) {
     rawConfig.target = targetNode;
+    rawConfig.name = 'server';
+
   } else {
+    rawConfig.name = 'client';
+    rawConfig.node = false;
+    rawConfig.target = { target: 'web' };
     // rawConfig.recordsPath = `${context}/records.json`;
-    // rawConfig.recordsInputPath = `${context}/inputRecords.json`;
-    // rawConfig.recordsOutputPath = `${context}/outputRecords.json`;
   }
 
   if (!envConfig.prod) {
-    rawConfig.devtool = 'eval';
+    rawConfig.devtool = 'inline-source-map';
   }
   // console.log(JSON.stringify(rawConfig, 0, 2));
   return configBuilder(rawConfig);

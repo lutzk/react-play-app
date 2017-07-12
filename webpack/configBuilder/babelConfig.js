@@ -1,15 +1,16 @@
 const babelConfigBase = {
   ignore: '/node_modules/',
-  babelrc: false,
-  presets: ['react', ['es2015', { modules: false }], 'stage-0-without-async'],
+  // babelrc: false,
+  presets: ['react', 'stage-0-without-async'],
   plugins: [
-    'transform-runtime',
+    // 'transform-runtime',
     'transform-decorators-legacy',
   ],
 };
 
 const devPlugins = [
   'react-hot-loader/babel',
+  'dual-import',
   'react-transform',
   {
     transforms: [{
@@ -20,6 +21,8 @@ const devPlugins = [
 ];
 
 const devPluginsServer = [
+  'react-hot-loader/babel',
+  'dual-import',
   'react-transform',
   {
     transforms: [{
@@ -32,10 +35,10 @@ const devPluginsServer = [
 const babelConfigApiBase = {
   ignore: '/node_modules/',
   babelrc: false,
-  'presets': [['es2015', { modules: false }], 'stage-0-without-async'],
-  'plugins': [
-    'transform-runtime'
-  ]
+  'presets': ['stage-0-without-async'],
+  // 'plugins': [
+  //   'transform-runtime'
+  // ]
 }
 
 const removePropTypes = [
@@ -64,7 +67,7 @@ babelConfigProdClient.plugins.push(transformReactConstantElements);
 babelConfigServerProd.plugins.push(transformReactConstantElements);
 
 babelConfigClient.plugins.push(devPlugins);
-babelConfigServer.plugins.push(devPluginsServer);
+babelConfigServer.plugins.push(ddevPlugins);
 
 export {
   babelConfigServer,

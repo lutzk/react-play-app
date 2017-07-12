@@ -2,42 +2,60 @@ import webpack from 'webpack';
 import CleanPlugin from 'clean-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import SWPrecache from 'sw-precache-webpack-plugin';
+import NameAllModulesPlugin from 'name-all-modules-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
-import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath } from '../settings';
+import HashChunkNamesPlugin from '../plugins/HashChunkNamesPlugin';
+import HashAllModulesNamesPlugin from '../plugins/HashAllModulesNamesPlugin';
 
-// const analyzerPlugin = new BundleAnalyzerPlugin({
-//   // Can be `server`, `static` or `disabled`.
-//   // In `server` mode analyzer will start HTTP server to show bundle report.
-//   // In `static` mode single HTML file with bundle report will be generated.
-//   // In `disabled` mode you can use this plugin to just generate Webpack Stats JSON file by setting `generateStatsFile` to `true`.
-//   analyzerMode: 'static',
-//   // Host that will be used in `server` mode to start HTTP server.
-//   // analyzerHost: '127.0.0.1',
-//   // Port that will be used in `server` mode to start HTTP server.
-//   // analyzerPort: 8888,
-//   // Path to bundle report file that will be generated in `static` mode.
-//   // Relative to bundles output directory.
-//   // reportFilename: 'report.html',
-//   // Module sizes to show in report by default.
-//   // Should be one of `stat`, `parsed` or `gzip`.
-//   // See "Definitions" section for more information.
-//   defaultSizes: 'parsed',
-//   // Automatically open report in default browser
-//   openAnalyzer: false,
-//   // If `true`, Webpack Stats JSON file will be generated in bundles output directory
-//   generateStatsFile: true,
-//   // Name of Webpack Stats JSON file that will be generated if `generateStatsFile` is `true`.
-//   // Relative to bundles output directory.
-//   statsFilename: 'stats.json',
-//   // Options for `stats.toJson()` method.
-//   // For example you can exclude sources of your modules from stats file with `source: false` option.
-//   // See more options here: https://github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21
-//   statsOptions: null,
-//   // Log level. Can be 'info', 'warn', 'error' or 'silent'.
-//   logLevel: 'info',
-// });
+import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath, ExtractCssChunks } from '../settings';
+
+const namedChunksPlugin = new webpack.NamedChunksPlugin();
+const nameAllModulesPlugin = new NameAllModulesPlugin();
+const hashChunkNamesPlugin = new HashChunkNamesPlugin();
+const hashAllModulesNamesPlugin = new HashAllModulesNamesPlugin();
+const hashedModuleIdsPlugin = new webpack.HashedModuleIdsPlugin();
+const moduleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
+
+const analyzerPlugin = new BundleAnalyzerPlugin({
+  analyzerMode: 'static',
+  defaultSizes: 'parsed',
+  openAnalyzer: false,
+  generateStatsFile: true,
+  statsFilename: 'stats.json',
+  statsOptions: null,
+  logLevel: 'info',
+});
+
+const swPrecachePlugin = new SWPrecache({
+  cacheId: 'spirit',
+  verbose: true,
+  dontCacheBustUrlsMatching: /./,
+  staticFileGlobs: [
+    '/',
+    './static/dist/assets/vendor-*.js',
+    './static/dist/assets/main-*.js',
+    './static/dist/assets/main-*.css',
+    './static/dist/assets/*.jpg',
+  ],
+  // error when import because that compilation has target web so globals are not as expected
+  // doing it manualy
+  // importScripts: [{ chunkName: 'pouchSW' }],
+  stripPrefix: './static', // stripPrefixMulti is also supported
+  filepath: './static/worker.js',
+  // urlPattern: /this\\.is\\.a\\.regex/,
+  // dynamicUrlToDependencies
+  // runtimeCaching: [{
+  //   urlPattern: /^\/api/,
+  //   handler: 'cacheFirst',
+  // },
+  // {
+  //   urlPattern: /^\/couch/,
+  //   handler: 'cacheFirst',
+  // }],
+});
 
 const buildCommonChunksPlugin = (prod) => {
   const options = {
@@ -45,33 +63,16 @@ const buildCommonChunksPlugin = (prod) => {
     filename: prod ? '[name]-[chunkhash].js' : '[name].js',
     minChunks(module, count) {
       const ctx = module.context;
-      if (ctx.indexOf('redux-connect') > -1) {
-        console.log('___BPF__MODULE__', module.context);
-      }
-      return ctx && ctx.indexOf('node_modules') >= 0;
+      return ctx && ctx.indexOf('node_modules') > -1;
     },
-    // minChunks: Infinity,
   };
 
   const manifestOptions = {
     name: 'manifest',
   };
 
-  const asyncOptions = {
-    async: true,
-    children: true,
-    // minChunks: 1,
-    minChunks: Infinity,
-    // minChunks(module, count) {
-    //   const ctx = module.context;
-    //   // node_modules/core-js
-    //   return ctx && ctx.indexOf('redux-connect') >= 0 && ctx.indexOf('node_modules') >= 0;
-    // },
-  };
-
   return [
     new webpack.optimize.CommonsChunkPlugin(options),
-    new webpack.optimize.CommonsChunkPlugin(asyncOptions),
     new webpack.optimize.CommonsChunkPlugin(manifestOptions),
   ];
 };
@@ -82,9 +83,6 @@ const statsPlugin = new StatsPlugin();
 const caseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
 const limitChunkCountPlugin = new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 });
 
-const nodeEnvDev = { 'process.env.NODE_ENV': JSON.stringify('development') };
-const nodeEnvProd = { 'process.env.NODE_ENV': JSON.stringify('production') };
-
 const extractTextPlugin = new ExtractTextPlugin({
   filename: '[name]-[hash].css',
   disable: false,
@@ -92,12 +90,13 @@ const extractTextPlugin = new ExtractTextPlugin({
 });
 
 const loaderOptions = new webpack.LoaderOptionsPlugin({
-  minimize: true,
+  minimize: false,
   debug: false,
 });
 
 const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
   beautify: false,
+  sourceMap: false,
   compress: {
     warnings: false,
     screw_ie8: true,
@@ -110,16 +109,32 @@ const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
     if_return: true,
     join_vars: true,
   },
-  mangle: {
-    screw_ie8: true,
-  },
+  // mangle: {
+  //   screw_ie8: true,
+  //   props: {
+  //     // regex: /^(refreshManifest|handleRefreshManifestRequest|loading|handleRangeUpdate|handleUpdateFilter|sorts|fields|missionStats|photoManifest|reducerName|listLength|roverName|listToRender|initialCount|solsToRender|updateList|handleSort)$/,
+  //     debug: 'DEBUG9',
+  //   },
+  // },
   output: {
     comments: false,
   },
   comments: false,
 });
 
+const nodeEnvDev = { 'process.env.NODE_ENV': JSON.stringify('development') };
+const nodeEnvProd = { 'process.env.NODE_ENV': JSON.stringify('production') };
 const getNodeEnv = ({ prod = false }) => prod ? nodeEnvProd : nodeEnvDev;
+
+const getClientEnv = server => !server ?
+  ({
+    'process.env.HOST': JSON.stringify(process.env.HOST),
+    'process.env.PORT': JSON.stringify(process.env.PORT),
+    'process.env.API_BASE': JSON.stringify(process.env.API_BASE),
+    'process.env.SSR_ASSETS_ROUTE': JSON.stringify(''),
+    'process.env.DEV_ASSETS_SERVER_PORT': JSON.stringify(''),
+  })
+  : {};
 
 const buildEnvPlugin = ({ server = false, prod = false } = {}) => {
   const envConf = {
@@ -127,6 +142,7 @@ const buildEnvPlugin = ({ server = false, prod = false } = {}) => {
     __SERVER__: server,
     __DEVELOPMENT__: !prod,
     __DEVTOOLS__: !prod,
+    ...getClientEnv(server),
     ...getNodeEnv({ prod }),
   };
   const envPlugin = new webpack.DefinePlugin(envConf);
@@ -140,7 +156,8 @@ const createCleanPlugin = path => new CleanPlugin([path], {
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
-    namedModulesPlugin,
+    namedChunksPlugin,
+    nameAllModulesPlugin,
     ...(prod ? [] : [hmrPlugin]),
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,
@@ -150,6 +167,9 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 
   const prodPlugins = [
     uglifyPlugin,
+    moduleConcatenationPlugin,
+    hashAllModulesNamesPlugin,
+    hashChunkNamesPlugin,
     loaderOptions,
   ];
 
@@ -164,17 +184,23 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
+    new ExtractCssChunks(),
     ...buildCommonChunksPlugin(prod),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-    // analyzerPlugin,
+    analyzerPlugin,
+    namedChunksPlugin,
+    nameAllModulesPlugin,
   ];
 
   const prodPlugins = [
+    swPrecachePlugin,
     statsPlugin,
     uglifyPlugin,
+    moduleConcatenationPlugin,
+    hashAllModulesNamesPlugin,
+    hashChunkNamesPlugin,
     loaderOptions,
-    extractTextPlugin,
     createCleanPlugin(relativeAssetsPath),
   ];
 
@@ -186,9 +212,31 @@ const buildClientPlugins = ({ prod = false }) => {
   return plugins;
 };
 
-const buildPlugins = ({ server = false, prod = false, api = false } = {}) =>
-  server ?
-    buildServerPlugins({ prod, api })
+const buildWorkerPlugins = ({ prod = false, worker = false }) => {
+  let plugins;
+  const base = [
+    limitChunkCountPlugin,
+    buildEnvPlugin({ prod }),
+    caseSensitivePathsPlugin,
+
+  ];
+
+  const prodPlugins = [
+    uglifyPlugin,
+    loaderOptions,
+  ];
+
+  if (prod) {
+    plugins = [...base, ...prodPlugins];
+  } else {
+    plugins = [...base, hmrPlugin];
+  }
+  return plugins;
+};
+
+const buildPlugins = ({ server = false, prod = false, api = false, worker = false } = {}) =>
+  (server || worker) ?
+    (() => server ? buildServerPlugins({ prod, api }) : buildWorkerPlugins({ prod }))()
     : buildClientPlugins({ prod });
 
 

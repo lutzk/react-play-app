@@ -1,4 +1,5 @@
 import path from 'path';
+import ExtractCssChunks from 'extract-css-chunks-webpack-plugin';
 
 const context = path.resolve(__dirname, '..');
 const rootPath = `${process.cwd()}/`;
@@ -40,6 +41,7 @@ export {
   publicPathProd,
   assetServerPort,
   serverBuildPath,
+  ExtractCssChunks,
   relativeAssetsPath,
   relativeApiServerBuildPath,
   relativeAppServerBuildPath,
