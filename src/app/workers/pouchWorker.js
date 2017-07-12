@@ -89,7 +89,8 @@ const initialSync = reply =>
     .then(r => {
       DBS.local.get('RoverView').then((rr) => console.log('initialSyncResult', rr));
       reply({ ...SYNC_INITIAL_SUCCESS });
-    });
+    })
+    .catch(error => reply({ ...SYNC_INITIAL_FAIL, error }));
 
 
 const syncInitial = async (user, reply) => {
