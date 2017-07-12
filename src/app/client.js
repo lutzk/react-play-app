@@ -3,55 +3,41 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
-import { useScroll } from 'react-router-scroll';
 import { AppContainer as HotReloader } from 'react-hot-loader';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import { ReduxAsyncConnect } from 'redux-connect';
-import { syncHistoryWithStore } from 'react-router-redux';
-import { Router, browserHistory, applyRouterMiddleware, match } from 'react-router';
+import createHistory from 'history/createBrowserHistory';
 
-import { getRoutes } from './routes';
 import { ApiClient } from '../helpers/ApiClient';
-import { createStore } from './redux/create';
-import { initCacheWorker } from './workers/utils';
+import { ReduxApp as App } from './containers/App/App';
+import { createReduxStore } from './redux/reduxRouterFirst/createReduxStore';
 
 const client = new ApiClient();
-const store = createStore({
+const history = createHistory();
+const preloadedState = window.__data;
+const { store, thunk } = createReduxStore({
   client,
-  history: browserHistory,
-  preloadedState: window.__data,
+  history,
+  preloadedState
 });
 
-const history = syncHistoryWithStore(browserHistory, store);
 const rootDomNode = document.getElementById('root');
-const routes = getRoutes(store);
-const asyncConnectRender = applyRouterMiddleware(useScroll());
-
-const renderRouter = props =>
-  <ReduxAsyncConnect { ...props } render={ asyncConnectRender } />;
-
-const render = (_routes, renderProps) => {
+const render = (App, store) => {
   let dom = null;
-  const App = (
-    <Provider store={store} key="appProvider">
-      <Router
-        render={ renderRouter }
-        history={ history }
-        { ...renderProps }>
-        { _routes }
-      </Router>
+  const app = (
+    <Provider store={store}>
+      <App />
     </Provider>);
 
   if (__DEVELOPMENT__) {
     dom = ReactDOM.render(
       <HotReloader>
-        {App}
+        {app}
       </HotReloader>,
       rootDomNode
     );
 
   } else {
-    dom = ReactDOM.render(App, rootDomNode);
+    dom = ReactDOM.render(app, rootDomNode);
   }
 
   return dom;
@@ -72,7 +58,7 @@ const renderDevStuff = () => {
       const devToolsDest = document.createElement('div');
       window.document.body.insertBefore(devToolsDest, null);
       ReactDOM.render(
-        <Provider store={store} key="devToolsProvider">
+        <Provider store={reduxStore} key="devToolsProvider">
           <DevTools />
         </Provider>,
         devToolsDest
@@ -81,23 +67,12 @@ const renderDevStuff = () => {
   }
 };
 
-injectTapEventPlugin();
-FastClick.attach(document.body);
-const t = '/worker.cache.js';
-match(
-   { history, routes },
-   (error, redirectLocation, renderProps) => {
-     console.log('__match');
-     render(routes, renderProps);
-     initCacheWorker(t).then((a) => {
-       console.log('__worker', t, 'set up', a, t);
-     });
-     if (__DEVELOPMENT__) {
-       renderDevStuff();
-       if (module.hot) {
-         module.hot.accept('./routes',
-           () => render(getRoutes(store), renderProps));
-       }
-     }
-   }
- );
+render(App, store)
+renderDevStuff();
+if (module.hot && process.env.NODE_ENV === 'development') {
+  module.hot.accept('./containers/App/App', () => {
+    const hotApp = require('./containers/App/App').ReduxApp;
+    reduxRender(hotApp, store);
+  });
+}
+// initCacheWorker(t).then((a) => {

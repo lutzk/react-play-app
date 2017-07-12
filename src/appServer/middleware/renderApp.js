@@ -1,81 +1,90 @@
 import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { Provider } from 'react-redux';
-import { match, createMemoryHistory } from 'react-router';
-import { ReduxAsyncConnect, loadOnServer } from 'redux-connect';
+import createHistory from 'history/createMemoryHistory';
+import flushChunks from 'webpack-flush-chunks';
+import { NOT_FOUND } from 'redux-first-router';
+import { flushChunkNames } from 'react-universal-component/server';
 
+import { ApiClient } from '../../helpers/ApiClient';
 import { Html, logJSON } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
-import { ApiClient } from '../../helpers/ApiClient';
-import { getRoutes } from '../../app/routes';
-import { createStore } from '../../app/redux/create';
+import { ReduxApp as App } from '../../app/containers/App/App';
+import { createReduxStore } from '../../app/redux/reduxRouterFirst/createReduxStore';
+
 
 require('../../helpers/reactTapEventPlugin');
-
 
 const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
   let assets = serverAssets;
   const client = new ApiClient(req);
-  const history = createMemoryHistory(req.originalUrl);
+  const doctype = '<!doctype html>\n';
   const preloadedState = res.preloadedState || {};
+  const history = createHistory({
+    initialEntries: [req.originalUrl],
+  });
 
-  const store = createStore({
+  const { store, thunk } = createReduxStore({
     client,
     history,
     preloadedState,
   });
 
-  const routes = getRoutes(store);
-  const doctype = '<!doctype html>\n';
-
-  const renderHtml = (_store, _assets, _component) =>
-    ReactDOM.renderToString(
-      <Html
-        store={_store}
-        assets={_assets}
-        component={_component} />);
-
-  const hydrateOnClient = _assets =>
-    res.send(
-      `${doctype}${ReactDOM.renderToString(
-        <Html store={store} assets={_assets} />)}`);
-
-  // in dev
   if (__DEVELOPMENT__ && res.locals.devAssets) {
     assets = res.locals.devAssets;
   }
 
-  match(
-    { history, routes, location: req.originalUrl },
-    (error, redirectLocation, renderProps) => {
-      if (error) {
-        logJSON(error, 'error');
-        res.status(500);
-        hydrateOnClient(assets);
+  const createApp = (App, _store) =>
+    (<Provider store={_store}>
+      <App />
+    </Provider>);
 
-      } else if (redirectLocation) {
-        res.redirect(`${redirectLocation.pathname}${redirectLocation.search}`);
+  const doesRedirect = ({ kind, pathname }, _res) => {// eslint-disable-line
+    if (kind === 'redirect') {
+      _res.redirect(302, pathname);
+      return true;
+    }
+  };
 
-      } else if (renderProps) {
-        loadOnServer({ ...renderProps, store })
-        .then(() => {
-          const component = (
-            <Provider store={store} key="appProvider">
-              <ReduxAsyncConnect { ...renderProps } />
-            </Provider>
-          );
+  let location = store.getState().location;
+  if (doesRedirect(location, res)) {
+    return false;
+  }
 
-          const html = `${doctype}${renderHtml(store, assets, component)}`;
-          res.status(200);
-          res.send(html);
-        })
-        .catch(next);
-      } else {
-        // res.redirect('/404');
-        res.status(404).send('Not found');
-      }
-    });
+  console.log('__SERVER_THUNK__', thunk);
+  await thunk(store).then((e) => console.log('__SERVER_THUNK__', e)); // THE PAYOFF BABY!
+
+  location = store.getState().location; // remember: state has now changed
+  if (doesRedirect(location, res)) {
+    return false; // only do this again if ur thunks have redirects
+  }
+
+  const resStatus = location.type === NOT_FOUND ? 404 : 200;
+  const reduxApp = createApp(App, store);
+  // move ?
+  // need to be rendered before
+  // flushChunkNames() to get the actual chunks for that request
+  const appString = ReactDOM.renderToString(reduxApp);
+  const chunkNames = flushChunkNames();
+  const { Js, Styles, cssHashRaw } = flushChunks(res.locals.clientStats, {
+    chunkNames,
+    before: ['manifest', 'vendor'],
+    after: ['main'],
+    publicPath: 'http://localhost:3011/dist/assets',
+    outputPath: '/Users/jonny/Desktop/do/static/dist/assets', // required!
+  });
+  const reduxHtml = `${doctype}${ReactDOM.renderToString(
+    (<Html
+      extra={{ Js, Styles, cssHashRaw }}
+      store={ store }
+      assets={ assets }
+      component={ appString } />
+  ))}`;
+
+  return res
+    .status(resStatus)
+    .send(reduxHtml);
 });
 
 export { renderApp };
