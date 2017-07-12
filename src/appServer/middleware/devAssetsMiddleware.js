@@ -13,6 +13,7 @@ const devAssetsMiddleware = () => aw(async (req, res, next) => {
   const response = await superagent.get(devAssetServerPath);
   if (response.status === 200 && response.body) {
     devAssets = getAssetsFromStats(response.body);
+    res.locals.clientStats = response.body;
     res.locals.devAssets = formatAssets(devAssets);
     return next();
   }
