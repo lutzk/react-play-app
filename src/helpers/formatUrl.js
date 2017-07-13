@@ -1,4 +1,4 @@
-import { host, port, apiBase } from '../config/appConfig';
+import { apiBase, appServerPath } from '../config/appConfig';
 
 const lead = '/';
 
@@ -9,7 +9,7 @@ const prefix = path =>
 
 const formatUrl = path =>
   __SERVER__ ?
-    `${host}:${port}${apiBase}${prefix(path)}`
-    : apiBase + prefix(path);
+    `${appServerPath}${prefix(path)}`
+    : `${apiBase}${prefix(path)}`;
 
 export default formatUrl;
