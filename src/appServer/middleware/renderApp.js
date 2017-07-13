@@ -1,16 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createMemoryHistory';
 import flushChunks from 'webpack-flush-chunks';
 import { NOT_FOUND } from 'redux-first-router';
 import { flushChunkNames } from 'react-universal-component/server';
+// import { END } from 'redux-saga';
 
 import { ApiClient } from '../../helpers/ApiClient';
-import { Html, logJSON } from '../../helpers';
+import { Html /* , logJSON */ } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { ReduxApp as App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/reduxRouterFirst/createReduxStore';
+import { renderToStringWithData } from './render';
 
 
 require('../../helpers/reactTapEventPlugin');
@@ -25,7 +27,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     initialEntries: [req.originalUrl],
   });
 
-  const { store, thunk } = createReduxStore({
+  const { store, thunk /* , rootTask */ } = createReduxStore({
     client,
     history,
     preloadedState,
@@ -35,7 +37,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     assets = res.locals.devAssets;
   }
 
-  const createApp = (App, _store) =>
+  const createApp = (App, _store) =>// eslint-disable-line
     (<Provider store={_store}>
       <App />
     </Provider>);
@@ -52,8 +54,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     return false;
   }
 
-  console.log('__SERVER_THUNK__', thunk);
-  await thunk(store).then((e) => console.log('__SERVER_THUNK__', e)); // THE PAYOFF BABY!
+  await thunk(store); // .then((e) => console.log('__SERVER_THUNK__', e)); // THE PAYOFF BABY!
 
   location = store.getState().location; // remember: state has now changed
   if (doesRedirect(location, res)) {
@@ -62,10 +63,15 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
   const resStatus = location.type === NOT_FOUND ? 404 : 200;
   const reduxApp = createApp(App, store);
-  // move ?
-  // need to be rendered before
-  // flushChunkNames() to get the actual chunks for that request
-  const appString = ReactDOM.renderToString(reduxApp);
+
+  // universal saga handling
+  // const actionCreator = await reduxApp.props.children.type.fetchData();
+  // store.dispatch(actionCreator());
+  // store.dispatch(END);
+  // await rootTask.done;
+  const appString = await renderToStringWithData(reduxApp, store);
+  // console.dir(reduxApp.props.children.type.WrappedComponent);
+  // const appString = ReactDOM.renderToString(reduxApp);
   const chunkNames = flushChunkNames();
   const { Js, Styles, cssHashRaw } = flushChunks(res.locals.clientStats, {
     chunkNames,
@@ -74,7 +80,7 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     publicPath: 'http://localhost:3011/dist/assets',
     outputPath: '/Users/jonny/Desktop/do/static/dist/assets', // required!
   });
-  const reduxHtml = `${doctype}${ReactDOM.renderToString(
+  const reduxHtml = `${doctype}${renderToString(
     (<Html
       extra={{ Js, Styles, cssHashRaw }}
       store={ store }

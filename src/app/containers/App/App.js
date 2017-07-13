@@ -99,6 +99,8 @@ export default class App extends Component {
     }
     return React.cloneElement(<div className="page loading" />, { key });
     // return null;
+  fetchData() {
+    return Promise.resolve(loadAuth);
   }
 
   render() {

@@ -14,14 +14,14 @@ import { createReduxStore } from './redux/reduxRouterFirst/createReduxStore';
 const client = new ApiClient();
 const history = createHistory();
 const preloadedState = window.__data;
-const { store, thunk } = createReduxStore({
+const { store /* , thunk */ } = createReduxStore({
   client,
   history,
-  preloadedState
+  preloadedState,
 });
 
 const rootDomNode = document.getElementById('root');
-const render = (App, store) => {
+const render = (App, store) => {// eslint-disable-line
   let dom = null;
   const app = (
     <Provider store={store}>
@@ -58,7 +58,7 @@ const renderDevStuff = () => {
       const devToolsDest = document.createElement('div');
       window.document.body.insertBefore(devToolsDest, null);
       ReactDOM.render(
-        <Provider store={reduxStore} key="devToolsProvider">
+        <Provider store={store} key="devToolsProvider">
           <DevTools />
         </Provider>,
         devToolsDest
@@ -67,12 +67,14 @@ const renderDevStuff = () => {
   }
 };
 
-render(App, store)
+injectTapEventPlugin();
+FastClick.attach(document.body);
+render(App, store);
 renderDevStuff();
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
     const hotApp = require('./containers/App/App').ReduxApp;
-    reduxRender(hotApp, store);
+    render(hotApp, store);
   });
 }
 // initCacheWorker(t).then((a) => {
