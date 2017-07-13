@@ -119,7 +119,7 @@ function getDataFromTree(rootElement, rootContext = {}, fetchRoot = true) {
     try {
       action = await promise; // could be an array
       if (Array.isArray(action)) {
-        const actions = action.map(async a => await dispatch(a()));
+        const actions = action.map(a => dispatch(a()));
         result = await Promise.all(actions);
       } else {
         result = await dispatch(action());
