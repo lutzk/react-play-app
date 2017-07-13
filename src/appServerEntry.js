@@ -20,11 +20,3 @@ const options = {
   const serverAssets = await getJsonData(options);
   appServer = startServer({ serverAssets });
 })();
-
-// const start = async () => {
-//   const serverAssets = await getJsonData(options);
-//   appServer = startServer({ serverAssets });
-// };
-
-// start();
-// export { start };
