@@ -1,6 +1,6 @@
-import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
-import { startLoading, endLoading } from './pageLoadBar';
-import { Deferred } from '../../../helpers/deferred';
+// import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
+// import { startLoading, endLoading } from './pageLoadBar';
+// import { Deferred } from '../../../helpers/deferred';
 
 import {
   rovers,
@@ -194,55 +194,65 @@ const updateList = ({ sorts, filter, range } = {}) => {
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-const subscribeWaiter = (waiter, store, selector, result) =>
-  store => () => {// eslint-disable-line
-    if (selector(store.getState())) {
-      waiter.resolve(result);
-    }
-  };
+// const subscribeWaiter = (waiter, store, selector, result) =>
+//   store => () => {// eslint-disable-line
+//     if (selector(store.getState())) {
+//       waiter.resolve(result);
+//     }
+//   };
 
-const initPage = ({ store, rover }) => (dispatch) => {
-
-  const NAME = reducerName;
-  const roverViewState = store.getState().roverView;
-  const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
-
-  if (roverViewState.loaded) {
-    return NAME;
-
-  } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
-    const waiter = new Deferred();
-    const selector = state => state.roverView.ready;
-    const unsubscribe = store.subscribe(
-      subscribeWaiter(waiter, store, selector, NAME)(store));
-
-    dispatch(startLoading());
-
-    return waiter.then((name) => {
-      unsubscribe();
-
-      if (!store.getState().roverView.loaded) {
-        const _rover = getRover();
-        return dispatch(getManifest(_rover, true))
-          .then(dispatch(endLoading()))
-          .then(NAME);
-      }
-      return dispatch(endLoading())
-        .then(() => name);
-    });
-  }
-
-  const _rover = getRover();
-  return dispatch(getManifest(_rover, true)).then(NAME);
-};
+// const initPage = ({ store }) => (dispatch) => {
 
 
-const roverViewReducer = persistentReducer(roverView, reducerName);
+//   const { location: { payload: { rover } } } = store.getState();
+
+//   const NAME = reducerName;
+//   const roverViewState = store.getState().roverView;
+//   const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
+//   console.log('__RVI__', 1);
+//   if (roverViewState.loaded) {
+//     console.log('__RVI__', 2);
+//     dispatch(endLoading());
+//     return NAME;
+
+//   } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
+//     console.log('__RVI__', 3);
+//     const waiter = new Deferred();
+//     const selector = state => state.roverView.ready;
+//     const unsubscribe = store.subscribe(
+//       subscribeWaiter(waiter, store, selector, NAME)(store));
+
+//     dispatch(startLoading());
+
+//     return waiter.then((name) => {
+//       unsubscribe();
+//       console.log('__RVI__', 4);
+//       if (!store.getState().roverView.loaded) {
+//         const _rover = getRover();
+//         return dispatch(getManifest(_rover, true))
+//           .then(dispatch(endLoading()))
+//           .then(NAME);
+//       }
+//       console.log('__RVI__', 5);
+//       return dispatch(endLoading())
+//         .then(() => name);
+//     });
+//   }
+//   console.log('__RVI__', 6);
+//   const _rover = getRover();
+//   return dispatch(getManifest(_rover, true)).then(() => dispatch(endLoading())).then(NAME);
+// };
+
+
+const roverViewReducer = roverView;// persistentReducer(roverView, reducerName);
 
 export {
-  initPage,
+  // initPage,
   updateList,
   getManifest,
   roverMatcher,
   roverViewReducer,
+  GET_MANIFEST,
+  GET_MANIFEST_SUCCESS,
+  GET_MANIFEST_FAIL,
 };
