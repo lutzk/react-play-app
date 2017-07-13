@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/server';
+// import { renderToString } from 'react-dom/server';
 import serialize from 'serialize-javascript';
 
 /**
@@ -21,14 +21,20 @@ const Html = (_props) => {
   *   component: node
   */
 
-  const { assets, component, store } = _props;
-  const appRoot = component ? ReactDOM.renderToString(component) : '';
+  const { /* assets , */ component, store, extra } = _props;
+  const appRoot = component; // ? renderToString(component) : '';
   const windowData = { __html: `window.__data=${serialize(store.getState())};` };
+  const windowCss = { __html: `window.__CSS_CHUNKS__=${serialize(extra.cssHashRaw)};` };
 
   const windowDataScript = (
     <script
       charSet="UTF-8"
       dangerouslySetInnerHTML={windowData} />);
+
+  const windowCSSHash = (
+    <script
+      charSet="UTF-8"
+      dangerouslySetInnerHTML={windowCss} />);
 
   const htmlContent = (
     <div
@@ -36,45 +42,19 @@ const Html = (_props) => {
       className="root"
       dangerouslySetInnerHTML={{ __html: appRoot }} />);
 
-  const css = assets.css ? Object.keys(assets.css).map((styles, key) => {
-    let scriptTags = null;
-    if (assets.css[styles]) {
-      scriptTags = assets.css[styles].map((style, i) => (
-        <link
-          key={key + i}
-          rel="stylesheet"
-          href={style}
-          type="text/css"
-          media="screen, projection"
-          charSet="UTF-8" />));
-    }
-
-    return scriptTags;
-  }) : null;
-
-  const js = assets.js ? Object.keys(assets.js).map((scripts, key) => {
-    let scriptTags = null;
-    if (assets.js[scripts]) {
-      scriptTags = assets.js[scripts].map((script, i) => (
-        <script
-          key={i + key}
-          charSet="UTF-8"
-          src={script} />));
-    }
-
-    return scriptTags;
-  }) : null;
-
+  const Js = extra.Js;
+  const Styles = extra.Styles;
   const html = (
     <html>
       <head>
-        {css}
+      <Styles />
       <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
         {htmlContent}
         {windowDataScript}
-        {js}
+        <Js />
+        {windowCSSHash}
       </body>
     </html>);
 
