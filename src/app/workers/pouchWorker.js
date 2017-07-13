@@ -275,6 +275,8 @@ const handleMsg = async e => {
   const workerName = self.name || 'pouchWorker';
   const hello = `hola, ${workerName} is here to work for you, send me msg's and i'll reply`;
   console.log('MSG::', type);
+  // const payload = { user, type, state, currentState, nextState, reducerName, reply };
+  // _handler[type](payload);
   if (type) {
     switch (type) {
 
