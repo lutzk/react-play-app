@@ -2,7 +2,6 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
-
 import { renderApp } from './middleware/renderApp';
 import { port, host } from '../config/appConfig';
 import { proxyRouter } from './routers/proxyRouter';
@@ -32,7 +31,11 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .use(faviconReqKiller())
-    .use(express.static(staticDir))
+    .use(express.static(staticDir, {
+      // etag: false,
+      // maxAge: '1y',
+      // setHeaders: setCustomCacheControl
+    }))
     .use(getCouchDocs())
     .use(renderApp({ serverAssets }))
     .use(errorHandler());
@@ -42,7 +45,7 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
       console.log('start app server error', err);
       throw Error(err);
     } else {
-      console.info(`server is up and runs on: //${host}:${port}`);
+      console.info(`server is up and runing on: //${host}:${port}`);
     }
   });
 };
