@@ -1,61 +1,70 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { asyncConnect } from 'redux-connect';
+import { connect } from 'react-redux';
+// import { redirect, NOT_FOUND, push } from 'redux-first-router';
 // import cn from 'classnames';
 import { get } from 'lodash'; // eslint-disable-line
-import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
-import { PATHS } from '../../../config/pathsConfig';
+// import { PATHS } from '../../../config/pathsConfig';
+import { goToPage } from '../../redux/modules/page';
 import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
+import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
+import { getComponent } from '../../universalComponents';
 
 import './App.sass';
+
+// const mapState = ({ page }) => {
+//   const isLoading = false;
+//   return { page, isLoading };
+// };
+
+const makeMapStateToProps = () => {
+  const getUserState = makeGetUserState();
+  const getUserMeta = makeGetUserMeta();
+  const mapStateToProps = (state, props) => ({
+    user: getUserState(state, props),
+    userMeta: getUserMeta(state, props),
+    loading: state.pageLoadBar.loading,
+    loadEnd: state.pageLoadBar.loadEnded,
+    loadError: state.pageLoadBar.error,
+    page: state.page,
+    isLoading: false,
+    location: state.location,
+  });
+  return mapStateToProps;
+};
 
 let mounted = false;
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    Object.assign({}, { loadAuth, push, logout }),
+    Object.assign({}, { loadAuth, logout, goToPage }),
     dispatch);
 
-const mapStateToProps = state => ({
-  user: state.user,
-  loading: state.pageLoadBar.loading,
-  loadEnd: state.pageLoadBar.loadEnded,
-  loadError: state.pageLoadBar.error,
-});
-
-@asyncConnect([{
-  key: 'App',
-  promise: (options) => {
-    const { store: { dispatch } } = options;
-    return dispatch(loadAuth())
-      .then(() => 'App');
-  },
-}],
-mapStateToProps, mapDispatchToProps)
-export default class App extends Component {
+class App extends Component {
 
   static propTypes = {
-    push: PropTypes.func,
     user: PropTypes.object,
+    userMeta: PropTypes.object,
     logout: PropTypes.func,
-    children: PropTypes.any.isRequired,
+    goToPage: PropTypes.func,
     location: PropTypes.object.isRequired,
     loading: PropTypes.bool,
     loadError: PropTypes.bool,
     loadEnded: PropTypes.bool,
     loadAuth: PropTypes.func,
+    page: PropTypes.any,
   };
 
   static contextTypes = {
     store: PropTypes.object.isRequired,
   };
 
-  // constructor(props) {
-  //   super(props);
-  // }
+  constructor(props) {
+    super(props);
+  }
 
   componentDidMount() {
     mounted = true;
@@ -63,27 +72,40 @@ export default class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) { // eslint-disable-line
-    const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
-    if (!this.props.user.user && nextProps.user.user) {
-      const nextPathnameFromState = get(nextProps, 'location.state.nextPathname', false);
-      const status = get(nextProps, 'routes[1].status', false);
-      const status404 = status && status === 404;
-
+    const { user } = this.props; // eslint-disable-line no-shadow
+    const { user: nextUser /* userMeta, */ /* location: nextLocation */ } = nextProps;
+    // const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
+    // const dontPush = path => dontPushTo.indexOf(path) === -1;
+    // console.log('__componentWillReceiveProps__', 0);
+    // console.log(this.props, nextProps);
+    if (!user.id && nextUser.id) {
+      // console.log('__componentWillReceiveProps__', 1);
+      // debugger;// eslint-disable-line
+      // const nextPathnameFromState = get(nextLocation, 'type', false);
+      // const status = get(nextProps, 'routes[1].status', false);
+      // const status404 = status && status === 404;
+      return this.props.goToPage({ type: 'ROVER_VIEW', payload: { rover: 'Spirit' } });
+      // return push('/rover-view/Spirit');
       // check if it matches a route at all
-      if (nextPathnameFromState && dontPushTo.indexOf(nextPathnameFromState) === -1) {
-        return this.props.push(`${nextPathnameFromState}`);
-      }
+      // if (nextPathnameFromState && dontPush(nextPathnameFromState)) {
+      //   // return push(`${nextPathnameFromState}`);
+      //   return goToPage({ type: 'ROVER_VIEW', });
+      // }
 
-      if (!status404) {
-        const nextPath = nextProps.user.user.savedPath || PATHS.ROVER_VIEW.ROOT;
-        return this.props.push(nextPath);
-      }
+      // if (!status404) {
+      //   const nextPath = userMeta.savedPath || PATHS.ROVER_VIEW.ROOT;
 
-    } else if (this.props.user.user && !nextProps.user.user) {
-      return this.props.push({
-        pathname: `/${PATHS.LOGIN}`,
-        state: { nextPathname: dontPushTo.indexOf(nextProps.location.pathname) === -1 ? nextProps.location.pathname : null },
-      });
+      //   return push(nextPath);
+      // }
+
+    } else if (user.id && !nextUser.id) {
+      // console.log('__componentWillReceiveProps__', 2);
+      // return push('/login');
+      return this.props.goToPage({ type: 'LOGIN' });
+      // return push({
+      //   pathname: `/${PATHS.LOGIN}`,
+      //   state: { nextPathname: dontPush(nextLocation.pathname) === -1 ? nextLocation.pathname : null },
+      // });
     }
   }
 
@@ -91,21 +113,12 @@ export default class App extends Component {
     mounted = false;
   }
 
-  getContent() {
-    const { location, children } = this.props;
-    const key = location.pathname;
-    if (children) {
-      return React.cloneElement(children, { key });
-    }
-    return React.cloneElement(<div className="page loading" />, { key });
-    // return null;
   fetchData() {
     return Promise.resolve(loadAuth);
   }
 
   render() {
 
-    const content = this.getContent();
     const loaderProps = {
       mount: mounted,
       loading: this.props.loading,
@@ -113,12 +126,19 @@ export default class App extends Component {
       loadError: this.props.loadError,
     };
 
+    const UniversalComponent = getComponent({ page: this.props.page });
+
     return (
       <div className="app">
         <Loader { ...loaderProps } />
-        {content}
+        {UniversalComponent}
         <Footer showFooter logout={this.props.logout}/>
       </div>
     );
   }
 }
+
+const ReduxApp = connect(makeMapStateToProps(), mapDispatchToProps, null, { withRef: true })(App);
+
+export { ReduxApp };
+
