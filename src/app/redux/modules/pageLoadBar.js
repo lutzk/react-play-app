@@ -89,8 +89,8 @@ export {
   endLoading,
   pageLoadBar,
   startLoading,
-  // LOADING
-  // END_LOADING
-  // RESET_LOADING
-  // END_LOADING_FROM_ERROR
+  LOADING,
+  END_LOADING,
+  RESET_LOADING,
+  END_LOADING_FROM_ERROR,
 };
