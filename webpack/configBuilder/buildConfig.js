@@ -45,7 +45,7 @@ export function buildConfig(env) {
   }
 
   if (!envConfig.prod) {
-    rawConfig.devtool = 'inline-source-map';
+    rawConfig.devtool = envConfig.server ? 'eval' : 'inline-source-map';
   }
   // console.log(JSON.stringify(rawConfig, 0, 2));
   return configBuilder(rawConfig);

@@ -12,7 +12,7 @@ import { Children } from 'react';
 import { renderToString } from 'react-dom/server';
 
 let dispatch;
-const key = 'fetchData';
+const FETCH = 'fetchData';
 // let getState;
 // Recurse a React Element tree, running visitor on each element.
 // If visitor returns `false`, don't call the element's render function
@@ -86,51 +86,55 @@ function walkTree(element, context, visitor) {
   }
 }
 
-function getQueriesFromTree({ rootElement, rootContext = {} }, fetchRoot = true) {
-  const queries = [];
+function getPromisesFromTree({ rootElement, rootContext = {} }, fetchRoot = true) {
+  const promises = [];
   walkTree(rootElement, rootContext, (element, instance, context) => {// eslint-disable-line
     const skipRoot = !fetchRoot && element === rootElement;
-    if (instance && typeof instance[key] === 'function' && !skipRoot) {
-      const query = instance[key]();
-      if (query) {
-        queries.push({ query, element, context });
+    if (instance && typeof instance[FETCH] === 'function' && !skipRoot) {
+      const promise = instance[FETCH]();
+      if (promise) {
+        promises.push({ promise, element, context });
         // Tell walkTree to not recurse inside this component;  we will
-        // wait for the query to execute before attempting it.
+        // wait for the promise to execute before attempting it.
         return false;
       }
     }
   });
 
-  return queries;
+  return promises;
 }
 
 // XXX component Cache
 function getDataFromTree(rootElement, rootContext = {}, fetchRoot = true) {
-  const queries = getQueriesFromTree({ rootElement, rootContext }, fetchRoot);
+  const promises = getPromisesFromTree({ rootElement, rootContext }, fetchRoot);
 
-  // no queries found, nothing to do
-  if (!queries.length) return Promise.resolve();
-
+  // no promises found, nothing to do
+  if (!promises.length) return Promise.resolve();
   const errors = [];
   // wait on each query that we found, re-rendering the subtree when it's done
-  const mappedQueries = queries.map(async ({ query, element, context }) => {
-  //   // we've just grabbed the query for element, so don't try and get it again
-
-    let queryRes;
-    let queryPromise;
+  const mappedPromises = promises.map(async ({ promise, element, context }) => {
+  //   // we've just grabbed the promise for element, so don't try and get it again
+    let action;
+    let result;
     try {
-      queryPromise = await query;
-      queryRes = await dispatch(queryPromise());
+      action = await promise; // could be an array
+      if (Array.isArray(action)) {
+        const actions = action.map(async a => await dispatch(a()));
+        result = await Promise.all(actions);
+      } else {
+        result = await dispatch(action());
+      }
+
       getDataFromTree(element, context, false);
     } catch (e) {
       errors.push(e);
     }
-    return queryRes;
+    return result;
   });
 
   // Run all queries. If there are errors, still wait for all queries to execute
   // so the caller can ignore them if they wish. See https://github.com/apollographql/react-apollo/pull/488#issuecomment-284415525
-  return Promise.all(mappedQueries).then(_ => {
+  return Promise.all(mappedPromises).then(_ => {
     if (errors.length > 0) {
       const error =
         errors.length === 1
@@ -138,19 +142,18 @@ function getDataFromTree(rootElement, rootContext = {}, fetchRoot = true) {
           : new Error(
               `${errors.length} errors were thrown when executing your GraphQL queries.`
             );
-      error.queryErrors = errors;
+      error.promiseErrors = errors;
       throw error;
     }
 
   });
 }
 
-function renderToStringWithData(component, store) {
+async function renderToStringWithData(component, store) {
   dispatch = store.dispatch;
   // getState = store.getState;
-  return getDataFromTree(component).then(() =>
-     renderToString(component)
-  );
+  await getDataFromTree(component);// .then(() =>
+  return renderToString(component);
 }
 
 export {
