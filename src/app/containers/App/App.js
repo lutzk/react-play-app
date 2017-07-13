@@ -62,10 +62,6 @@ class App extends Component {
     store: PropTypes.object.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     mounted = true;
     this.props.loadAuth();
