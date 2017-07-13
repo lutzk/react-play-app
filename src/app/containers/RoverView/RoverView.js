@@ -1,29 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
-import { asyncConnect } from 'redux-connect';
+import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { initPage, getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
+import { /* initPage, */ getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
 import { PATHS } from '../../../config/pathsConfig.js';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
-import './roverViewStyles.sass';
+import './RoverView.sass';
 
-const NAME = 'RoverView';
-
-const asyncInfo = {
-  key: NAME,
-  promise: (options) => {
-    const {
-      store: { dispatch },
-      params: { rover },
-    } = options;
-
-    const store = options.store;
-    return dispatch(initPage({ store, rover }))
-      .then(name => name);
-  },
-};
 
 const mapStateToProps = state => ({
   syncing: state.app.syncing,
@@ -40,6 +25,7 @@ const mapStateToProps = state => ({
   loading: state.roverView.loading,
   initialSolCount: state.roverView.initialCount,
   manifestLoadError: state.roverView.error,
+  location: state.location,
 });
 
 const mapDispatchToProps = dispatch =>
@@ -47,14 +33,10 @@ const mapDispatchToProps = dispatch =>
     Object.assign({}, { refreshManifest, updateList }),
     dispatch);
 
-@asyncConnect(
-  [asyncInfo],
-  mapStateToProps,
-  mapDispatchToProps
-)
-export default class RoverView extends Component {
+class RoverView extends Component {
 
   static propTypes = {
+    location: PropTypes.object,
     syncing: PropTypes.bool,
     savedData: PropTypes.object,
     range: PropTypes.object,
@@ -84,7 +66,7 @@ export default class RoverView extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.params.rover && this.props.roverName) {
+    if (!this.props.location.payload.rover && this.props.roverName) {
       window.history.pushState(null, '', `${window.location.pathname}/${this.props.roverName}`);
     }
   }
@@ -109,19 +91,21 @@ export default class RoverView extends Component {
     const field = e.target.dataset.field;
     const toggle = e.target.dataset.toggle;
     const filter = { on: this.props.filter.on };
-
+    // console.log('__FILTER__', field, toggle, filter);
+    // console.log({ ...{ filter: this.props.filter } });
     if (toggle) {
       filter.on = !this.props.filter.on;
-
+      // console.log('__FILTER__', 1);
     } else if (field && !toggle) {
       if (e.target.type === 'checkbox') {
         filter[field] = { on: e.target.checked };
-
+        // console.log('__FILTER__', 2);
       } else if (e.target.type === 'number') {
         filter[field] = { value: parseInt(e.target.value, 10) };
-
+        // console.log('__FILTER__', 3);
       } else {
         filter[field] = { value: e.target.value };
+        // console.log('__FILTER__', 4);
       }
     }
 
@@ -133,6 +117,11 @@ export default class RoverView extends Component {
     const range = { action };
     return this.props.updateList({ range });
   }
+
+  // will execute on server render
+  // fetchData() {
+  //   return Promise.resolve(initPage); // eslint-disable-line
+  // }
 
   render() {
 
@@ -303,3 +292,7 @@ export default class RoverView extends Component {
       </div>);
   }
 }
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(RoverView);
+
