@@ -58,14 +58,16 @@ function endLoading(fromError = false, rewindOnError = true) {
   if (fromError && rewindOnError) {
     return (dispatch, getState) => {
       const state = getState().pageLoadBar;
+      let endWithDelay;
+      let resetWithDelay;
       if (state.loading && !state.loadEnd) {
         clearTimeout(endWithDelay);// eslint-disable-line
-        const endWithDelay = setTimeout(() => {
+        endWithDelay = setTimeout(() => {
           dispatch({ type: END_LOADING_FROM_ERROR });
         }, rewindDelay);
 
         clearTimeout(resetWithDelay);// eslint-disable-line
-        const resetWithDelay = setTimeout(() => {
+        resetWithDelay = setTimeout(() => {
           dispatch({ type: RESET_LOADING });
         }, resetDelay);
       }
@@ -74,11 +76,11 @@ function endLoading(fromError = false, rewindOnError = true) {
 
   return (dispatch, getState) => {
     const state = getState().pageLoadBar;
+    let resetWithDelay;
     if (state.loading && !state.loadEnd) {
       dispatch({ type: END_LOADING });
-
       clearTimeout(resetWithDelay);// eslint-disable-line
-      const resetWithDelay = setTimeout(() => {
+      resetWithDelay = setTimeout(() => {
         dispatch({ type: RESET_LOADING });
       }, resetDelay);
     }
