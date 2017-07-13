@@ -87,7 +87,7 @@ const resetReducer = async reply => {
 const initialSync = reply =>
   DBS.remote.replicate.to(DBS.local, { live: false })
     .then(r => {
-      DBS.local.get('RoverView').then((rr) => console.log('initialSyncResult', rr));
+      // DBS.local.get('RoverView').then((rr) => console.log('initialSyncResult', rr));
       reply({ ...SYNC_INITIAL_SUCCESS });
     })
     .catch(error => reply({ ...SYNC_INITIAL_FAIL, error }));
