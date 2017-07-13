@@ -67,7 +67,7 @@ babelConfigProdClient.plugins.push(transformReactConstantElements);
 babelConfigServerProd.plugins.push(transformReactConstantElements);
 
 babelConfigClient.plugins.push(devPlugins);
-babelConfigServer.plugins.push(ddevPlugins);
+babelConfigServer.plugins.push(devPlugins);
 
 export {
   babelConfigServer,
