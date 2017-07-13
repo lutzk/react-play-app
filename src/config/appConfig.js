@@ -1,10 +1,12 @@
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 3010;
 const couchProtocol = 'http://';
+
 // const protocol = process.env.SSL ? 'http://' : 'https://';
 // const apiHost = process.env.API_HOST || 'localhost';
 // const apiPort = process.env.API_PORT || 3040;
 const apiBase = process.env.API_BASE || '/api/v1';
+const appServerPath = `${host}:${port}${apiBase}`;
 const couchBase = '/couch';
 const couchHost = '127.0.0.1';
 const couchPort = 5984;
@@ -22,6 +24,7 @@ export {
   couchBase,
   couchHost,
   couchPort,
+  appServerPath,
   couchProtocol,
   apiSocket,
   authTokenKey,
