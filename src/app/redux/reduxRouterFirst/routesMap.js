@@ -1,6 +1,6 @@
 // import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import { /* loadAuth, isLoaded, killUser, */ requireLogin } from '../modules/user';// eslint-disable-line
-import { HOME, LOGIN, ROVER_VIEW, PATHS } from './nav';
+import { HOME, LOGIN, ROVER_VIEW, SOL_VIEW, PATHS } from './nav';
 
 const thunk = async (dispatch, getState) => {
   await dispatch(requireLogin());
@@ -20,8 +20,8 @@ const routesMap = {
     path: `${PATHS[ROVER_VIEW]}/:rover`,
     thunk,
   },
-  SOL: {
-    path: `${PATHS[ROVER_VIEW]}/:rover/sol/:sol`,
+  [SOL_VIEW]: {
+    path: `${PATHS[ROVER_VIEW]}/:rover${PATHS[SOL_VIEW]}/:sol`,
     thunk,
   },
 };

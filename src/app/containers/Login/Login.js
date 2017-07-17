@@ -6,7 +6,7 @@ import Link from 'redux-first-router-link';
 
 import { goToPage } from '../../redux/modules/page';
 import { login, signup, loadAuth } from '../../redux/modules/user';
-import { PATHS } from '../../../config/pathsConfig';
+import { HOME, ROVER_VIEW } from '../../redux/reduxRouterFirst/nav';
 
 import './Login.sass';
 
@@ -65,11 +65,11 @@ class Login extends Component {
           <h1 className="login_headline">
             <Link to="/bla">aaa</Link>
             &nbsp;
-            <Link to={`/${PATHS.HOME}`}>home</Link>
-            <Link to={{ type: 'ROVER_VIEW', payload: { rover: 'Spirit' } }}>Rover ViewAA</Link>
+            <Link to={{ type: HOME }}>home</Link>
+            <Link to={{ type: ROVER_VIEW, payload: { rover: 'Spirit' } }}>Rover - Spirit</Link>
             <span
               className={active(this.props.path, '/login')}
-              onClick={() => this.props.onClick({ type: 'ROVER_VIEW', payload: { rover: 'Spirit' } })}>
+              onClick={() => this.props.onClick({ type: ROVER_VIEW, payload: { rover: 'Spirit' } })}>
               Rover ViewA
             </span>
           </h1>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { PATHS } from '../../../config/pathsConfig';
+import Link from 'redux-first-router-link';
+import { SOL_VIEW } from '../../redux/reduxRouterFirst/nav';
 
 const RoverMissionSols = (input) => {
 
@@ -21,7 +21,7 @@ const RoverMissionSols = (input) => {
   const { rover, sols } = input;
 
   const solsCards = sols.map((sol, index) => (
-    <Link key={index} data-sol={sol.sol} className="solCard" to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}/${PATHS.SOL}/${sol.sol}`}>
+    <Link key={index} data-sol={sol.sol} className="solCard" to={{ type: SOL_VIEW, payload: { rover, sol: sol.sol } }}>
       <span className={'sol_card_sol'}>sol:&nbsp;{sol.sol}</span>
       <span className={'sol_card_totalPhotos'}>totalPhotos:&nbsp;{sol.totalPhotos}</span>
       <span className={'sol_card_cameras'}>

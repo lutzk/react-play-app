@@ -1,10 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { PATHS } from '../../../config/pathsConfig';
+import Link from 'redux-first-router-link';
+import { HOME } from '../../redux/reduxRouterFirst/nav';
 
 const NotFound = () => (
   <div className="page NotFound">
-    <h1>404&nbsp;<Link to={`/${PATHS.HOME}`}>go home</Link></h1>
+    <h1>404&nbsp;<Link to={{ type: HOME }}>go home</Link></h1>
   </div>);
 
 export default NotFound;

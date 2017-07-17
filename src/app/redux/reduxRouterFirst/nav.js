@@ -1,21 +1,21 @@
 const HOME = 'HOME';
 const LOGIN = 'LOGIN';
-const SOL = 'SOL_VIEW';
+const SOL_VIEW = 'SOL_VIEW';
 const ROVER_VIEW = 'ROVER_VIEW';
 
 const PATHS = {
   // [ROOT]: '/',
-  [SOL]: '/sol',
   [HOME]: '/home',
   [LOGIN]: '/login',
+  [SOL_VIEW]: '/sol',
   [ROVER_VIEW]: '/rover-view',
 };
 
 
 export {
-  SOL,
   HOME,
   PATHS,
   LOGIN,
+  SOL_VIEW,
   ROVER_VIEW,
 };

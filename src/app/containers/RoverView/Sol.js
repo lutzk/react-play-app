@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import Link from 'redux-first-router-link';
 import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
-import { PATHS } from '../../../config/pathsConfig';
+import { ROVER_VIEW, HOME } from '../../redux/reduxRouterFirst/nav';
 import imageSrc from '../../theme/IMG_1672.jpg';
-import './roverViewStyles.sass';
+import './RoverView.sass';
 
 const asyncInfo = {
   key: 'Sol',
@@ -230,10 +230,10 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     return (
       <div className="page roverView">
         <div className="pageHeader">
-          <h1><Link to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}`}>{rover}</Link></h1>
+          <h1><Link to={{ type: ROVER_VIEW, payload: { rover } }}>{rover}</Link></h1>
           <h3>sol: {sol}</h3>
-          <p><Link to={`/${PATHS.ROVER_VIEW.ROOT}/${rover}`}>back to rover</Link></p>
-          <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
+          <p><Link to={{ type: ROVER_VIEW, payload: { rover } }}>back to rover</Link></p>
+          <p><Link to={{ type: HOME }}>go home</Link></p>
 
           {loadPane}
 

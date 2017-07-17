@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { /* initPage, */ getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
-import { PATHS } from '../../../config/pathsConfig.js';
+import { HOME } from '../../redux/reduxRouterFirst/nav';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
 import './RoverView.sass';
@@ -264,7 +264,7 @@ class RoverView extends Component {
           <h1>RoverView</h1>
           {syncing && <div>...SAVING DATA ...</div>}
           {savedData && !syncing && <div>...SAVED!</div>}
-          <p><Link to={`/${PATHS.HOME}`}>go home</Link></p>
+          <p><Link to={{ type: HOME }}>go home</Link></p>
 
           {loadPane}
 

@@ -1,15 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { PATHS } from '../../../config/pathsConfig.js';
+import Link from 'redux-first-router-link';
+import { ROVER_VIEW } from '../../redux/reduxRouterFirst/nav';
 import './Home.sass';
 
+const linkToSpirit = { type: ROVER_VIEW, payload: { rover: 'Spirit' } };
 const Home = () => (
   <div className="page home">
     <h1>home</h1>
     <p>
-      <Link to={PATHS.ROOT}>root</Link>
-      &nbsp;
-      <Link to={`/${PATHS.ROVER_VIEW.ROOT}`}>RoverView (rover = "Spirit")</Link>
+      <Link to={linkToSpirit}>RoverView (rover = "Spirit")</Link>
     </p>
   </div>);
 
