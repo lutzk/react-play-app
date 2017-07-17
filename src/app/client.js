@@ -69,8 +69,10 @@ const renderDevStuff = () => {
 
 injectTapEventPlugin();
 FastClick.attach(document.body);
+
 render(App, store);
 renderDevStuff();
+
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
     const hotApp = require('./containers/App/App').ReduxApp;
