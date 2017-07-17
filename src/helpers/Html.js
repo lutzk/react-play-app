@@ -12,19 +12,23 @@ import serialize from 'serialize-javascript';
  * by the server.js file.
  */
 
-const Html = (_props) => {
+const setWindowData = (key, data) =>
+  ({ __html: `window.${key} = ${serialize(data)};` });
+
+const Html = args => {
 
   /*
-  * _props:
+  * args:
   *   store: object
   *   assets: object
   *   component: node
   */
 
-  const { /* assets , */ component, store, extra } = _props;
-  const appRoot = component; // ? renderToString(component) : '';
-  const windowData = { __html: `window.__data=${serialize(store.getState())};` };
-  const windowCss = { __html: `window.__CSS_CHUNKS__=${serialize(extra.cssHashRaw)};` };
+  const { app, store, assets:
+    { Js, publicPath, cssHashRaw, stylesheets },
+  } = args;
+  const windowCss = setWindowData('__CSS_CHUNKS__', cssHashRaw);
+  const windowData = setWindowData('__data', store.getState());
 
   const windowDataScript = (
     <script
@@ -40,21 +44,22 @@ const Html = (_props) => {
     <div
       id="root"
       className="root"
-      dangerouslySetInnerHTML={{ __html: appRoot }} />);
+      dangerouslySetInnerHTML={{ __html: app }} />);
 
-  const Js = extra.Js;
-  const Styles = extra.Styles;
+  const css = stylesheets.map((file, key) =>
+    <link rel="stylesheet" href={`${publicPath}/${file}`} key={key} />);
+
   const html = (
     <html>
       <head>
-      <Styles />
       <link rel="manifest" href="/manifest.json" />
+      {css}
       </head>
       <body>
         {htmlContent}
+        {windowCSSHash}
         {windowDataScript}
         <Js />
-        {windowCSSHash}
       </body>
     </html>);
 

@@ -14,14 +14,16 @@ import { ReduxApp as App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/reduxRouterFirst/createReduxStore';
 import { renderToStringWithData } from './render';
 
-
 require('../../helpers/reactTapEventPlugin');
 
-const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
 
-  let assets = serverAssets;
+const doctype = '<!doctype html>\n';
+
+// serverAssets => stats
+const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => {
+
+  // let assets = serverAssets;
   const client = new ApiClient(req);
-  const doctype = '<!doctype html>\n';
   const preloadedState = res.preloadedState || {};
   const history = createHistory({
     initialEntries: [req.originalUrl],
@@ -33,18 +35,25 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     preloadedState,
   });
 
-  if (__DEVELOPMENT__ && res.locals.devAssets) {
-    assets = res.locals.devAssets;
-  }
+  // if (__DEVELOPMENT__ && res.locals.devAssets) {
+  //   assets = res.locals.devAssets;
+  // }
 
-  const createApp = (App, _store) =>// eslint-disable-line
-    (<Provider store={_store}>
+  const renderHtml = ({ app, store, assets }) =>// eslint-disable-line
+    `${doctype}${renderToString((<Html
+      app={ app }
+      store={ store }
+      assets={ assets } />
+  ))}`;
+
+  const createApp = (App, store) =>// eslint-disable-line
+    (<Provider store={store}>
       <App />
     </Provider>);
 
-  const doesRedirect = ({ kind, pathname }, _res) => {// eslint-disable-line
+  const doesRedirect = ({ kind, pathname }, res) => {// eslint-disable-line
     if (kind === 'redirect') {
-      _res.redirect(302, pathname);
+      res.redirect(302, pathname);
       return true;
     }
   };
@@ -54,43 +63,41 @@ const renderApp = ({ serverAssets } = {}) => aw(async (req, res, next) => {
     return false;
   }
 
-  await thunk(store); // .then((e) => console.log('__SERVER_THUNK__', e)); // THE PAYOFF BABY!
+  await thunk(store).then(r => console.log('__SERVER_THUNK__', r));
 
-  location = store.getState().location; // remember: state has now changed
+  location = store.getState().location;
   if (doesRedirect(location, res)) {
-    return false; // only do this again if ur thunks have redirects
+    return false;
   }
 
   const resStatus = location.type === NOT_FOUND ? 404 : 200;
   const reduxApp = createApp(App, store);
 
   // universal saga handling
-  // const actionCreator = await reduxApp.props.children.type.fetchData();
-  // store.dispatch(actionCreator());
+  // start sagas eg dispatch some
   // store.dispatch(END);
   // await rootTask.done;
-  const appString = await renderToStringWithData(reduxApp, store);
-  // console.dir(reduxApp.props.children.type.WrappedComponent);
-  // const appString = ReactDOM.renderToString(reduxApp);
+  const app = await renderToStringWithData(reduxApp, store);
   const chunkNames = flushChunkNames();
-  const { Js, Styles, cssHashRaw } = flushChunks(res.locals.clientStats, {
-    chunkNames,
-    before: ['manifest', 'vendor'],
-    after: ['main'],
-    publicPath: 'http://localhost:3011/dist/assets',
-    outputPath: '/Users/jonny/Desktop/do/static/dist/assets', // required!
-  });
-  const reduxHtml = `${doctype}${renderToString(
-    (<Html
-      extra={{ Js, Styles, cssHashRaw }}
-      store={ store }
-      assets={ assets }
-      component={ appString } />
-  ))}`;
+  const { Js, publicPath, cssHashRaw, stylesheets } = flushChunks(
+    res.locals.clientStats,
+    {
+      chunkNames,
+      before: ['manifest', 'vendor'],
+      after: ['main'],
+    // publicPath: 'http://localhost:3011/dist/assets',
+    // outputPath: '/Users/jonny/Desktop/do/static/dist/assets', // required!
+    });
+
+  const assets = {
+    Js, publicPath, cssHashRaw, stylesheets,
+  };
+
+  const html = renderHtml({ app, store, assets });
 
   return res
     .status(resStatus)
-    .send(reduxHtml);
+    .send(html);
 });
 
 export { renderApp };
