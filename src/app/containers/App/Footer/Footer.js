@@ -4,9 +4,9 @@ import Link from 'redux-first-router-link';
 import { HOME } from '../../../redux/reduxRouterFirst/nav.js';
 import './Footer.sass';
 
-const Footer = (_props) => {
+const Footer = args => {
 
-  const { showFooter, logout } = _props;
+  const { showFooter, logout } = args;
 
   if (!showFooter) return null;
 

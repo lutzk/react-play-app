@@ -1,16 +1,16 @@
 import React from 'react';
 
-const RoverMissionStats = (_props) => {
+const RoverMissionStats = args => {
 
   /*
-  *  _props:
+  *  args:
   *    roverName: string
   *    missionStats: object
   */
 
-  if (!_props.missionStats || !Object.keys(_props.missionStats).length) return null;
+  if (!args.missionStats || !Object.keys(args.missionStats).length) return null;
 
-  const { missionStats, roverName } = _props;
+  const { missionStats, roverName } = args;
   const stats = Object.keys(missionStats).map((stat, index) => (
       <p key={index} className="roverMissionStat">
         {stat}:&nbsp;{missionStats[stat]}
