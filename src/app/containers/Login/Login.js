@@ -6,7 +6,8 @@ import Link from 'redux-first-router-link';
 
 import { goToPage } from '../../redux/modules/page';
 import { login, signup, loadAuth } from '../../redux/modules/user';
-import { HOME, ROVER_VIEW } from '../../redux/reduxRouterFirst/nav';
+import { linkToHome, linkToSpirit } from '../../redux/reduxRouterFirst/navTypes';
+import { PATHS } from '../../redux/reduxRouterFirst/nav';
 
 import './Login.sass';
 
@@ -23,10 +24,10 @@ const mapState = ({ location }) => ({ path: location.pathname });
 class Login extends Component {
 
   static propTypes = {
+    path: PropTypes.string,
     login: PropTypes.func,
     signup: PropTypes.func,
     onClick: PropTypes.func,
-    path: PropTypes.string,
   };
 
   constructor(props) {
@@ -65,11 +66,11 @@ class Login extends Component {
           <h1 className="login_headline">
             <Link to="/bla">aaa</Link>
             &nbsp;
-            <Link to={{ type: HOME }}>home</Link>
-            <Link to={{ type: ROVER_VIEW, payload: { rover: 'Spirit' } }}>Rover - Spirit</Link>
+            <Link to={linkToHome}>home</Link>
+            <Link to={linkToSpirit}>Rover - Spirit</Link>
             <span
-              className={active(this.props.path, '/login')}
-              onClick={() => this.props.onClick({ type: ROVER_VIEW, payload: { rover: 'Spirit' } })}>
+              className={active(this.props.path, PATHS.LOGIN)}
+              onClick={() => this.props.onClick(linkToSpirit)}>
               Rover ViewA
             </span>
           </h1>

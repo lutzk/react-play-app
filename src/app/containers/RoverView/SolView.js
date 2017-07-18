@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'redux-first-router-link';
-import { asyncConnect } from 'redux-connect';
+// import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
-import { ROVER_VIEW, HOME } from '../../redux/reduxRouterFirst/nav';
+import { createRoverLinkView, linkToHome } from '../../redux/reduxRouterFirst/navTypes';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
 
-const asyncInfo = {
-  key: 'Sol',
-  promise: (options) => {
-    const {
-      store: { dispatch /* , getState */ },
-      params: { rover, sol },
-    } = options;
+// const asyncInfo = {
+//   key: 'Sol',
+//   promise: (options) => {
+//     const {
+//       store: { dispatch /* , getState */ },
+//       params: { rover, sol },
+//     } = options;
 
-    return dispatch(getSolManifest(rover, sol, true)).then(() => 'Sol');
-  },
-};
+//     return dispatch(getSolManifest(rover, sol, true)).then(() => 'Sol');
+//   },
+// };
 
 const mapStateToProps = state => ({
   sorts: state.solView.sorts,
@@ -39,8 +39,8 @@ const mapDispatchToProps = dispatch => bindActionCreators(
   Object.assign({}, { refreshManifest, updateList }), dispatch
 );
 
-@asyncConnect([asyncInfo], mapStateToProps, mapDispatchToProps)
-export default class Sol extends Component { // eslint-disable-line react/prefer-stateless-function
+// @asyncConnect([asyncInfo], mapStateToProps, mapDispatchToProps)
+class SolView extends Component { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
     params: PropTypes.object,
@@ -230,10 +230,10 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
     return (
       <div className="page roverView">
         <div className="pageHeader">
-          <h1><Link to={{ type: ROVER_VIEW, payload: { rover } }}>{rover}</Link></h1>
+          <h1><Link to={createRoverLinkView({ rover })}>{rover}</Link></h1>
           <h3>sol: {sol}</h3>
-          <p><Link to={{ type: ROVER_VIEW, payload: { rover } }}>back to rover</Link></p>
-          <p><Link to={{ type: HOME }}>go home</Link></p>
+          <p><Link to={createRoverLinkView({ rover })}>back to rover</Link></p>
+          <p><Link to={linkToHome}>go home</Link></p>
 
           {loadPane}
 
@@ -261,3 +261,6 @@ export default class Sol extends Component { // eslint-disable-line react/prefer
       </div>);
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(SolView);
+

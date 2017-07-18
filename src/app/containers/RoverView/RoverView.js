@@ -4,7 +4,7 @@ import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { /* initPage, */ getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
-import { HOME } from '../../redux/reduxRouterFirst/nav';
+import { linkToHome } from '../../redux/reduxRouterFirst/navTypes';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
 import './RoverView.sass';
@@ -264,7 +264,7 @@ class RoverView extends Component {
           <h1>RoverView</h1>
           {syncing && <div>...SAVING DATA ...</div>}
           {savedData && !syncing && <div>...SAVED!</div>}
-          <p><Link to={{ type: HOME }}>go home</Link></p>
+          <p><Link to={linkToHome}>go home</Link></p>
 
           {loadPane}
 

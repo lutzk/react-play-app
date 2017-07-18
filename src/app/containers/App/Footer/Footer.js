@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'redux-first-router-link';
 
-import { HOME } from '../../../redux/reduxRouterFirst/nav.js';
+import { linkToHome } from '../../../redux/reduxRouterFirst/navTypes.js';
 import './Footer.sass';
 
 const Footer = args => {
@@ -17,7 +17,7 @@ const Footer = args => {
       <p>
         Footer
         &nbsp;
-        <Link to={{ type: HOME }}>home</Link>
+        <Link to={linkToHome}>home</Link>
         &nbsp;
         <span onClick={handleLogout}>logout</span>
       </p>
