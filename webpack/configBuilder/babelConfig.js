@@ -1,6 +1,6 @@
 const babelConfigBase = {
-  ignore: '/node_modules/',
-  // babelrc: false,
+  // ignore: '/node_modules/',
+  babelrc: false,
   presets: ['react', 'stage-0-without-async'],
   plugins: [
     // 'transform-runtime',
@@ -9,8 +9,9 @@ const babelConfigBase = {
 };
 
 const devPlugins = [
-  'react-hot-loader/babel',
+  // nees to be first
   'dual-import',
+  'react-hot-loader/babel',
   'react-transform',
   {
     transforms: [{
@@ -21,8 +22,8 @@ const devPlugins = [
 ];
 
 const devPluginsServer = [
-  'react-hot-loader/babel',
   'dual-import',
+  'react-hot-loader/babel',
   'react-transform',
   {
     transforms: [{

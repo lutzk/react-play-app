@@ -3,15 +3,15 @@ import universal from 'react-universal-component';
 
 const loading = () => <div className="LoadingGG"></div>;
 const components = {
-  Home: universal(() => import(/* webpackChunkName: 'Home' */ '../containers/Home/Home'), {
+  Home: universal(() => import('../containers/Home/Home'), {
     resolve: () => require.resolveWeak('../containers/Home/Home'),
-    minDelay: 1, // match sliding animation duration
+    minDelay: 0, // match sliding animation duration
     loading,
     chunkName: 'Home',
   }),
-  RoverView: universal(() => import(/* webpackChunkName: 'RoverView' */ '../containers/RoverView/RoverView'), {
+  RoverView: universal(() => import('../containers/RoverView/RoverView'), {
     resolve: () => require.resolveWeak('../containers/RoverView/RoverView'),
-    minDelay: 1, // match sliding animation duration
+    minDelay: 0, // match sliding animation duration
     loading,
     chunkName: 'RoverView',
   }),
@@ -21,21 +21,23 @@ const components = {
   // //   loading,
   // //   chunkName: 'solView',
   // // }),
-  NotFound: universal(() => import(/* webpackChunkName: 'NotFound' */ '../containers/NotFound/NotFound'), {
+  NotFound: universal(() => import('../containers/NotFound/NotFound'), {
     resolve: () => require.resolveWeak('../containers/NotFound/NotFound'),
-    minDelay: 1, // match sliding animation duration
+    minDelay: 0, // match sliding animation duration
     loading,
     chunkName: 'NotFound',
   }),
-  Login: universal(() => import(/* webpackChunkName: 'Login' */'../containers/Login/Login'), {
+  Login: universal(() => import('../containers/Login/Login'), {
     resolve: () => require.resolveWeak('../containers/Login/Login'),
-    minDelay: 1, // match sliding animation duration
+    minDelay: 0, // match sliding animation duration
     loading,
+    // if not set server render flushChunks just gets default
+    // probaly use named export
     chunkName: 'Login',
   }),
 };
 
-const getComponent = ({ page }) => {// eslint-disable-line
+const getComponent = ({ page, isLoading }) => {// eslint-disable-line
   const Component = components[page] || components.NotFound;
   return <Component isLoading={false} />;
 };
