@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'redux-first-router-link';
 import { createSolLink } from '../../redux/reduxRouterFirst/navTypes';
 
-const RoverMissionSols = (args) => {
+const RoverMissionSols = args => {
 
   /*
   * args:
@@ -33,7 +33,7 @@ const RoverMissionSols = (args) => {
     </Link>));
 
   return (
-    <div className="roverPhotoDataData">
+    <div className="roverPhotoData">
       {solsCards}
     </div>);
 };
