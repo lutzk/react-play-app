@@ -63,7 +63,7 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
     return false;
   }
 
-  await thunk(store).then(r => console.log('__SERVER_THUNK__', r));
+  await thunk(store);
 
   location = store.getState().location;
   if (doesRedirect(location, res)) {

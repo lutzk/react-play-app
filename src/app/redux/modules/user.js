@@ -129,15 +129,32 @@ function login(username, password) {
   };
 }
 
-const loadAuth = () => (dispatch, getState) => {
-  const timeNow = new Date().getTime();
-  const lastLoaded = getState().user.lastLoaded;
-  if (lastLoaded) {
-    if (((timeNow - lastLoaded) / 1000) < 5) {
-      return false;
+const shouldRefreshOrLogout = (state, timeNow) => {
+  const lastLoaded = state.user.lastLoaded;
+  let justLoaded = false;
+  let expires = false;
+  // let issued = false;
+  if (state.user.user) {
+    // issued = state.user.user.issued;
+    expires = state.user.user.expires;
+    if (((timeNow - expires) / 1000) > 0) {
+      return logout();
     }
   }
 
+  if (lastLoaded) {
+    if (((timeNow - lastLoaded) / 1000) < 10) {
+      justLoaded = true;
+    }
+  }
+  return !justLoaded;
+};
+
+const loadAuth = () => (dispatch, getState) => {
+  const timeNow = new Date().getTime();
+  if (!shouldRefreshOrLogout(getState(), timeNow)) {
+    return Promise.resolve(false);
+  }
   return dispatch({
     types: [LOAD_AUTH, LOAD_AUTH_SUCCESS, LOAD_AUTH_FAIL],
     lastLoaded: timeNow,
@@ -172,6 +189,23 @@ function signup(name, username, email, password, confirmPassword) {
     promise: request,
   };
 }
+
+
+const requireLogin = () => (dispatch, getState) => {// eslint-disable-line
+  const checkAuth = () => {// eslint-disable-line
+    const { user: { user } } = getState();// eslint-disable-line
+    if (!user) {
+      return dispatch(redirect({ ...linkToLogin, nextPathname: getState().location.pathname }));
+    }
+  };
+
+  if (!isLoaded(getState())) {
+    return dispatch(loadAuth())
+      .then(() =>
+        checkAuth());
+  }
+  return checkAuth();
+};
 
 export {
   user,
