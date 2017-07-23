@@ -9,29 +9,14 @@ const babelConfigBase = {
 };
 
 const devPlugins = [
-  // nees to be first
   'dual-import',
   'react-hot-loader/babel',
-  'react-transform',
-  {
-    transforms: [{
-      transform: 'react-transform-catch-errors',
-      imports: ['react', 'redbox-react']
-    }]
-  }
 ];
 
-const devPluginsServer = [
-  'dual-import',
-  'react-hot-loader/babel',
-  'react-transform',
-  {
-    transforms: [{
-      transform: 'react-transform-catch-errors',
-      imports: ['react', 'redbox-react']
-    }]
-  }
-];
+// const devPluginsServer = [
+//   'dual-import',
+//   'react-hot-loader/babel',
+// ];
 
 const babelConfigApiBase = {
   ignore: '/node_modules/',
@@ -51,6 +36,7 @@ const removePropTypes = [
   },
 ];
 
+
 const transformReactConstantElements = "transform-react-constant-elements";
 
 const babelConfigApiServer = JSON.parse(JSON.stringify(babelConfigApiBase));
@@ -67,8 +53,8 @@ babelConfigServerProd.plugins.push(removePropTypes);
 babelConfigProdClient.plugins.push(transformReactConstantElements);
 babelConfigServerProd.plugins.push(transformReactConstantElements);
 
-babelConfigClient.plugins.push(devPlugins);
-babelConfigServer.plugins.push(devPlugins);
+babelConfigClient.plugins.push(...devPlugins);
+babelConfigServer.plugins.push(...devPlugins);
 
 export {
   babelConfigServer,
