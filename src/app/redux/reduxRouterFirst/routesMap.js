@@ -2,14 +2,13 @@
 import { /* loadAuth, isLoaded, killUser, */ requireLogin } from '../modules/user';// eslint-disable-line
 import { HOME, LOGIN, ROVER_VIEW, SOL_VIEW, PATHS } from './nav';
 
-const thunk = async (dispatch, getState) => dispatch(requireLogin());
-
+const thunk = (dispatch, getState) => dispatch(requireLogin());
 
 const routesMap = {
   // [LOGIN]: '/',
   [LOGIN]: {
     path: PATHS[LOGIN],
-    thunk,
+    // thunk,
   },
   [HOME]: {
     path: PATHS[HOME],

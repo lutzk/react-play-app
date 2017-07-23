@@ -1,3 +1,6 @@
+import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
+import { linkToLogin } from '../reduxRouterFirst/navTypes';
+
 const LOGIN = 'user/LOGIN';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGIN_FAIL = 'user/LOGIN_FAIL';
@@ -118,16 +121,20 @@ function user(state = initialState, action = {}) {
   }
 }
 
-function login(username, password) {
-
+const login = (username, password) => dispatch => {
   const types = [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL];
-  const request = client => client.post('/login', { data: { username, password } });
-
-  return {
+  const promise = client => client.post('/login', { data: { username, password } });
+  return dispatch({
     types,
-    promise: request,
-  };
-}
+    promise,
+  });
+};
+
+const logout = () => (getState, dispatch) => {
+  const types = [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL];
+  const promise = client => client.get('/logout');
+  return dispatch({ types, promise });
+};
 
 const shouldRefreshOrLogout = (state, timeNow) => {
   const lastLoaded = state.user.lastLoaded;
@@ -162,61 +169,54 @@ const loadAuth = () => (dispatch, getState) => {
   });
 };
 
-function killUser() {
-  return {
-    type: [KILL_USER],
-  };
-}
+const killUser = () => (getState, dispatch) => dispatch({
+  type: [KILL_USER],
+});
 
 function isLoaded(state) {
   return state.user && state.user.loaded;
 }
 
-function logout() {
-  return {
-    types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
-    promise: client => client.get('/logout'),
-  };
-}
-
-function signup(name, username, email, password, confirmPassword) {
+const signup = (name, username, email, password, confirmPassword) => dispatch => {
 
   const types = [SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAIL];
-  const request = client => client.post('/signup', { data: { name, username, email, password, confirmPassword } });
+  const promise = client => client.post('/signup', { data: { name, username, email, password, confirmPassword } });
 
-  return {
-    types,
-    promise: request,
-  };
-}
+  return dispatch({ types, promise });
+};
 
-
-const requireLogin = () => (dispatch, getState) => {// eslint-disable-line
-  const checkAuth = () => {// eslint-disable-line
-    const { user: { user } } = getState();// eslint-disable-line
-    if (!user) {
-      return dispatch(redirect({ ...linkToLogin, nextPathname: getState().location.pathname }));
-    }
-  };
-
-  if (!isLoaded(getState())) {
-    return dispatch(loadAuth())
-      .then(() =>
-        checkAuth());
+const checkAuth = (dispatch, getState) => { // eslint-disable-line
+  const { user: { user } } = getState(); // eslint-disable-line
+  if (!user) {
+    return dispatch(redirect({ ...linkToLogin, nextPathname: getState().location.pathname }));
   }
-  return checkAuth();
+};
+
+const requireLogin = () => (dispatch, getState) => {
+  dispatch(loadAuth())
+    .then(() =>
+      checkAuth(dispatch, getState));
 };
 
 export {
   user,
   login,
   logout,
+  LOGOUT,
   signup,
   loadAuth,
   killUser,
   isLoaded,
   KILL_USER,
+  checkAuth,
   LOGIN_SUCCESS,
   SIGNUP_SUCCESS,
   LOGOUT_SUCCESS,
+  LOGIN,
+  LOGIN_FAIL,
+  LOGOUT_FAIL,
+  LOAD_AUTH,
+  LOAD_AUTH_SUCCESS,
+  LOAD_AUTH_FAIL,
+  requireLogin,
 };

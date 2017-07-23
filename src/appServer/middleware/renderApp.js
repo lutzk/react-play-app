@@ -12,7 +12,6 @@ import { Html /* , logJSON */ } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { ReduxApp as App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/reduxRouterFirst/createReduxStore';
-import { renderToStringWithData } from './render';
 
 require('../../helpers/reactTapEventPlugin');
 
@@ -47,9 +46,10 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   ))}`;
 
   const createApp = (App, store) =>// eslint-disable-line
-    (<Provider store={store}>
-      <App />
-    </Provider>);
+    renderToString(
+      (<Provider store={store}>
+        <App />
+      </Provider>));
 
   const doesRedirect = ({ kind, pathname }, res) => {// eslint-disable-line
     if (kind === 'redirect') {
@@ -70,23 +70,20 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
     return false;
   }
 
-  const resStatus = location.type === NOT_FOUND ? 404 : 200;
-  const reduxApp = createApp(App, store);
-
   // universal saga handling
   // start sagas eg dispatch some
   // store.dispatch(END);
   // await rootTask.done;
-  const app = await renderToStringWithData(reduxApp, store);
+
+  const app = createApp(App, store);
   const chunkNames = flushChunkNames();
+
   const { Js, publicPath, cssHashRaw, stylesheets } = flushChunks(
     res.locals.clientStats,
     {
       chunkNames,
       before: ['manifest', 'vendor'],
       after: ['main'],
-    // publicPath: 'http://localhost:3011/dist/assets',
-    // outputPath: '/Users/jonny/Desktop/do/static/dist/assets', // required!
     });
 
   const assets = {
@@ -94,6 +91,7 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   };
 
   const html = renderHtml({ app, store, assets });
+  const resStatus = location.type === NOT_FOUND ? 404 : 200;
 
   return res
     .status(resStatus)

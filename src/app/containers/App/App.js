@@ -5,20 +5,16 @@ import { connect } from 'react-redux';
 // import cn from 'classnames';
 import { get } from 'lodash'; // eslint-disable-line
 import { bindActionCreators } from 'redux';
-// import { PATHS } from '../../../config/pathsConfig';
+
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
+import { linkToSpirit, linkToLogin } from '../../redux/reduxRouterFirst/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
 import { getComponent } from '../../universalComponents';
 
 import './App.sass';
-
-// const mapState = ({ page }) => {
-//   const isLoading = false;
-//   return { page, isLoading };
-// };
 
 const makeMapStateToProps = () => {
   const getUserState = makeGetUserState();
@@ -56,6 +52,7 @@ class App extends Component {
     loadEnded: PropTypes.bool,
     loadAuth: PropTypes.func,
     page: PropTypes.any,
+    isLoading: PropTypes.bool,
   };
 
   static contextTypes = {
@@ -80,7 +77,7 @@ class App extends Component {
       // const nextPathnameFromState = get(nextLocation, 'type', false);
       // const status = get(nextProps, 'routes[1].status', false);
       // const status404 = status && status === 404;
-      return this.props.goToPage({ type: 'ROVER_VIEW', payload: { rover: 'Spirit' } });
+      return this.props.goToPage(linkToSpirit);
       // return push('/rover-view/Spirit');
       // check if it matches a route at all
       // if (nextPathnameFromState && dontPush(nextPathnameFromState)) {
@@ -97,7 +94,7 @@ class App extends Component {
     } else if (user.id && !nextUser.id) {
       // console.log('__componentWillReceiveProps__', 2);
       // return push('/login');
-      return this.props.goToPage({ type: 'LOGIN' });
+      return this.props.goToPage(linkToLogin);
       // return push({
       //   pathname: `/${PATHS.LOGIN}`,
       //   state: { nextPathname: dontPush(nextLocation.pathname) === -1 ? nextLocation.pathname : null },
@@ -109,10 +106,6 @@ class App extends Component {
     mounted = false;
   }
 
-  fetchData() {
-    return Promise.resolve(loadAuth);
-  }
-
   render() {
 
     const loaderProps = {
@@ -122,7 +115,7 @@ class App extends Component {
       loadError: this.props.loadError,
     };
 
-    const UniversalComponent = getComponent({ page: this.props.page });
+    const UniversalComponent = getComponent({ page: this.props.page, isLoading: this.props.isLoading });
 
     return (
       <div className="app">
