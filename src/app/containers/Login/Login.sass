@@ -9,4 +9,50 @@
     .login_headline
       +font_size(40px)
       font-family: $font-family_bold
-      
+
+.has-float-label
+  display: block
+  position: relative
+
+  label
+    position: absolute
+    left: 5px
+    top: 5px
+    cursor: text
+    // font-size: 75%
+    opacity: .7
+    // -webkit-transition: opacity .2s
+    // transition: opacity .2s
+    // top: .25em
+    transform: translateY(0%) scale(.7)
+    transform-origin: 0 0
+    transition: transform 100ms ease-out
+    will-change: transform
+
+  input
+    font-size: inherit
+    padding: getRythm(.7) getRythm(.5) getRythm(.5)
+
+    &::placeholder
+      opacity: 0
+      transition: all .2s
+
+    &:placeholder-shown:not(:focus)::placeholder
+      opacity: 0
+
+    // out
+    &:placeholder-shown:not(:focus) + *,
+      opacity: .5
+      transform: scale(1.1) translateY(40%)
+      transform-origin: 0 0
+      transition: transform 200ms ease-out
+      will-change: transform
+
+    &:focus,
+      outline: 0
+      border-color: rgba(0, 0, 0, .5)
+
+// .has-float-label select
+//   padding-right: 1em
+//   background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .5em bottom .25em
+//   background-size: 8px 10px

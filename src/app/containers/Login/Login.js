@@ -7,12 +7,12 @@ import Link from 'redux-first-router-link';
 import { goToPage } from '../../redux/modules/page';
 import { login, signup, loadAuth } from '../../redux/modules/user';
 import { linkToHome, linkToSpirit } from '../../redux/reduxRouterFirst/navTypes';
-import { PATHS } from '../../redux/reduxRouterFirst/nav';
+// import { PATHS } from '../../redux/reduxRouterFirst/nav';
 
 import './Login.sass';
 
-const active = (currentPath, path) =>
-  currentPath === path ? 'Activo' : '';
+// const active = (currentPath, path) =>
+//   currentPath === path ? 'Activo' : '';
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
@@ -67,16 +67,23 @@ class Login extends Component {
             <Link to="/bla">aaa</Link>
             &nbsp;
             <Link to={linkToHome}>home</Link>
+            &nbsp;
             <Link to={linkToSpirit}>Rover - Spirit</Link>
+            &nbsp;
             <span
-              className={active(this.props.path, PATHS.LOGIN)}
               onClick={() => this.props.onClick(linkToSpirit)}>
-              Rover ViewA
+              Rover View
             </span>
           </h1>
           <form onSubmit={this.hanldeSubmit}>
-            <input type="text" id="username" name="username"/>
-            <input type="text" id="password" name="password"/>
+            <div className="has-float-label">
+              <input type="text" id="username" name="username" placeholder="Username"/>
+              <label htmlFor="username">_Username_</label>
+            </div>
+            <div className="has-float-label">
+              <input type="text" id="password" name="password" placeholder="Password"/>
+              <label htmlFor="password">Password</label>
+            </div>
             <input type="submit" value="login" />
           </form>
         </div>
