@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'redux-first-router-link';
-import { createSolLink } from '../../redux/reduxRouterFirst/navTypes';
+import { createSolLink } from '../../redux/routing/navTypes';
 
 const RoverMissionSols = args => {
 

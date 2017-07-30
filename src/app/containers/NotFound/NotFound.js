@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'redux-first-router-link';
-import { linkToHome } from '../../redux/reduxRouterFirst/navTypes';
+import { linkToHome } from '../../redux/routing/navTypes';
 
 const NotFound = () => (
   <div className="page NotFound">

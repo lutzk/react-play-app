@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'redux-first-router-link';
-import { linkToSpirit } from '../../redux/reduxRouterFirst/navTypes';
+import { linkToSpirit } from '../../redux/routing/navTypes';
 import './Home.sass';
 
 const Home = () => (

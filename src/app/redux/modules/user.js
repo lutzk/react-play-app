@@ -1,5 +1,5 @@
 import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
-import { linkToLogin } from '../reduxRouterFirst/navTypes';
+import { linkToLogin } from '../routing/navTypes';
 
 const LOGIN = 'user/LOGIN';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
@@ -185,18 +185,18 @@ const signup = (name, username, email, password, confirmPassword) => dispatch =>
   return dispatch({ types, promise });
 };
 
-const checkAuth = (dispatch, getState) => { // eslint-disable-line
+const checkAuth = () => (dispatch, getState) => { // eslint-disable-line
   const { user: { user } } = getState(); // eslint-disable-line
   if (!user) {
-    return dispatch(redirect({ ...linkToLogin, nextPathname: getState().location.pathname }));
+    const action = redirect({ ...linkToLogin, nextPathname: getState().location.pathname });
+    return dispatch(redirect(action));
   }
+  return Promise.resolve(true);
 };
 
-const requireLogin = () => (dispatch, getState) => {
+const requireLogin = () => (dispatch, getState) =>
   dispatch(loadAuth())
-    .then(() =>
-      checkAuth(dispatch, getState));
-};
+    .then((r) => dispatch(checkAuth()));
 
 export {
   user,

@@ -6,8 +6,8 @@ import Link from 'redux-first-router-link';
 
 import { goToPage } from '../../redux/modules/page';
 import { login, signup, loadAuth } from '../../redux/modules/user';
-import { linkToHome, linkToSpirit } from '../../redux/reduxRouterFirst/navTypes';
-// import { PATHS } from '../../redux/reduxRouterFirst/nav';
+import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
+// import { PATHS } from '../../redux/routing/nav';
 
 import './Login.sass';
 

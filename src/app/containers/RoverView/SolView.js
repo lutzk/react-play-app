@@ -4,7 +4,7 @@ import Link from 'redux-first-router-link';
 // import { asyncConnect } from 'redux-connect';
 import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
-import { createRoverLinkView, linkToHome } from '../../redux/reduxRouterFirst/navTypes';
+import { createRoverLinkView, linkToHome } from '../../redux/routing/navTypes';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
 

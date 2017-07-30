@@ -9,7 +9,7 @@ const babelConfigBase = {
 };
 
 const devPlugins = [
-  'dual-import',
+  'universal-import',
   'react-hot-loader/babel',
 ];
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'redux-first-router-link';
 
-import { linkToHome } from '../../../redux/reduxRouterFirst/navTypes.js';
+import { linkToHome } from '../../../redux/routing/navTypes.js';
 import './Footer.sass';
 
 const Footer = args => {

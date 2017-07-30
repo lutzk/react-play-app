@@ -4,7 +4,7 @@ import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { /* initPage, */ getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
-import { linkToHome } from '../../redux/reduxRouterFirst/navTypes';
+import { linkToHome } from '../../redux/routing/navTypes';
 import RoverMissionStats from './RoverMissionStats';
 import RoverMissionSols from './RoverMissionSols';
 import './RoverView.sass';

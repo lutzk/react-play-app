@@ -3,6 +3,7 @@ import { /* loadAuth, isLoaded, killUser, */ requireLogin } from '../modules/use
 import { HOME, LOGIN, ROVER_VIEW, SOL_VIEW, PATHS } from './nav';
 
 const thunk = (dispatch, getState) => dispatch(requireLogin());
+const rthunk = (dispatch, getState) => dispatch(requireLogin());
 
 const routesMap = {
   // [LOGIN]: '/',
@@ -16,7 +17,7 @@ const routesMap = {
   },
   [ROVER_VIEW]: {
     path: `${PATHS[ROVER_VIEW]}/:rover`,
-    thunk,
+    thunk: rthunk,
   },
   [SOL_VIEW]: {
     path: `${PATHS[ROVER_VIEW]}/:rover${PATHS[SOL_VIEW]}/:sol`,

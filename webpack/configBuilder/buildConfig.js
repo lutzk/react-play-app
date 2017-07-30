@@ -39,7 +39,15 @@ export function buildConfig(env) {
 
   } else {
     rawConfig.name = 'client';
-    rawConfig.node = false;
+    // rawConfig.node = false;
+    rawConfig.node = {
+      Buffer: false,
+      __dirname: true,
+      __filename: false,
+      console: false,
+      global: false,
+      process: false,
+    };
     rawConfig.target = { target: 'web' };
     // rawConfig.recordsPath = `${context}/records.json`;
   }

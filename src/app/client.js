@@ -9,7 +9,7 @@ import createHistory from 'history/createBrowserHistory';
 
 import { ApiClient } from '../helpers/ApiClient';
 import { ReduxApp as App } from './containers/App/App';
-import { createReduxStore } from './redux/reduxRouterFirst/createReduxStore';
+import { createReduxStore } from './redux/store/createReduxStore';
 
 const client = new ApiClient();
 const history = createHistory();

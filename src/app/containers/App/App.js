@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
-import { linkToSpirit, linkToLogin } from '../../redux/reduxRouterFirst/navTypes';
+import { linkToSpirit, linkToLogin } from '../../redux/routing/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
