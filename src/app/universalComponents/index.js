@@ -2,38 +2,38 @@ import React from 'react';
 import universal from 'react-universal-component';
 
 const loading = () => <div className="LoadingGG"></div>;
+const setOptions = chunkName => ({
+  loading,
+  chunkName,
+  minDelay: 0,
+});
+
 const components = {
-  Home: universal(() => import('../containers/Home/Home'), {
+  Home: universal(import('../containers/Home/Home'), {
     resolve: () => require.resolveWeak('../containers/Home/Home'),
-    minDelay: 0, // match sliding animation duration
-    loading,
-    chunkName: 'Home',
+    ...setOptions('Home'),
   }),
-  RoverView: universal(() => import('../containers/RoverView/RoverView'), {
+
+  RoverView: universal(import('../containers/RoverView/RoverView'), {
     resolve: () => require.resolveWeak('../containers/RoverView/RoverView'),
-    minDelay: 0, // match sliding animation duration
-    loading,
-    chunkName: 'RoverView',
+    ...setOptions('RoverView'),
   }),
+
   // // SolView: universal(() => import(/* webpackChunkName: 'solView' */ '../containers/RoverView/Sol'), {
   // //   resolve: () => require.resolveWeak('../containers/RoverView/Sol'),
   // //   minDelay: 1, // match sliding animation duration
   // //   loading,
   // //   chunkName: 'solView',
   // // }),
-  NotFound: universal(() => import('../containers/NotFound/NotFound'), {
+
+  NotFound: universal(import('../containers/NotFound/NotFound'), {
     resolve: () => require.resolveWeak('../containers/NotFound/NotFound'),
-    minDelay: 0, // match sliding animation duration
-    loading,
-    chunkName: 'NotFound',
+    ...setOptions('NotFound'),
   }),
-  Login: universal(() => import('../containers/Login/Login'), {
+
+  Login: universal(import('../containers/Login/Login'), {
     resolve: () => require.resolveWeak('../containers/Login/Login'),
-    minDelay: 0, // match sliding animation duration
-    loading,
-    // if not set server render flushChunks just gets default
-    // probaly use named export
-    chunkName: 'Login',
+    ...setOptions('Login'),
   }),
 };
 
