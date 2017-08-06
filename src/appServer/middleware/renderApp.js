@@ -10,7 +10,7 @@ import { flushChunkNames } from 'react-universal-component/server';
 import { ApiClient } from '../../helpers/ApiClient';
 import { Html /* , logJSON */ } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
-import { ReduxApp as App } from '../../app/containers/App/App';
+import { App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
 
 require('../../helpers/reactTapEventPlugin');

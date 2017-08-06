@@ -1,59 +1,64 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'redux-first-router-link';
+// import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { /* initPage, */ getManifest as refreshManifest, updateList } from '../../redux/modules/roverView';
-import { linkToHome } from '../../redux/routing/navTypes';
-import RoverMissionStats from './RoverMissionStats';
-import RoverMissionSols from './RoverMissionSols';
-import './RoverView.sass';
+import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
+import { createRoverLink, linkToHome } from '../../redux/routing/navTypes';
+import imageSrc from '../../theme/IMG_1672.jpg';
+import '../RoverView/RoverView.sass';
 
+// const asyncInfo = {
+//   key: 'Sol',
+//   promise: (options) => {
+//     const {
+//       store: { dispatch /* , getState */ },
+//       params: { rover, sol },
+//     } = options;
+
+//     return dispatch(getSolManifest(rover, sol, true)).then(() => 'Sol');
+//   },
+// };
 
 const mapStateToProps = state => ({
-  syncing: state.app.syncing,
-  savedData: state.app.savedData,
-  sorts: state.roverView.sorts,
-  range: state.roverView.range,
-  maxSol: state.roverView.maxSol,
-  filter: state.roverView.filter,
-  roverName: state.roverView.roverName,
-  listLength: state.roverView.listLength,
-  missionStats: state.roverView.missionStats,
-  solsToRender: state.roverView.listToRender,
-  loaded: state.roverView.loaded,
-  loading: state.roverView.loading,
-  initialSolCount: state.roverView.initialCount,
-  manifestLoadError: state.roverView.error,
-  location: state.location,
+  sorts: state.solView.sorts,
+  range: state.solView.range,
+  filter: state.solView.filter,
+  listLength: state.solView.listLength,
+  list: state.solView.listToRender,
+  minShown: state.solView.minShown,
+  maxShown: state.solView.maxShown,
+  moreShown: state.solView.moreShown,
+  manifestLoaded: state.solView.loaded,
+  manifestLoading: state.solView.loading,
+  initialCount: state.solView.initialCount,
+  manifestLoadError: state.solView.error,
 });
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    Object.assign({}, { refreshManifest, updateList }),
-    dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators(
+  Object.assign({}, { refreshManifest, updateList }), dispatch
+);
 
-class RoverView extends Component {
+// @asyncConnect([asyncInfo], mapStateToProps, mapDispatchToProps)
+class SolView extends Component { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
-    location: PropTypes.object,
-    syncing: PropTypes.bool,
-    savedData: PropTypes.object,
+    params: PropTypes.object,
     range: PropTypes.object,
     sorts: PropTypes.object,
     filter: PropTypes.object,
-    params: PropTypes.object,
-    maxSol: PropTypes.number,
-    roverName: PropTypes.string,
-    updateList: PropTypes.func,
-    listLength: PropTypes.number,
-    missionStats: PropTypes.object,
-    solsToRender: PropTypes.array,
-    loaded: PropTypes.bool,
-    refreshManifest: PropTypes.func,
-    loading: PropTypes.bool,
-    initialSolCount: PropTypes.number,
+    list: PropTypes.array,
+    minShown: PropTypes.bool,
+    maxShown: PropTypes.bool,
+    moreShown: PropTypes.bool,
+    manifestLoaded: PropTypes.bool,
+    manifestLoading: PropTypes.bool,
+    initialCount: PropTypes.number,
     manifestLoadError: PropTypes.any,
+    updateList: PropTypes.func,
+    refreshManifest: PropTypes.func,
+    listLength: PropTypes.number,
   }
 
   constructor(props) {
@@ -65,15 +70,9 @@ class RoverView extends Component {
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
-  componentDidMount() {
-    if (!this.props.location.payload.rover && this.props.roverName) {
-      window.history.pushState(null, '', `${window.location.pathname}/${this.props.roverName}`);
-    }
-  }
-
   handleRefreshManifestRequest(e) {
     const offline = !!e.target.dataset.offline;
-    return this.props.refreshManifest('Spirit', offline);
+    return this.props.refreshManifest(this.props.params.rover, this.props.params.sol, offline);
   }
 
   handleSort(e) {
@@ -91,21 +90,19 @@ class RoverView extends Component {
     const field = e.target.dataset.field;
     const toggle = e.target.dataset.toggle;
     const filter = { on: this.props.filter.on };
-    // console.log('__FILTER__', field, toggle, filter);
-    // console.log({ ...{ filter: this.props.filter } });
+
     if (toggle) {
       filter.on = !this.props.filter.on;
-      // console.log('__FILTER__', 1);
+
     } else if (field && !toggle) {
       if (e.target.type === 'checkbox') {
         filter[field] = { on: e.target.checked };
-        // console.log('__FILTER__', 2);
+
       } else if (e.target.type === 'number') {
         filter[field] = { value: parseInt(e.target.value, 10) };
-        // console.log('__FILTER__', 3);
+
       } else {
         filter[field] = { value: e.target.value };
-        // console.log('__FILTER__', 4);
       }
     }
 
@@ -118,61 +115,18 @@ class RoverView extends Component {
     return this.props.updateList({ range });
   }
 
-  // will execute on server render
-  // fetchData() {
-  //   return Promise.resolve(initPage); // eslint-disable-line
-  // }
-
   render() {
 
     const {
-      loaded,
-      loading,
-      syncing,
-      savedData,
+      // minShown,
+      // maxShown,
+      // listLength,
+      manifestLoaded,
+      manifestLoading,
       manifestLoadError,
     } = this.props;
 
-    /* eslint-disable */
-    const getListStats = () => {
-      const { solsToRender, listLength, range: { start, end } } = this.props;
-      let sols = null;
-      let maxSol = null;
-      let minSol = null;
-      let stats = null;
-      const currentRange = end - start;
-      // solsToRender && solsToRender.length && solsToRender.map(sol => sol.sol);
-
-      if (solsToRender && solsToRender.length) {
-        sols = solsToRender.map(sol => sol.sol);
-        maxSol = Math.max(...sols);
-        minSol = Math.min(...sols);
-
-        stats = (
-          <div className="statsPane">
-            total count: {listLength},
-            <br />
-            current count: {solsToRender.length + 1}
-            <br />
-            min shown sol: {minSol},
-            <br />
-            max shown sol: {maxSol}
-          </div>);
-
-        return stats;
-      }
-    };
-    /* eslint-enable */
-
-    const missionStatsProps = {
-      roverName: this.props.roverName,
-      missionStats: this.props.missionStats,
-    };
-
-    const missionSolsProps = {
-      sols: this.props.solsToRender,
-      rover: this.props.roverName ? this.props.roverName.toLowerCase() : '',
-    };
+    const { sol, rover } = this.props.params;
 
     const loadPane = (
       <div className="loadPane">
@@ -189,8 +143,7 @@ class RoverView extends Component {
               &nbsp;
               <input type="checkbox"
                 id={`${field}`}
-                checked={this.props.filter.fields[field].on}
-                onChange={this.handleUpdateFilter}
+                onClick={this.handleUpdateFilter}
                 data-field={`${field}`}/>
             </label>
             &nbsp;
@@ -216,7 +169,7 @@ class RoverView extends Component {
       const { listLength, range: { start, end } } = this.props;
       const currentRange = end - start;
       // maxSol
-      if (this.props.solsToRender && this.props.solsToRender.length) {
+      if (this.props.list && this.props.list.length) {
         return (
           <div className="rangePane">
             {currentRange > 0 && <button data-range="next" onClick={this.handleRangeUpdate}>next {currentRange}</button>}
@@ -234,10 +187,10 @@ class RoverView extends Component {
       const sortField = this.props.sorts.fields[0];
       // const newSortField = sortField === 'total_photos' ? 'cameras' : 'total_photos';
       let sortButtons = null;
-      if (this.props.solsToRender && this.props.solsToRender.length) {
+      if (this.props.list && this.props.list.length) {
         sortButtons = (
           <div className="sortPane">
-            {Object.keys(this.props.solsToRender[0]).map((key, i) =>
+            {Object.keys(this.props.list[0]).map((key, i) =>
               <button key={i} className={sortField === key ? 'enabled' : ''} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
             }
             <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
@@ -258,41 +211,57 @@ class RoverView extends Component {
       </div>
     );
 
+    const photoPane = (this.props.list && this.props.list.length) ?
+      <div className="solsImgs">
+        {this.props.list.map((photo, i) => (
+          <div key={i} className="solImg">
+            <h4 className="headline">photo id:&nbsp;{photo.id}</h4>
+            <div className="cameraData">
+              <h5 className="subHeadline">camera:&nbsp;{photo.camera.name}</h5>
+              <p>id:&nbsp;{photo.camera.id}</p>
+              <p>full name:&nbsp;{photo.camera.full_name}</p>
+            </div>
+            <p>earth_date:&nbsp;{photo.earth_date}</p>
+            <img className="image" src={imageSrc} alt={photo.img_src}/>
+          </div>
+        ))}
+      </div>
+      : null;
+
     return (
       <div className="page roverView">
         <div className="pageHeader">
-          <h1>RoverView</h1>
-          {syncing && <div>...SAVING DATA ...</div>}
-          {savedData && !syncing && <div>...SAVED!</div>}
+          <h1><Link to={createRoverLink({ rover })}>{rover}</Link></h1>
+          <h3>sol: {sol}</h3>
+          <p><Link to={createRoverLink({ rover })}>back to rover</Link></p>
           <p><Link to={linkToHome}>go home</Link></p>
 
           {loadPane}
 
-          {loading && !manifestLoadError &&
-            <div className="pageContent loading"><h3>loading ...</h3></div>
+          {manifestLoading && !manifestLoadError &&
+            <div className="pageContent manifestLoading"><h3>loading ...</h3></div>
           }
 
           {manifestLoadError &&
             <div className="pageContent error">
-              something went wrong loading rover manifest
+              something went wrong loading photos
             </div>
           }
         </div>
 
-        {loaded && !manifestLoadError &&
+        {manifestLoaded &&
           <div className="pageContent">
-            <RoverMissionStats {...missionStatsProps} />
             {buttonPane}
             {renderFilterPane()}
-            <RoverMissionSols {...missionSolsProps} />
+            {photoPane}
             {buttonPane}
             {loadPane}
           </div>
         }
+
       </div>);
   }
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(RoverView);
+export default connect(mapStateToProps, mapDispatchToProps)(SolView);
 

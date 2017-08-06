@@ -9,7 +9,7 @@ import { login, signup, loadAuth } from '../../redux/modules/user';
 import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
 // import { PATHS } from '../../redux/routing/nav';
 
-import './Login.sass';
+import '../../style/Login.sass';
 
 // const active = (currentPath, path) =>
 //   currentPath === path ? 'Activo' : '';
@@ -21,7 +21,7 @@ const mapDispatchToProps = dispatch =>
 
 const mapState = ({ location }) => ({ path: location.pathname });
 
-class Login extends Component {
+class LoginComp extends Component {
 
   static propTypes = {
     path: PropTypes.string,
@@ -105,4 +105,5 @@ class Login extends Component {
   }
 }
 
-export default connect(mapState, mapDispatchToProps)(Login);
+// const Login = connect(mapState, mapDispatchToProps)(LoginComp);
+export default connect(mapState, mapDispatchToProps)(LoginComp);

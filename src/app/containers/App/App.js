@@ -12,9 +12,36 @@ import { linkToSpirit, linkToLogin } from '../../redux/routing/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
-import { getComponent } from '../../universalComponents';
+
+import { UniversalComponent } from './universalComponent';
 
 import './App.sass';
+
+
+// find out why server is executing react-universal-component module twice
+// wich results in following sequence:
+// SETHASPLUGIN
+// hasBabelPlugin false
+
+// react-universal-component's call
+// setHasBabelPlugin__CALLED
+// hasBabelPlugin: true
+
+// thats the actual issue
+// and here the module is again eceuted but no call to setHasBabelPlugin results in:
+// hasBabelPlugin: false
+
+// thats our call to re enable it
+// setHasBabelPlugin__CALLED
+// hasBabelPlugin: true
+
+const setPluginEnabled = () => {
+  const weakId = require.resolveWeak('react-universal-component');
+  const module = __webpack_require__(weakId);// eslint-disable-line
+  module.setHasBabelPlugin();
+};
+
+setPluginEnabled();
 
 const makeMapStateToProps = () => {
   const getUserState = makeGetUserState();
@@ -39,7 +66,7 @@ const mapDispatchToProps = dispatch =>
     Object.assign({}, { loadAuth, logout, goToPage }),
     dispatch);
 
-class App extends Component {
+class AppComponent extends Component {
 
   static propTypes = {
     user: PropTypes.object,
@@ -69,36 +96,18 @@ class App extends Component {
     const { user: nextUser /* userMeta, */ /* location: nextLocation */ } = nextProps;
     // const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
     // const dontPush = path => dontPushTo.indexOf(path) === -1;
-    // console.log('__componentWillReceiveProps__', 0);
-    // console.log(this.props, nextProps);
     if (!user.id && nextUser.id) {
-      // console.log('__componentWillReceiveProps__', 1);
-      // debugger;// eslint-disable-line
       // const nextPathnameFromState = get(nextLocation, 'type', false);
-      // const status = get(nextProps, 'routes[1].status', false);
-      // const status404 = status && status === 404;
       return this.props.goToPage(linkToSpirit);
-      // return push('/rover-view/Spirit');
       // check if it matches a route at all
       // if (nextPathnameFromState && dontPush(nextPathnameFromState)) {
       //   // return push(`${nextPathnameFromState}`);
       //   return goToPage({ type: 'ROVER_VIEW', });
       // }
-
-      // if (!status404) {
-      //   const nextPath = userMeta.savedPath || PATHS.ROVER_VIEW.ROOT;
-
       //   return push(nextPath);
-      // }
 
     } else if (user.id && !nextUser.id) {
-      // console.log('__componentWillReceiveProps__', 2);
-      // return push('/login');
       return this.props.goToPage(linkToLogin);
-      // return push({
-      //   pathname: `/${PATHS.LOGIN}`,
-      //   state: { nextPathname: dontPush(nextLocation.pathname) === -1 ? nextLocation.pathname : null },
-      // });
     }
   }
 
@@ -115,19 +124,17 @@ class App extends Component {
       loadError: this.props.loadError,
     };
 
-    const UniversalComponent = getComponent({ page: this.props.page, isLoading: this.props.isLoading });
-
     return (
       <div className="app">
         <Loader { ...loaderProps } />
-        {UniversalComponent}
-        <Footer showFooter logout={this.props.logout}/>
+         <UniversalComponent page={this.props.page} isLoading={false} />
+        <Footer showFooter logout={this.props.logout} />
       </div>
     );
   }
 }
 
-const ReduxApp = connect(makeMapStateToProps(), mapDispatchToProps, null, { withRef: true })(App);
+const App = connect(makeMapStateToProps(), mapDispatchToProps, null, { withRef: true })(AppComponent);
 
-export { ReduxApp };
+export { App };
 
