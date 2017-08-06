@@ -58,7 +58,7 @@ const swPrecachePlugin = new SWPrecache({
 });
 
 const buildCommonChunksPlugin = (prod) => {
-  const options = {
+  const vendor = {
     name: 'vendor',
     filename: prod ? '[name]-[chunkhash].js' : '[name].js',
     minChunks(module, count) {
@@ -67,13 +67,13 @@ const buildCommonChunksPlugin = (prod) => {
     },
   };
 
-  const manifestOptions = {
-    name: 'manifest',
+  const runtime = {
+    name: 'runtime',
   };
 
   return [
-    new webpack.optimize.CommonsChunkPlugin(options),
-    new webpack.optimize.CommonsChunkPlugin(manifestOptions),
+    new webpack.optimize.CommonsChunkPlugin(vendor),
+    new webpack.optimize.CommonsChunkPlugin(runtime),
   ];
 };
 

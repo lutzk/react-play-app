@@ -77,12 +77,11 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
 
   const app = createApp(App, store);
   const chunkNames = flushChunkNames();
-
   const { Js, publicPath, cssHashRaw, stylesheets } = flushChunks(
     res.locals.clientStats,
     {
       chunkNames,
-      before: ['manifest', 'vendor'],
+      before: ['runtime', 'vendor'],
       after: ['main'],
     });
 
