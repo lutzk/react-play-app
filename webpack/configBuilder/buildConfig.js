@@ -39,10 +39,12 @@ export function buildConfig(env) {
 
   } else {
     rawConfig.name = 'client';
+    // setting all explictly false is ok
+    // setting 'node = false' not
     // rawConfig.node = false;
     rawConfig.node = {
       Buffer: false,
-      __dirname: true,
+      __dirname: false,
       __filename: false,
       console: false,
       global: false,
@@ -53,7 +55,7 @@ export function buildConfig(env) {
   }
 
   if (!envConfig.prod) {
-    rawConfig.devtool = envConfig.server ? 'eval' : 'inline-source-map';
+    rawConfig.devtool = 'inline-source-map';
   }
   // console.log(JSON.stringify(rawConfig, 0, 2));
   return configBuilder(rawConfig);
