@@ -5,6 +5,7 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
 import NameAllModulesPlugin from 'name-all-modules-plugin';
+import BabiliPlugin from 'babili-webpack-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
 import HashChunkNamesPlugin from '../plugins/HashChunkNamesPlugin';
@@ -94,6 +95,15 @@ const loaderOptions = new webpack.LoaderOptionsPlugin({
   debug: false,
 });
 
+
+const babiliPlugin = new BabiliPlugin({
+    removeDebugger: true
+  }, {
+    comments: false
+}, {
+    sourceMap: false
+});
+
 const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
   beautify: false,
   sourceMap: false,
@@ -156,8 +166,9 @@ const createCleanPlugin = path => new CleanPlugin([path], {
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
-    namedChunksPlugin,
-    nameAllModulesPlugin,
+    // babiliPlugin,
+    // namedChunksPlugin,
+    // nameAllModulesPlugin,
     ...(prod ? [] : [hmrPlugin]),
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,
@@ -166,7 +177,8 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
   ];
 
   const prodPlugins = [
-    uglifyPlugin,
+    // uglifyPlugin,
+    babiliPlugin,
     moduleConcatenationPlugin,
     hashAllModulesNamesPlugin,
     hashChunkNamesPlugin,
