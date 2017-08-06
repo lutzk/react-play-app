@@ -1,22 +1,17 @@
 const babelConfigBase = {
-  // ignore: '/node_modules/',
+  ignore: '/node_modules/',
   babelrc: false,
   presets: ['react', 'stage-0-without-async'],
   plugins: [
     // 'transform-runtime',
+    'universal-import',
     'transform-decorators-legacy',
   ],
 };
 
 const devPlugins = [
-  'universal-import',
   'react-hot-loader/babel',
 ];
-
-// const devPluginsServer = [
-//   'dual-import',
-//   'react-hot-loader/babel',
-// ];
 
 const babelConfigApiBase = {
   ignore: '/node_modules/',
