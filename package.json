@@ -3,7 +3,7 @@
   "scripts": {
     "check-app-server": "node ./check.server app",
     "check-api-server": "node ./check.server api",
-    "dev-app-server-watch": "webpack --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
+    "dev-app-server-watch": "webpack-universal --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-api-server-watch": "webpack --env dev.apiServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-cache-worker": "webpack --env dev.worker.cache --colors --display-used-exports --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-pouch-worker": "webpack --env dev.worker.pouch --colors --display-used-exports --display-error-details --config webpack/webpackConfig.js --watch",
@@ -18,6 +18,9 @@
     "start-prod-app-server": "node ./startProdAppServer",
     "start-prod-api-server": "node ./startProdApiServer",
     "start-prod": "npm-run-all --parallel start-prod-app-server start-prod-api-server"
+  },
+  "_moduleAliases": {
+    "webpack": "./node_modules/webpack-universal"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
@@ -95,5 +98,6 @@
     "sw-precache-webpack-plugin": "0.11.0",
     "uuid": "^3.0.1",
     "webpack-bundle-analyzer": "^2.7.0"
+    "webpack-universal": "^1.0.0"
   }
 }
