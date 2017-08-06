@@ -9,7 +9,7 @@ import { login, signup, loadAuth } from '../../redux/modules/user';
 import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
 // import { PATHS } from '../../redux/routing/nav';
 
-import '../../style/Login.sass';
+import '../Login/Login.sass';
 
 // const active = (currentPath, path) =>
 //   currentPath === path ? 'Activo' : '';
