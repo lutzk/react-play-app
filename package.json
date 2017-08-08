@@ -19,9 +19,6 @@
     "start-prod-api-server": "node ./startProdApiServer",
     "start-prod": "npm-run-all --parallel start-prod-app-server start-prod-api-server"
   },
-  "_moduleAliases": {
-    "webpack": "./node_modules/webpack-universal"
-  },
   "devDependencies": {
     "babel-core": "^6.23.1",
     "babel-eslint": "^7.1.1",
@@ -107,6 +104,5 @@
     "uuid": "^3.0.1",
     "webpack-bundle-analyzer": "^2.7.0",
     "webpack-flush-chunks": "1.1.18",
-    "webpack-universal": "^1.0.0"
   }
 }

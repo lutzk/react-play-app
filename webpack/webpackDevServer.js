@@ -1,5 +1,4 @@
 require('../setEnv');
-require('module-alias/register');
 const Express = require('express');
 const webpack = require('webpack');
 const webpackHotMiddleware = require('webpack-hot-middleware');
