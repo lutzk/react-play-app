@@ -19,9 +19,6 @@
     "start-prod-api-server": "node ./startProdApiServer",
     "start-prod": "npm-run-all --parallel start-prod-app-server start-prod-api-server"
   },
-  "_moduleAliases": {
-    "webpack": "./node_modules/webpack-universal"
-  },
   "devDependencies": {
     "babel-core": "^6.23.1",
     "babel-eslint": "^7.1.1",
@@ -58,7 +55,7 @@
     "sass-loader": "^6.0.3",
     "style-loader": "^0.18.1",
     "url-loader": "^0.5.8",
-    "webpack": "3.4.1",
+    "webpack": "3.5.1",
     "webpack-dev-middleware": "^1.10.2",
     "webpack-hot-middleware": "^2.17.1",
     "webpack-node-externals": "^1.5.4"
@@ -107,7 +104,6 @@
     "sw-precache-webpack-plugin": "0.11.0",
     "uuid": "^3.0.1",
     "webpack-bundle-analyzer": "^2.7.0",
-    "webpack-flush-chunks": "1.1.18",
-    "webpack-universal": "^1.0.0"
+    "webpack-flush-chunks": "1.1.18"
   }
 }

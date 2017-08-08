@@ -80,7 +80,7 @@ const targetNode = {
     __filename: false,
   },
   externals: [nodeExternals({
-    whitelist: [/^webpack\/hot/, /^react-universal-component/]
+    whitelist: [/^webpack\/hot/, /^react-universal-component/, /^webpack-flush-chunk/]
   })],
 };
 
