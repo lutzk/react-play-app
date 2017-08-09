@@ -3,7 +3,7 @@
   "scripts": {
     "check-app-server": "node ./check.server app",
     "check-api-server": "node ./check.server api",
-    "dev-app-server-watch": "webpack-universal --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
+    "dev-app-server-watch": "webpack --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-api-server-watch": "webpack --env dev.apiServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-cache-worker": "webpack --env dev.worker.cache --colors --display-used-exports --display-error-details --config webpack/webpackConfig.js --watch",
     "dev-pouch-worker": "webpack --env dev.worker.pouch --colors --display-used-exports --display-error-details --config webpack/webpackConfig.js --watch",
