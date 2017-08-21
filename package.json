@@ -71,7 +71,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.14.1",
     "express-session": "^1.15.2",
-    "extract-css-chunks-webpack-plugin": "2.0.16",
+    "extract-css-chunks-webpack-plugin": "^2.0.16",
     "fastclick": "^1.0.6",
     "find-root": "^1.0.0",
     "history": "^4.6.3",
@@ -88,12 +88,12 @@
     "react-dom": "^15.5.3",
     "react-redux": "^5.0.3",
     "react-tap-event-plugin": "^2.0.1",
-    "react-universal-component": "2.3.2",
+    "react-universal-component": "^2.5.0",
     "redis": "^2.7.1",
     "redux": "^3.6.0",
     "redux-connect": "^5.0.0",
-    "redux-first-router": "1.9.10",
-    "redux-first-router-link": "^1.0.5",
+    "redux-first-router": "^1.9.18",
+    "redux-first-router-link": "^1.2.0",
     "redux-saga": "^0.15.4",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
@@ -103,6 +103,6 @@
     "sw-precache-webpack-plugin": "0.11.0",
     "uuid": "^3.0.1",
     "webpack-bundle-analyzer": "^2.7.0",
-    "webpack-flush-chunks": "1.1.18"
+    "webpack-flush-chunks": "^1.1.23"
   }
 }
