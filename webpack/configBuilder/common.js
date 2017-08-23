@@ -1,4 +1,6 @@
 import nodeExternals from 'webpack-node-externals';
+import fs from 'fs';
+import path from 'path';
 import {
   host,
   context,
@@ -73,15 +75,22 @@ const getClientOutput = prod => prod ?
   : { ...clientOutput, ...clientDevFilename };
 
 // server
+// https://github.com/faceyspacey/universal-demo/blob/master/webpack/server.dev.js#L5
+const res = p => path.resolve(__dirname, p);
+const nodeModules = res('../node_modules');
+const externals = fs
+  .readdirSync(nodeModules)
+  .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x))
+  .reduce((externals, mod) => {
+    externals[mod] = `commonjs ${mod}`
+    return externals
+  }, {});
 const targetNode = {
   target: 'node',
-  node: {
-    __dirname: false,
-    __filename: false,
-  },
-  externals: [nodeExternals({
-    whitelist: [/^webpack\/hot/, /^react-universal-component/, /^webpack-flush-chunk/]
-  })],
+  externals,
+  // externals: [nodeExternals({
+  //   whitelist: [/^webpack\/hot/, /^react-universal-component/, /^webpack-flush-chunk/]
+  // })],
 };
 
 const targetWebworker = {
