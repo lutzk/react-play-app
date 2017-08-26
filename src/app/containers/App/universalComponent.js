@@ -18,4 +18,11 @@ const UniversalComponent = universal(props =>
   options
 );
 
-export { UniversalComponent };
+// const setPluginEnabled = () => {
+//   const weakId = require.resolveWeak('react-universal-component');
+//   const universal = __webpack_require__(weakId);// eslint-disable-line
+//   universal.setHasBabelPlugin();
+// };
+// setPluginEnabled();
+
+export default UniversalComponent;
