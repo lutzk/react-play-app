@@ -74,23 +74,23 @@ const getClientOutput = prod => prod ?
   clientOutput
   : { ...clientOutput, ...clientDevFilename };
 
-// server
-// https://github.com/faceyspacey/universal-demo/blob/master/webpack/server.dev.js#L5
-const res = p => path.resolve(__dirname, p);
-const nodeModules = res('../node_modules');
-const externals = fs
-  .readdirSync(nodeModules)
-  .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x))
-  .reduce((externals, mod) => {
-    externals[mod] = `commonjs ${mod}`
-    return externals
-  }, {});
+const filteredNodeModules = fs.readdirSync(`${context}/node_modules`)
+  .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x));
+
 const targetNode = {
   target: 'node',
-  externals,
-  // externals: [nodeExternals({
-  //   whitelist: [/^webpack\/hot/, /^react-universal-component/, /^webpack-flush-chunk/]
-  // })],
+  externals: [
+    // https://webpack.js.org/configuration/externals/#function
+    (context, request, callback) => {
+      if (
+          filteredNodeModules.indexOf(request.split('/')[0]) > -1
+          && request.indexOf('webpack/hot') === -1
+        ) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
+  ],
 };
 
 const targetWebworker = {
