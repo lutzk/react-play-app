@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 // import cn from 'classnames';
 import { get } from 'lodash'; // eslint-disable-line
 import { bindActionCreators } from 'redux';
+import universal from 'react-universal-component';
 
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
@@ -13,7 +14,7 @@ import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
 
-import { UniversalComponent } from './universalComponent';
+// import UniversalComponent from './universalComponent';
 
 import './App.sass';
 
@@ -37,11 +38,28 @@ import './App.sass';
 
 const setPluginEnabled = () => {
   const weakId = require.resolveWeak('react-universal-component');
-  const module = __webpack_require__(weakId);// eslint-disable-line
-  module.setHasBabelPlugin();
+  const universal = __webpack_require__(weakId);// eslint-disable-line
+  universal.setHasBabelPlugin();
 };
 
 setPluginEnabled();
+
+const error = () => <div className="errorGG">UNI error</div>;
+const loading = () => <div className="LoadingGG">UNI LOADING</div>;
+const minDelay = 0;
+const loadingTransition = false;
+
+const options = {
+  error,
+  loading,
+  minDelay,
+  loadingTransition,
+};
+
+const UniversalComponent = universal(props =>
+  import(`../asyncContext/${props.page}`),
+  options
+);
 
 const makeMapStateToProps = () => {
   const getUserState = makeGetUserState();
