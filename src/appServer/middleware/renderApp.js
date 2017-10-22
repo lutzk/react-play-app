@@ -1,7 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Provider } from 'react-redux';
-import createHistory from 'history/createMemoryHistory';
 import flushChunks from 'webpack-flush-chunks';
 import { NOT_FOUND } from 'redux-first-router';
 import { flushChunkNames } from 'react-universal-component/server';
@@ -24,13 +23,11 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   // let assets = serverAssets;
   const client = new ApiClient(req);
   const preloadedState = res.preloadedState || {};
-  const history = createHistory({
-    initialEntries: [req.originalUrl],
-  });
 
+  const reqPath = [req.path];
   const { store, thunk /* , rootTask */ } = createReduxStore({
     client,
-    history,
+    reqPath,
     preloadedState,
   });
 

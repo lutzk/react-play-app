@@ -1,22 +1,18 @@
-import Perf from 'react-addons-perf';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 import { AppContainer as HotReloader } from 'react-hot-loader';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import createHistory from 'history/createBrowserHistory';
 
 import { ApiClient } from '../helpers/ApiClient';
 import { App } from './containers/App/App';
 import { createReduxStore } from './redux/store/createReduxStore';
 
 const client = new ApiClient();
-const history = createHistory();
 const preloadedState = window.__data;
 const { store /* , thunk */ } = createReduxStore({
   client,
-  history,
   preloadedState,
 });
 
