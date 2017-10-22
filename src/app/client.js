@@ -25,7 +25,7 @@ const render = (App, store) => {// eslint-disable-line
     </Provider>);
 
   if (__DEVELOPMENT__) {
-    dom = ReactDOM.render(
+    dom = ReactDOM.hydrate(
       <HotReloader>
         {app}
       </HotReloader>,
@@ -33,7 +33,7 @@ const render = (App, store) => {// eslint-disable-line
     );
 
   } else {
-    dom = ReactDOM.render(app, rootDomNode);
+    dom = ReactDOM.hydrate(app, rootDomNode);
   }
 
   return dom;
@@ -43,17 +43,12 @@ const renderDevStuff = () => {
   if (__DEVELOPMENT__) {
 
     window.React = React;
-    window.perf = Perf;// enable debugger
-
-    if (!rootDomNode || !rootDomNode.firstChild || !rootDomNode.firstChild.attributes || !rootDomNode.firstChild.attributes['data-react-checksum']) {
-      console.error('Server-side React render was discarded. Make sure that your initial render does not contain any client-side code.');
-    }
 
     if (__DEVTOOLS__) {
       const DevTools = require('./containers/DevTools/DevTools').default;
       const devToolsDest = document.createElement('div');
       window.document.body.insertBefore(devToolsDest, null);
-      ReactDOM.render(
+      ReactDOM.hydrate(
         <Provider store={store} key="devToolsProvider">
           <DevTools />
         </Provider>,
