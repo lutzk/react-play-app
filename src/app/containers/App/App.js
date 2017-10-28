@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import universal from 'react-universal-component';
 
 import { goToPage } from '../../redux/modules/page';
-import { loadAuth, logout /* , killUser */ } from '../../redux/modules/user';
+import { loadAuth, logout } from '../../redux/modules/user';
 import { linkToSpirit, linkToLogin } from '../../redux/routing/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
@@ -66,13 +66,13 @@ const makeMapStateToProps = () => {
   const getUserMeta = makeGetUserMeta();
   const mapStateToProps = (state, props) => ({
     user: getUserState(state, props),
-    userMeta: getUserMeta(state, props),
+    page: state.page,
     loading: state.pageLoadBar.loading,
     loadEnd: state.pageLoadBar.loadEnded,
-    loadError: state.pageLoadBar.error,
-    page: state.page,
-    isLoading: false,
     location: state.location,
+    userMeta: getUserMeta(state, props),
+    loadError: state.pageLoadBar.error,
+    isLoading: false,
   });
   return mapStateToProps;
 };
@@ -88,15 +88,15 @@ class AppComponent extends Component {
 
   static propTypes = {
     user: PropTypes.object,
-    userMeta: PropTypes.object,
+    page: PropTypes.any,
     logout: PropTypes.func,
+    loading: PropTypes.bool,
+    loadAuth: PropTypes.func,
+    userMeta: PropTypes.object,
     goToPage: PropTypes.func,
     location: PropTypes.object.isRequired,
-    loading: PropTypes.bool,
     loadError: PropTypes.bool,
     loadEnded: PropTypes.bool,
-    loadAuth: PropTypes.func,
-    page: PropTypes.any,
     isLoading: PropTypes.bool,
   };
 
@@ -155,4 +155,3 @@ class AppComponent extends Component {
 const App = connect(makeMapStateToProps(), mapDispatchToProps, null, { withRef: true })(AppComponent);
 
 export { App };
-
