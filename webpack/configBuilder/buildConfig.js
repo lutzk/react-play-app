@@ -50,6 +50,7 @@ export function buildConfig(env) {
       global: false,
       process: false,
     };
+    rawConfig.output.crossOriginLoading = "anonymous";
     rawConfig.target = { target: 'web' };
     // rawConfig.recordsPath = `${context}/records.json`;
   }
