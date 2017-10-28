@@ -130,7 +130,7 @@ const login = (username, password) => dispatch => {
   });
 };
 
-const logout = () => (getState, dispatch) => {
+const logout = () => dispatch => {
   const types = [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL];
   const promise = client => client.get('/logout');
   return dispatch({ types, promise });
