@@ -1,1 +1,1 @@
-export default '../RoverView/RoverView';
+export default from '../RoverView/RoverView';
