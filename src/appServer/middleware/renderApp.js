@@ -91,7 +91,8 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
 
   return res
     .status(resStatus)
-    .send(html);
+    .send(html)
+    .end();
 });
 
 export { renderApp };
