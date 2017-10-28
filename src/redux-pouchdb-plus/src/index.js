@@ -9,14 +9,15 @@
     by:
       lutzk
 */
+
 import { debounce } from 'lodash';// eslint-disable-line
 import { cloneDeep, isEqual } from 'lodash'; // eslint-disable-line
 import { initWorkerSync, currySendMsg } from '../../app/workers/utils';
 import {
   STORE_INIT,
-  SYNC_INITIAL,
-  SYNC_INITIAL_SUCCESS,
-  SYNC_INITIAL_FAIL,
+  // SYNC_INITIAL,
+  // SYNC_INITIAL_SUCCESS,
+  // SYNC_INITIAL_FAIL,
   REDUCER_SET,
   REDUCER_RESET,
   REDUCER_REINIT,
@@ -36,7 +37,7 @@ const INIT = '@@redux-pouchdb-plus/INIT';
 const RESET = '@@redux-pouchdb-plus/RESET';
 const REINIT = '@@redux-pouchdb-plus/REINIT';
 const REINIT_SUCCESS = '@@redux-pouchdb-plus/REINIT_SUCCESS';
-// const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
+const REINIT_FAIL = '@@redux-pouchdb-plus/REINIT_FAIL';
 const REQUEST_REINIT = '@@redux-pouchdb-plus/REQUEST_REINIT';
 const SET_REDUCER = '@@redux-pouchdb-plus/SET_REDUCER';
 const REDUCER_READY = '@@redux-pouchdb-plus/REDUCER_READY';
@@ -46,9 +47,8 @@ const SYNC_SUCCESS = '@@redux-pouchdb-plus/SYNC_SUCCESS';
 const SYNC_FAIL = '@@redux-pouchdb-plus/SYNC_FAIL';
 
 let pouchWorker;
-let sendMsgToWorker;// = currySendMsg(worker);
+let sendMsgToWorker;
 const initializedReducers = {};
-
 
 const setReducerInitialized = reducerName =>
   initializedReducers[reducerName] = true;
@@ -75,7 +75,6 @@ const reset = () => (dispatch) => {
 };
 
 const requestReinit = () => dispatch => dispatch({ type: REQUEST_REINIT });
-
 const persistentStore = () => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
   const state = store.getState();
@@ -102,18 +101,13 @@ const isUserPresent = (store) => { // eslint-disable-line
   return (userState && userState.user && userState.user.userId);
 };
 
-// const setSyncing = reducerName => dispatch => dispatch({ type: SYNC, reducerName });
-// const setSyncSuccess = (reducerName, data) => dispatch => dispatch({ type: SYNC_SUCCESS, reducerName, data });
-// const setSyncfail = (reducerName, error) => dispatch => dispatch({ type: SYNC_FAIL, reducerName, error });
-
 const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
 
   let store;
   let initialState;
   let currentState;
 
-  const workerMsgHandler = (e) => {
-
+  const workerMsgHandler = e => {
     const { data: { type, doc, reducerName } } = e;// eslint-disable-line
     if (type) {
 
@@ -128,12 +122,12 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
           break;
 
         case REDUCERS_READY.type:
-          setReady(); // eslint-disable-line no-use-before-define
+          store.dispatch(setReady()); // eslint-disable-line no-use-before-define
+          // console.log('_REINIT_SUCCESS_');
           break;
 
         case 'CLOSE':
-          // setReady();
-          console.log('_RECIEVED_CLOSE_');
+          // console.log('_RECIEVED_CLOSE_');
           break;
 
         default:
@@ -143,8 +137,8 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
   };
 
   const setReducer = (doc) => {
-    const { _rev, _id: reducer, state } = doc;// eslint-disable-line
-    // const state = cloneDeep(dbState);
+    const { _rev, _id: reducer, state: dbState } = doc;// eslint-disable-line
+    const state = cloneDeep(dbState);
     // const state = dbState;
 
     store.dispatch({
@@ -191,12 +185,11 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
 
       case INIT:
         store = action.store;
-        pouchWorker.onmessage = (e) => {
-          workerMsgHandler(e);
-        };
         pouchWorker = action.pouchWorker;
-        sendMsgToWorker = action.sendMsgToWorker;
+        pouchWorker.onmessage = e =>
+          workerMsgHandler(e);
 
+        sendMsgToWorker = action.sendMsgToWorker;
 
       case REINIT: // eslint-disable-line
         if (isUserPresent(store)) {
@@ -244,6 +237,8 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
 };
 
 export {
+  REQUEST_REINIT,
+  REINIT,
   reset,
   reinit,
   requestReinit,
@@ -252,4 +247,6 @@ export {
   SYNC,
   SYNC_SUCCESS,
   SYNC_FAIL,
+  REDUCER_READY,
+  // setPersistetStore,
 };
