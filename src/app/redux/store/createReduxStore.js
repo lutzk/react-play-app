@@ -19,14 +19,15 @@ import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';// esl
 // };
 // createSagaMonitor(config);
 
-function createReduxStore({ history, client, preloadedState }) { // eslint-disable-line
+function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disable-line
   let composeFuncs;
   const createRootReducer = require('../modules/reducer').createRootReducer;
   const options = {
+    initialEntries: reqPath,
     initialDispatch: false,
-    onBeforeChange: (dispatch, getState, action) => { // eslint-disable-line
+    onBeforeChange: (dispatch, getState, bag) => { // eslint-disable-line
       const userRequiredRoutes = ['HOME', 'ROVER_VIEW'];
-      const userRequired = userRequiredRoutes.indexOf(action.type) > -1;
+      const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
         // not async https://github.com/faceyspacey/redux-first-router/issues/90
         // return checkAuth(dispatch, getState);
@@ -46,7 +47,7 @@ function createReduxStore({ history, client, preloadedState }) { // eslint-disab
   //   }),
   // });
   // applyMiddleware(sagaMiddleware)
-  const { reducer, middleware, enhancer, thunk, initialDispatch } = connectRoutes(history, routesMap, options);
+  const { reducer, middleware, enhancer, thunk, initialDispatch } = connectRoutes(routesMap, options);
   const rootReducer = createRootReducer(reducer);
   const middlewares = [
     middleware,
