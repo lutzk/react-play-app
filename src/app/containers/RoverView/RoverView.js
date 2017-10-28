@@ -90,22 +90,21 @@ class RoverView extends Component {
   handleUpdateFilter(e) {
     const field = e.target.dataset.field;
     const toggle = e.target.dataset.toggle;
-    const filter = { on: this.props.filter.on };
-    // console.log('__FILTER__', field, toggle, filter);
-    // console.log({ ...{ filter: this.props.filter } });
+    const filter = {};
+
     if (toggle) {
       filter.on = !this.props.filter.on;
-      // console.log('__FILTER__', 1);
+
     } else if (field && !toggle) {
       if (e.target.type === 'checkbox') {
         filter[field] = { on: e.target.checked };
-        // console.log('__FILTER__', 2);
+
       } else if (e.target.type === 'number') {
         filter[field] = { value: parseInt(e.target.value, 10) };
-        // console.log('__FILTER__', 3);
+
       } else {
         filter[field] = { value: e.target.value };
-        // console.log('__FILTER__', 4);
+
       }
     }
 
@@ -117,11 +116,6 @@ class RoverView extends Component {
     const range = { action };
     return this.props.updateList({ range });
   }
-
-  // will execute on server render
-  // fetchData() {
-  //   return Promise.resolve(initPage); // eslint-disable-line
-  // }
 
   render() {
 
