@@ -1,10 +1,17 @@
 import { NOT_FOUND } from 'redux-first-router';
+import {
+  HOME,
+  LOGIN,
+  SOL_VIEW,
+  ROVER_VIEW,
+} from '../routing/nav';
 
 const components = {
-  HOME: 'Home',
-  ROVER_VIEW: 'RoverView',
-  LOGIN: 'Login',
+  [HOME]: 'Home',
+  [LOGIN]: 'Login',
+  [SOL_VIEW]: 'SolView',
   [NOT_FOUND]: 'NotFound',
+  [ROVER_VIEW]: 'RoverView',
 };
 
 // the primary reducer demonstrating Redux-First Router:

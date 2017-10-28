@@ -1,10 +1,11 @@
 import thunkMiddleware from 'redux-thunk';
 // import createSagaMiddleware from 'redux-saga';
-import { connectRoutes /* , redirect, NOT_FOUND */ } from 'redux-first-router';
+import { connectRoutes, redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 // import { LOGIN } from './nav';
 import { routesMap } from '../routing/routesMap';
+import { linkToLogin } from '../routing/navTypes';
 import { clientMiddleware } from '../middleware/clientMiddleware';
 import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';// eslint-disable-line
 
