@@ -28,7 +28,13 @@ function createReduxStore({ history, client, preloadedState }) { // eslint-disab
       const userRequiredRoutes = ['HOME', 'ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(action.type) > -1;
       if (userRequired) {
-        return checkAuth(dispatch, getState);
+        // not async https://github.com/faceyspacey/redux-first-router/issues/90
+        // return checkAuth(dispatch, getState);
+        const { user: { user } } = getState(); // eslint-disable-line
+        if (!user) {
+          const action = redirect({ ...linkToLogin, nextPathname: getState().location.pathname });
+          dispatch(redirect(action));
+        }
       }
     },
   };
