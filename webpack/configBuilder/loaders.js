@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import pathIsInside from 'path-is-inside';
 import findRoot from 'find-root';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import { embedLimit, fileTests, context, ExtractCssChunks } from '../settings';
 import {
   babelConfigServer,
@@ -51,25 +50,6 @@ const devSassLoaderOptions = {
   outputStyle: 'expanded',
 };
 
-const buildExtractTextPluginLoader = ({ kind = 'css' }) => {
-  const test = fileTests[kind];
-  const options = { fallback: styleLoader };
-
-  if (kind === 'css') {
-    options.use = [styleLoader, cssLoader];
-  } else if (kind === 'sass') {
-    options.use = [
-      setUse(cssLoader, cssLoaderOptions),
-      setUse(sassLoader, sassLoaderOptions),
-    ];
-  }
-
-  return {
-    test,
-    loader: ExtractTextPlugin.extract(options),
-  };
-};
-
 const buildExtractCssChunksLoader = ({ kind = 'css' }) => {
   const test = fileTests[kind];
   const options = { /* fallback: styleLoader */ };
@@ -100,23 +80,7 @@ const buildServerSassLoader = (prod = false) => ({
 
 const buildClientSassLoader = (prod = false) => {
   const test = { test: fileTests.sass };
-  let conf;
-
-  if (!prod) {
-    conf = buildExtractCssChunksLoader({ kind: 'sass' });
-    // conf = {
-    //   ...test,
-    //   use: [
-    //     setUse(styleLoader, { sourceMap: true }),
-    //     setUse(cssLoader, devCssLoaderOptions),
-    //     setUse(sassLoader, devSassLoaderOptions),
-    //   ],
-    // };
-  } else {
-    // conf = buildExtractTextPluginLoader({ kind: 'sass' });
-    conf = buildExtractCssChunksLoader({ kind: 'sass' });
-  }
-  return conf;
+  return buildExtractCssChunksLoader({ kind: 'sass' });
 };
 
 const buildSassLoader = ({ server = false, prod = false } = {}) => {
@@ -128,22 +92,7 @@ const buildSassLoader = ({ server = false, prod = false } = {}) => {
 
 const buildClientCssLoader = (prod = false) => {
   const test = { test: fileTests.css };
-  let conf;
-
-  if (!prod) {
-    conf = buildExtractCssChunksLoader({ kind: 'css' });
-    // conf = {
-    //   ...test,
-    //   use: [
-    //     setUse(styleLoader, { sourceMap: true }),
-    //     setUse(cssLoader, devCssLoaderOptions),
-    //   ],
-    // };
-  } else {
-    // conf = buildExtractTextPluginLoader({ kind: 'css' });
-    conf = buildExtractCssChunksLoader({ kind: 'css' });
-  }
-  return conf;
+  return buildExtractCssChunksLoader({ kind: 'css' });
 };
 
 const buildCssLoader = ({ server = false, prod = false } = {}) => {

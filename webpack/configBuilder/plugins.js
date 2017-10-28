@@ -1,6 +1,5 @@
 import webpack from 'webpack';
 import CleanPlugin from 'clean-webpack-plugin';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
@@ -83,12 +82,6 @@ const hmrPlugin = new webpack.HotModuleReplacementPlugin();
 const statsPlugin = new StatsPlugin();
 const caseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
 const limitChunkCountPlugin = new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 });
-
-const extractTextPlugin = new ExtractTextPlugin({
-  filename: '[name]-[hash].css',
-  disable: false,
-  allChunks: true,
-});
 
 const loaderOptions = new webpack.LoaderOptionsPlugin({
   minimize: false,
