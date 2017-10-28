@@ -9,18 +9,6 @@ import { createRoverLink, linkToHome } from '../../redux/routing/navTypes';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
 
-// const asyncInfo = {
-//   key: 'Sol',
-//   promise: (options) => {
-//     const {
-//       store: { dispatch /* , getState */ },
-//       params: { rover, sol },
-//     } = options;
-
-//     return dispatch(getSolManifest(rover, sol, true)).then(() => 'Sol');
-//   },
-// };
-
 const mapStateToProps = state => ({
   sorts: state.solView.sorts,
   range: state.solView.range,
@@ -41,7 +29,6 @@ const mapDispatchToProps = dispatch => bindActionCreators(
   Object.assign({}, { refreshManifest, updateList }), dispatch
 );
 
-// @asyncConnect([asyncInfo], mapStateToProps, mapDispatchToProps)
 class SolView extends Component { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
