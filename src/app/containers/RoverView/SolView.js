@@ -34,6 +34,7 @@ const mapStateToProps = state => ({
   manifestLoading: state.solView.loading,
   initialCount: state.solView.initialCount,
   manifestLoadError: state.solView.error,
+  location: state.location,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(
@@ -44,7 +45,7 @@ const mapDispatchToProps = dispatch => bindActionCreators(
 class SolView extends Component { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
-    params: PropTypes.object,
+    location: PropTypes.object,
     range: PropTypes.object,
     sorts: PropTypes.object,
     filter: PropTypes.object,
@@ -72,7 +73,7 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
 
   handleRefreshManifestRequest(e) {
     const offline = !!e.target.dataset.offline;
-    return this.props.refreshManifest(this.props.params.rover, this.props.params.sol, offline);
+    return this.props.refreshManifest(this.props.location.payload.rover, this.props.location.payload.sol, offline);
   }
 
   handleSort(e) {
@@ -126,7 +127,7 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
       manifestLoadError,
     } = this.props;
 
-    const { sol, rover } = this.props.params;
+    const { sol, rover } = this.props.location.payload;
 
     const loadPane = (
       <div className="loadPane">
