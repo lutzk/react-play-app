@@ -59,9 +59,9 @@ class RoverView extends Component {
   constructor(props) {
     super(props);
 
-    this.handleSort = ::this.handleSort;
+    // this.handleSort = ::this.handleSort;
     this.handleRangeUpdate = ::this.handleRangeUpdate;
-    this.handleUpdateFilter = ::this.handleUpdateFilter;
+    // this.handleUpdateFilter = ::this.handleUpdateFilter;
     this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
@@ -190,7 +190,7 @@ class RoverView extends Component {
               <input type="checkbox"
                 id={`${field}`}
                 checked={this.props.filter.fields[field].on}
-                onChange={this.handleUpdateFilter}
+                onChange={e => this.handleUpdateFilter(e)}
                 data-field={`${field}`}/>
             </label>
             &nbsp;
@@ -198,13 +198,13 @@ class RoverView extends Component {
               <input
                 type={typeof this.props.filter.fields[field].value === 'number' ? 'number' : 'text'}
                 value={this.props.filter.fields[field].value}
-                onChange={this.handleUpdateFilter}
+                onChange={e => this.handleUpdateFilter(e)}
                 data-field={`${field}`}/>}
           </div>));
 
       return (
         <div className="filterPane">
-          <a data-toggle onClick={this.handleUpdateFilter}>toggle filter</a>
+          <a data-toggle onClick={e => this.handleUpdateFilter(e)}>toggle filter</a>
           {this.props.filter.on &&
             <div>
               {filterPane}
@@ -238,9 +238,9 @@ class RoverView extends Component {
         sortButtons = (
           <div className="sortPane">
             {Object.keys(this.props.solsToRender[0]).map((key, i) =>
-              <button key={i} className={sortField === key ? 'enabled' : ''} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
+              <button key={i} className={sortField === key ? 'enabled' : ''} disabled={sortField === key} data-sortfield={key} onClick={e => this.handleSort(e)}>sort by {key}</button>)
             }
-            <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
+            <button data-sortorder={newSortOrder} onClick={e => this.handleSort(e)}>sort {newSortOrder}</button>
             { /* <div>
               current sort: {sortField} - {sortOrder}
             </div> */ }
