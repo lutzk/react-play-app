@@ -16,6 +16,10 @@ export default function nasa(req, params) { // eslint-disable-line
     path = `${basePath}${manifestsPath}${rover}?api_key=${key}`;
   }
 
+  if (rover && sol && !offline) {
+    path = `${basePath}/rovers/${rover}/photos?sol=${sol}&api_key=${key}`;
+  }
+
   if (rover && offline && !sol) {
     path = `${offlineRoverPath}/${rover}`;
   }
@@ -25,9 +29,7 @@ export default function nasa(req, params) { // eslint-disable-line
   // }
 
   if (rover && offline && sol) {
-    console.log('__here');
     path = `${offlineSolPath}/rover/${rover}/sol/${sol}`;
-    console.log('_path', path);
   }
 
   return client.get(path);
