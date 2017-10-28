@@ -13,3 +13,5 @@ bin/*
 report.html
 
 *.hot-update.*
+
+outputRecords.json
