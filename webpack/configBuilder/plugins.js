@@ -16,7 +16,7 @@ const namedChunksPlugin = new webpack.NamedChunksPlugin();
 const nameAllModulesPlugin = new NameAllModulesPlugin();
 const hashChunkNamesPlugin = new HashChunkNamesPlugin();
 const hashAllModulesNamesPlugin = new HashAllModulesNamesPlugin();
-const hashedModuleIdsPlugin = new webpack.HashedModuleIdsPlugin();
+// const hashedModuleIdsPlugin = new webpack.HashedModuleIdsPlugin();
 const moduleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
 
 const analyzerPlugin = new BundleAnalyzerPlugin({
@@ -77,7 +77,7 @@ const buildCommonChunksPlugin = (prod) => {
   ];
 };
 
-const namedModulesPlugin = new webpack.NamedModulesPlugin();
+// const namedModulesPlugin = new webpack.NamedModulesPlugin();
 const hmrPlugin = new webpack.HotModuleReplacementPlugin();
 const statsPlugin = new StatsPlugin();
 const caseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
@@ -88,13 +88,12 @@ const loaderOptions = new webpack.LoaderOptionsPlugin({
   debug: false,
 });
 
-
 const babiliPlugin = new BabiliPlugin({
-    removeDebugger: true
-  }, {
-    comments: false
+  removeDebugger: true,
 }, {
-    sourceMap: false
+  comments: false,
+}, {
+  sourceMap: false,
 });
 
 const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
@@ -160,8 +159,8 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
     // babiliPlugin,
-    // namedChunksPlugin,
-    // nameAllModulesPlugin,
+    namedChunksPlugin,
+    nameAllModulesPlugin,
     ...(prod ? [] : [hmrPlugin]),
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,

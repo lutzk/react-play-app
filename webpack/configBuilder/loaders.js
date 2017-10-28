@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import pathIsInside from 'path-is-inside';
+import pathIsInside from 'path-is-inside'; // eslint
 import findRoot from 'find-root';
-import { embedLimit, fileTests, context, ExtractCssChunks } from '../settings';
+import { embedLimit, fileTests, /* context, */ ExtractCssChunks } from '../settings';
 import {
   babelConfigServer,
   babelConfigClient,
@@ -12,10 +12,10 @@ import {
 } from './babelConfig';
 
 const locals = '/locals';
-const urlLoader = 'url-loader';
+// const urlLoader = 'url-loader';
 const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
-const styleLoader = 'style-loader';
+// const styleLoader = 'style-loader';
 const babelLoader = 'babel-loader';
 const eslintLoader = 'eslint-loader';
 const cssLoaderLocal = cssLoader + locals;
@@ -52,13 +52,12 @@ const devSassLoaderOptions = {
 
 const buildExtractCssChunksLoader = ({ kind = 'css' }) => {
   const test = fileTests[kind];
-  const options = { /* fallback: styleLoader */ };
+  const options = {};
 
   if (kind === 'css') {
-    options.use = [/* styleLoader, */ setUse(cssLoader, devCssLoaderOptions)];
+    options.use = [setUse(cssLoader, devCssLoaderOptions)];
   } else if (kind === 'sass') {
     options.use = [
-      // styleLoader,
       setUse(cssLoader, devCssLoaderOptions),
       setUse(sassLoader, devSassLoaderOptions),
     ];
@@ -78,10 +77,8 @@ const buildServerSassLoader = (prod = false) => ({
   ],
 });
 
-const buildClientSassLoader = (prod = false) => {
-  const test = { test: fileTests.sass };
-  return buildExtractCssChunksLoader({ kind: 'sass' });
-};
+const buildClientSassLoader = (prod = false) =>
+  buildExtractCssChunksLoader({ kind: 'sass' });
 
 const buildSassLoader = ({ server = false, prod = false } = {}) => {
   if (server) {
@@ -132,7 +129,7 @@ const getBabelConfig = ({ server = false, prod = false, api = false, worker = fa
 /*
 
   http://2ality.com/2017/04/transpiling-dependencies-babel.html
-  
+
 */
 const jsTest = { test: fileTests.js };
 const dirJs = path.resolve(process.cwd(), 'src');
@@ -145,20 +142,20 @@ function hasPkgEsnext(filepath) {
   const pkgRoot = findRoot(filepath);
   const packageJsonPath = path.resolve(pkgRoot, 'package.json');
   const packageJsonText = fs.readFileSync(packageJsonPath,
-      {encoding: 'utf-8'});
+      { encoding: 'utf-8' });
   const packageJson = JSON.parse(packageJsonText);
   return {}.hasOwnProperty.call(packageJson, 'esnext')
     || {}.hasOwnProperty.call(packageJson, 'jsnext')
     || {}.hasOwnProperty.call(packageJson, 'module');
 }
+
 const buildJsLoader = ({ server = false, prod = false, api = false, worker = false } = {}) => ({
   ...jsTest,
   // exclude: /node_modules/,
-  include: (filepath) => {
-    return pathIsInside(filepath, dirJs) ||
+  include: (filepath) =>
+    pathIsInside(filepath, dirJs) ||
       (pathIsInside(filepath, dirNodeModules) &&
-      hasPkgEsnext(filepath));
-  },
+      hasPkgEsnext(filepath)),
   use: [
     setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
     setUse(eslintLoader, { fix: true }),
