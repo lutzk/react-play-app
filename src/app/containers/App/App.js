@@ -36,6 +36,7 @@ import './App.sass';
 // setHasBabelPlugin__CALLED
 // hasBabelPlugin: true
 
+// without it would just get 'default' chunkname
 const setPluginEnabled = () => {
   const weakId = require.resolveWeak('react-universal-component');
   const universal = __webpack_require__(weakId);// eslint-disable-line
