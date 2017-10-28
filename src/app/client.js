@@ -48,7 +48,7 @@ const renderDevStuff = () => {
       const DevTools = require('./containers/DevTools/DevTools').default;
       const devToolsDest = document.createElement('div');
       window.document.body.insertBefore(devToolsDest, null);
-      ReactDOM.hydrate(
+      ReactDOM.render(
         <Provider store={store} key="devToolsProvider">
           <DevTools />
         </Provider>,
