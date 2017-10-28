@@ -32,7 +32,7 @@ exports.encoding = function(str){
 exports.hash = function(pwd, salt, cb) {
 
   if (arguments.length === 3) {
-    console.log('___SALT___', pwd, salt, crypto.getHashes());
+    // console.log('___SALT___', pwd, salt, crypto.getHashes());
     // create hash from plain text password and salt
     // hash('secret', 'salt', function(err, hash) {})
     if (!pwd) return cb(new Error('password missing'));
