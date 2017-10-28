@@ -145,7 +145,7 @@ class AppComponent extends Component {
     return (
       <div className="app">
         <Loader { ...loaderProps } />
-         <UniversalComponent page={this.props.page} isLoading={false} />
+        <UniversalComponent key={this.props.page} page={this.props.page} isLoading={false} />
         <Footer showFooter logout={this.props.logout} />
       </div>
     );
