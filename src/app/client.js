@@ -17,15 +17,16 @@ const { store /* , thunk */ } = createReduxStore({
 });
 
 const rootDomNode = document.getElementById('root');
-const render = (App, store) => {// eslint-disable-line
+const render = (App, store, hydrate = true) => {// eslint-disable-line
   let dom = null;
+  const renderFn = hydrate ? ReactDOM.hydrate : ReactDOM.render;
   const app = (
     <Provider store={store}>
       <App />
     </Provider>);
 
   if (__DEVELOPMENT__) {
-    dom = ReactDOM.hydrate(
+    dom = renderFn(
       <HotReloader>
         {app}
       </HotReloader>,
@@ -33,7 +34,7 @@ const render = (App, store) => {// eslint-disable-line
     );
 
   } else {
-    dom = ReactDOM.hydrate(app, rootDomNode);
+    dom = renderFn(app, rootDomNode);
   }
 
   return dom;
@@ -67,7 +68,7 @@ renderDevStuff();
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
     const hotApp = require('./containers/App/App').ReduxApp;
-    render(hotApp, store);
+    render(hotApp, store, false);
   });
 }
 // initCacheWorker(t).then((a) => {
