@@ -80,9 +80,7 @@ const makeMapStateToProps = () => {
 let mounted = false;
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    Object.assign({}, { loadAuth, logout, goToPage }),
-    dispatch);
+  bindActionCreators({ ...{ loadAuth, logout, goToPage } }, dispatch);
 
 class AppComponent extends Component {
 
