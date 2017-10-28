@@ -1,4 +1,4 @@
-// import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
+import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 // import { startLoading, endLoading } from './pageLoadBar';
 // import { Deferred } from '../../../helpers/deferred';
 
@@ -244,7 +244,7 @@ const updateList = ({ sorts, filter, range } = {}) => {
 // };
 
 
-const roverViewReducer = roverView;// persistentReducer(roverView, reducerName);
+const roverViewReducer = persistentReducer(roverView, reducerName);
 
 export {
   // initPage,

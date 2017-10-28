@@ -1,9 +1,9 @@
-// import { reinit, reset, requestReinit } from '../../../redux-pouchdb-plus/src/index';
+import { reinit, reset, requestReinit } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
-import { KILL_USER, /* SIGNUP_SUCCESS, LOGIN_SUCCESS, */ LOGOUT_SUCCESS /* LOGOUT, logout */ /* , LOAD_AUTH_SUCCESS */ } from '../modules/user';
-// import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
+import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS } from '../modules/user';
+import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
 
-const clientMiddleware = client => ({ dispatch, getState }) => next => /* async */ (action) => {// eslint-disable-line
+const clientMiddleware = client => ({ dispatch, getState }) => next => action => {// eslint-disable-line
 
   const { promise, types, ...rest } = action;
 
@@ -12,13 +12,11 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => /* async 
   }
 
   const [REQUEST, SUCCESS, FAILURE] = types;
-  // const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
-  // const maybeReinitReducerTypes = [LOAD_AUTH_SUCCESS];
+  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
 
   next({ ...rest, type: REQUEST });
   dispatch(startLoading());
   return promise(client).then((result) => {
-    console.log('__CLMW__4', result);
 
     const { error } = result;
 
@@ -42,23 +40,21 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => /* async 
       return next({ ...rest, error, type: FAILURE });
     }
 
-    // if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
-    //   // return dispatch({ ...rest, result, type: SUCCESS })
-    //   dispatch({ ...rest, result, type: SUCCESS });
-    //     // .then(async () => {
-    //   return (async () => {
-    //     dispatch(requestReinit());
-    //     const state = getState();
-    //     const msg = { user: state.user, ...SYNC_INITIAL };
-    //     const sendMsg = state.app.sendMsgToWorker;
-    //     await sendMsg(msg);
-    //     return dispatch(reinit());
-    //   })();
-    // }
+    if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
+      dispatch({ ...rest, result, type: SUCCESS });
+      return (async () => {
+        dispatch(requestReinit());
+        const state = getState();
+        const msg = { user: state.user, ...SYNC_INITIAL };
+        const sendMsg = state.app.sendMsgToWorker;
+        await sendMsg(msg);
+        return dispatch(reinit());
+      })();
+    }
 
     if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
+      dispatch(reset());
       dispatch({ ...rest, result, type: SUCCESS });
-      // dispatch(reset());
       dispatch(endLoading());
     }
 
