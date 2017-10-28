@@ -131,6 +131,10 @@ class AppComponent extends Component {
     mounted = false;
   }
 
+  componentDidCatch(err, info) {
+    console.log('___ERROR CATCHED__', err, info);
+  }
+
   render() {
 
     const loaderProps = {
