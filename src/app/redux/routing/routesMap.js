@@ -16,11 +16,11 @@ const routesMap = {
     thunk,
   },
   [ROVER_VIEW]: {
-    path: `${PATHS[ROVER_VIEW]}/:rover`,
+    path: `${PATHS[ROVER_VIEW]}/:rover?`,
     thunk: rthunk,
   },
   [SOL_VIEW]: {
-    path: `${PATHS[ROVER_VIEW]}/:rover${PATHS[SOL_VIEW]}/:sol`,
+    path: `${PATHS[ROVER_VIEW]}/:rover${PATHS[SOL_VIEW]}/:sol?`,
     thunk,
   },
 };
