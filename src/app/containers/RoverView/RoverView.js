@@ -62,7 +62,7 @@ class RoverView extends Component {
     // this.handleSort = ::this.handleSort;
     this.handleRangeUpdate = ::this.handleRangeUpdate;
     // this.handleUpdateFilter = ::this.handleUpdateFilter;
-    this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
+    // this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
   componentDidMount() {
@@ -73,7 +73,7 @@ class RoverView extends Component {
 
   handleRefreshManifestRequest(e) {
     const offline = !!e.target.dataset.offline;
-    return this.props.refreshManifest('Spirit', offline);
+    return this.props.refreshManifest(this.props.roverName, offline);
   }
 
   handleSort(e) {
@@ -170,8 +170,8 @@ class RoverView extends Component {
 
     const loadPane = (
       <div className="loadPane">
-        <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-        <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
+        <button onClick={e => this.handleRefreshManifestRequest(e)}>refresh</button>
+        <button onClick={e => this.handleRefreshManifestRequest(e)} data-offline>refresh (offline)</button>
       </div>);
 
     const renderFilterPane = () => {
@@ -258,7 +258,7 @@ class RoverView extends Component {
           <h1>RoverView</h1>
           {syncing && <div>...SAVING DATA ...</div>}
           {savedData && !syncing && <div>...SAVED!</div>}
-          <p><Link to={linkToHome}>go home</Link></p>
+          <p><Link to={linkToHome}>go  home</Link></p>
 
           {loadPane}
 
