@@ -8,7 +8,6 @@ const appConfig = require('../src/config/config');
 const webpackConfig = require('./webpackConfig.js');
 
 const clientConfig = webpackConfig('dev.client');
-const webpackConfigServer = webpackConfig('dev.appServer');
 const compiler = webpack(clientConfig);
 const StatsToJsonConfig = {
   assets: true,
