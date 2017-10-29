@@ -1,8 +1,12 @@
 import { configBuilder } from './configBuilder';
 import { buildLoaders as rules } from './loaders';
 import { buildPlugins as plugins } from './plugins';
-import { buildEntry as entry, buildOutput as output, buildResolve as resolve, targetNode, targetWebworker } from './common';
-import { context } from '../settings';
+import {
+  buildEntry as entry,
+  buildOutput as output,
+  buildResolve as resolve,
+  targetNode, targetWebworker,
+} from './common';
 
 export function buildConfig(env) {
 
