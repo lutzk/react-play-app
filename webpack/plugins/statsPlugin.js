@@ -16,7 +16,9 @@ StatsPlugin.prototype.apply = function apply(compiler) {
   const outFile = 'webpack-assets.json'
   compiler.plugin('done', (stats) => {
     const assets = getAssetsFromStats(stats.toJson());
-    fs.writeFileSync(outFile, JSON.stringify(formatAssets(assets)));
+    const json = JSON.stringify(formatAssets(assets));
+    fs.writeFileSync(outFile, json);
+    fs.writeFileSync('./static/' + outFile, json);
   });
 };
 
