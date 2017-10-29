@@ -207,10 +207,10 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
             <div className="cameraData">
               <h5 className="subHeadline">camera:&nbsp;{photo.camera.name}</h5>
               <p>id:&nbsp;{photo.camera.id}</p>
-              <p>full name:&nbsp;{photo.camera.full_name}</p>
+              <p>full name:&nbsp;{photo.camera.fullName}</p>
             </div>
-            <p>earth_date:&nbsp;{photo.earth_date}</p>
-            <img className="image" src={imageSrc} alt={photo.img_src}/>
+            <p>earth_date:&nbsp;{photo.earthDate}</p>
+            <img className="image" src={photo.imgSrc} alt={photo.imgSrc}/>
           </div>
         ))}
       </div>
@@ -223,6 +223,7 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
           <h3>sol: {sol}</h3>
           <p><Link to={createRoverLink({ rover })}>back to rover</Link></p>
           <p><Link to={linkToHome}>go home</Link></p>
+          <p>{this.props.listLength && <span>total pics: {this.props.listLength}</span>}</p>
 
           {loadPane}
 

@@ -12,7 +12,7 @@ const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
 // const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
 
-const availableSorts = { fields: ['id', 'earth_date', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
+const availableSorts = { fields: ['id', 'earthDate', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
 
 const reducerName = 'SolView';
@@ -23,7 +23,7 @@ const defaultFilter = {
       value: 0,
       on: false,
     },
-    earth_date: {
+    earthDate: {
       value: 0,
       on: false,
     },
@@ -67,7 +67,7 @@ const initialState = {
 
 const cleanUpData = data =>
   data.map((item) => {
-    const fieldsWhiteList = ['id', 'sol', 'camera', 'img_src', 'earth_date'];
+    const fieldsWhiteList = ['id', 'sol', 'camera', 'imgSrc', 'earthDate'];
     const returnObj = {};
     Object.keys(item).map(itemKey =>
       fieldsWhiteList.indexOf(itemKey) > -1 ?

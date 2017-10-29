@@ -18,7 +18,7 @@
     "start-prod-app-server": "node ./startProdAppServer",
     "start-prod-api-server": "node ./startProdApiServer",
     "start-prod": "npm-run-all --parallel start-prod-app-server start-prod-api-server",
-    "dev-all": "npm-run-all --parallel run-dev-app-server-watch run-dev-api-server-watch dev-client-watch-server dev-pouch-worker",
+    "dev-all": "export NODE_ENV=development; npm-run-all --parallel run-dev-app-server-watch run-dev-api-server-watch dev-client-watch-server dev-pouch-worker",
     "postinstall": "cp ./babel-plugin-universal-import.patch.js ./node_modules/babel-plugin-universal-import/index.js; cp ./superlogin-lib-util-js.patch.js ./node_modules/couch-pwd/index.js"
   },
   "devDependencies": {
