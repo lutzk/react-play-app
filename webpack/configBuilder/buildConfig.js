@@ -6,6 +6,14 @@ import { context } from '../settings';
 
 export function buildConfig(env) {
 
+  const nodeFalse = {
+    Buffer: false,
+    __dirname: false,
+    __filename: false,
+    console: false,
+    global: false,
+    process: false,
+  };
   const rawConfig = {};
   const servers = ['apiServer', 'appServer'];
   const [prod, target, kind] = env.split('.');
@@ -24,14 +32,8 @@ export function buildConfig(env) {
     rawConfig.target = targetWebworker;
     // to fix https://github.com/webpack/webpack/issues/4998
     // as otherwise there would be no global obj available
-    rawConfig.node = {
-      Buffer: false,
-      __dirname: false,
-      __filename: false,
-      console: false,
-      global: true,
-      process: false,
-    };
+    rawConfig.node = nodeFalse;
+    rawConfig.node.global = true;
 
   } else if (envConfig.server) {
     rawConfig.target = targetNode;
@@ -42,15 +44,8 @@ export function buildConfig(env) {
     // setting all explictly false is ok
     // setting 'node = false' not
     // rawConfig.node = false;
-    rawConfig.node = {
-      Buffer: false,
-      __dirname: false,
-      __filename: false,
-      console: false,
-      global: false,
-      process: false,
-    };
-    rawConfig.output.crossOriginLoading = "anonymous";
+    rawConfig.node = nodeFalse;
+    rawConfig.output.crossOriginLoading = 'anonymous';
     rawConfig.target = { target: 'web' };
     // rawConfig.recordsPath = `${context}/records.json`;
   }
