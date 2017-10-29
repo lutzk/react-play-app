@@ -7,15 +7,13 @@ import NameAllModulesPlugin from 'name-all-modules-plugin';
 import BabiliPlugin from 'babili-webpack-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
-import HashChunkNamesPlugin from '../plugins/HashChunkNamesPlugin';
-import HashAllModulesNamesPlugin from '../plugins/HashAllModulesNamesPlugin';
 
 import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath, ExtractCssChunks } from '../settings';
 
 const namedChunksPlugin = new webpack.NamedChunksPlugin();
 const nameAllModulesPlugin = new NameAllModulesPlugin();
-const hashChunkNamesPlugin = new HashChunkNamesPlugin();
-const hashAllModulesNamesPlugin = new HashAllModulesNamesPlugin();
+// const hashChunkNamesPlugin = new HashChunkNamesPlugin();
+// const hashAllModulesNamesPlugin = new HashAllModulesNamesPlugin();
 // const hashedModuleIdsPlugin = new webpack.HashedModuleIdsPlugin();
 const moduleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
 
@@ -172,8 +170,8 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
     // uglifyPlugin,
     babiliPlugin,
     moduleConcatenationPlugin,
-    hashAllModulesNamesPlugin,
-    hashChunkNamesPlugin,
+    // hashAllModulesNamesPlugin,
+    // hashChunkNamesPlugin,
     loaderOptions,
   ];
 
@@ -202,8 +200,8 @@ const buildClientPlugins = ({ prod = false }) => {
     statsPlugin,
     uglifyPlugin,
     moduleConcatenationPlugin,
-    hashAllModulesNamesPlugin,
-    hashChunkNamesPlugin,
+    // hashAllModulesNamesPlugin,
+    // hashChunkNamesPlugin,
     loaderOptions,
     createCleanPlugin(relativeAssetsPath),
   ];
