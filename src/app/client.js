@@ -67,8 +67,7 @@ renderDevStuff();
 
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
-    const hotApp = require('./containers/App/App').ReduxApp;
-    render(hotApp, store, false);
+    render(App, store, false);
   });
 }
 // initCacheWorker(t).then((a) => {
