@@ -5,19 +5,11 @@ import {
   buildEntry as entry,
   buildOutput as output,
   buildResolve as resolve,
-  targetNode, targetWebworker,
+  nodeFalse, targetNode, targetWebworker,
 } from './common';
 
 export function buildConfig(env) {
 
-  const nodeFalse = {
-    Buffer: false,
-    __dirname: false,
-    __filename: false,
-    console: false,
-    global: false,
-    process: false,
-  };
   const rawConfig = {};
   const servers = ['apiServer', 'appServer'];
   const [prod, target, kind] = env.split('.');

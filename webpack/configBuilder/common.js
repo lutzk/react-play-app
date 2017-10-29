@@ -74,6 +74,15 @@ const getClientOutput = prod => prod ?
   clientOutput
   : { ...clientOutput, ...clientDevFilename };
 
+const nodeFalse = {
+  Buffer: false,
+  __dirname: false,
+  __filename: false,
+  console: false,
+  global: false,
+  process: false,
+};
+
 const filteredNodeModules = fs.readdirSync(`${context}/node_modules`)
   .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x));
 
@@ -137,10 +146,11 @@ const buildEntry = ({ server = false, prod = false, api = false, worker = false 
 };
 
 export {
-  targetWebworker,
+  nodeFalse,
   baseConfig,
   targetNode,
   buildEntry,
   buildOutput,
   buildResolve,
+  targetWebworker,
 };
