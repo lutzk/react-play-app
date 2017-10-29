@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import pathIsInside from 'path-is-inside'; // eslint
+import pathIsInside from 'path-is-inside';
 import findRoot from 'find-root';
 import { embedLimit, fileTests, /* context, */ ExtractCssChunks } from '../settings';
 import {
@@ -12,10 +12,8 @@ import {
 } from './babelConfig';
 
 const locals = '/locals';
-// const urlLoader = 'url-loader';
 const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
-// const styleLoader = 'style-loader';
 const babelLoader = 'babel-loader';
 const eslintLoader = 'eslint-loader';
 const cssLoaderLocal = cssLoader + locals;
@@ -50,17 +48,16 @@ const devSassLoaderOptions = {
   outputStyle: 'expanded',
 };
 
-const buildExtractCssChunksLoader = ({ kind = 'css' }) => {
+const buildExtractCssChunksLoader = ({ kind = 'css', prod = false }) => {
   const test = fileTests[kind];
   const options = {};
+  const cssLoaderUse = setUse(cssLoader, prod ? cssLoaderOptions : devCssLoaderOptions);
+  const sassLoaderUse = setUse(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions);
 
   if (kind === 'css') {
-    options.use = [setUse(cssLoader, devCssLoaderOptions)];
+    options.use = [cssLoaderUse];
   } else if (kind === 'sass') {
-    options.use = [
-      setUse(cssLoader, devCssLoaderOptions),
-      setUse(sassLoader, devSassLoaderOptions),
-    ];
+    options.use = [cssLoaderUse, sassLoaderUse];
   }
 
   return {
@@ -77,27 +74,25 @@ const buildServerSassLoader = (prod = false) => ({
   ],
 });
 
-const buildClientSassLoader = (prod = false) =>
-  buildExtractCssChunksLoader({ kind: 'sass' });
+const buildClientStylesLoader = (kind = 'css') =>
+  buildExtractCssChunksLoader({ kind });
 
-const buildSassLoader = ({ server = false, prod = false } = {}) => {
+const buildServerStylesLoader = ({ kind = 'css', prod = false }) =>
+  kind === 'css' ?
+    serverCssLoader
+    : buildServerSassLoader(prod);
+
+const buildStylesLoader = (kind = 'css') => ({ server = false, prod = false } = {}) => {
   if (server) {
-    return buildServerSassLoader(prod);
+    return buildServerStylesLoader({ kind, prod });
   }
-  return buildClientSassLoader(prod);
+
+  return buildClientStylesLoader(kind);
 };
 
-const buildClientCssLoader = (prod = false) => {
-  const test = { test: fileTests.css };
-  return buildExtractCssChunksLoader({ kind: 'css' });
-};
-
-const buildCssLoader = ({ server = false, prod = false } = {}) => {
-  if (server) {
-    return serverCssLoader;
-  }
-  return buildClientCssLoader(prod);
-};
+const stylesChain = ['css', 'sass'];
+const styleLoaders = stylesChain.map(style =>
+  buildStylesLoader(style));
 
 const buildImageLoader = ({ server = false, prod = false, api = false } = {}) => ({
   test: fileTests.img,
@@ -164,8 +159,7 @@ const buildJsLoader = ({ server = false, prod = false, api = false, worker = fal
 
 const loaders = [
   buildJsLoader,
-  buildCssLoader,
-  buildSassLoader,
+  ...styleLoaders,
   buildImageLoader,
 ];
 
