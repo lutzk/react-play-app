@@ -131,7 +131,7 @@ const getInlineWorker = (worker) => {
 
 const initWorkerSync = (worker, name) => {
   if (hasWindow() && workersEnabled()) {
-    const w = new Worker(worker, name);
+    const w = new Worker(worker, { name });
     return w;
   }
   return false;
