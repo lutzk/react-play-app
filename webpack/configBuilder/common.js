@@ -92,9 +92,9 @@ const targetNode = {
     // https://webpack.js.org/configuration/externals/#function
     (context, request, callback) => {
       if (
-          filteredNodeModules.indexOf(request.split('/')[0]) > -1
-          && request.indexOf('webpack/hot') === -1
-        ) {
+        filteredNodeModules.indexOf(request.split('/')[0]) > -1
+        && request.indexOf('webpack/hot') === -1
+      ) {
         return callback(null, `commonjs ${request}`);
       }
       callback();
