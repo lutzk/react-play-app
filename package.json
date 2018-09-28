@@ -92,7 +92,6 @@
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.3",
-    "react-tap-event-plugin": "^3.0.2",
     "react-universal-component": "^2.5.5",
     "redis": "^2.7.1",
     "redux": "^3.7.2",

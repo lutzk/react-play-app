@@ -12,8 +12,6 @@ import { asyncWrap as aw } from '../../helpers/utils';
 import { App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
 
-require('../../helpers/reactTapEventPlugin');
-
 
 const doctype = '<!doctype html>\n';
 
@@ -34,15 +32,16 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   // if (__DEVELOPMENT__ && res.locals.devAssets) {
   //   assets = res.locals.devAssets;
   // }
-
-  const renderHtml = ({ app, store, assets }) =>// eslint-disable-line
+  // eslint-disable-next-line no-shadow
+  const renderHtml = ({ app, store, assets }) =>
     `${doctype}${renderToString((<Html
-      app={ app }
-      store={ store }
-      assets={ assets } />
-  ))}`;
+      app={app}
+      store={store}
+      assets={assets} />
+    ))}`;
 
-  const createApp = (App, store) =>// eslint-disable-line
+  // eslint-disable-next-line no-shadow
+  const createApp = (App, store) =>
     renderToString(
       (<Provider store={store}>
         <App />
