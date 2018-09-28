@@ -75,8 +75,7 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
   }
 
   handleUpdateFilter(e) {
-    const field = e.target.dataset.field;
-    const toggle = e.target.dataset.toggle;
+    const { field, toggle } = e.target.dataset;
     const filter = { on: this.props.filter.on };
 
     if (toggle) {
