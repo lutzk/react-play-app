@@ -10,13 +10,6 @@ import StatsPlugin from '../plugins/statsPlugin';
 
 import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath, ExtractCssChunks } from '../settings';
 
-const namedChunksPlugin = new webpack.NamedChunksPlugin();
-const nameAllModulesPlugin = new NameAllModulesPlugin();
-// const hashChunkNamesPlugin = new HashChunkNamesPlugin();
-// const hashAllModulesNamesPlugin = new HashAllModulesNamesPlugin();
-// const hashedModuleIdsPlugin = new webpack.HashedModuleIdsPlugin();
-const moduleConcatenationPlugin = new webpack.optimize.ModuleConcatenationPlugin();
-
 const analyzerPlugin = new BundleAnalyzerPlugin({
   analyzerMode: 'static',
   defaultSizes: 'parsed',
@@ -55,27 +48,6 @@ const swPrecachePlugin = new SWPrecache({
   // }],
 });
 
-const buildCommonChunksPlugin = (prod) => {
-  const vendor = {
-    name: 'vendor',
-    filename: prod ? '[name]-[chunkhash].js' : '[name].js',
-    minChunks(module, count) {
-      const ctx = module.context;
-      return ctx && ctx.indexOf('node_modules') > -1;
-    },
-  };
-
-  const runtime = {
-    name: 'runtime',
-  };
-
-  return [
-    new webpack.optimize.CommonsChunkPlugin(vendor),
-    new webpack.optimize.CommonsChunkPlugin(runtime),
-  ];
-};
-
-// const namedModulesPlugin = new webpack.NamedModulesPlugin();
 const hmrPlugin = new webpack.HotModuleReplacementPlugin();
 const statsPlugin = new StatsPlugin();
 const caseSensitivePathsPlugin = new CaseSensitivePathsPlugin();
@@ -89,38 +61,10 @@ const loaderOptions = new webpack.LoaderOptionsPlugin({
 const babiliPlugin = new BabiliPlugin({
   removeDebugger: true,
 }, {
-  comments: false,
-}, {
-  sourceMap: false,
-});
-
-const uglifyPlugin = new webpack.optimize.UglifyJsPlugin({
-  beautify: false,
-  sourceMap: false,
-  compress: {
-    warnings: false,
-    screw_ie8: true,
-    conditionals: true,
-    unused: true,
-    comparisons: true,
-    sequences: true,
-    dead_code: true,
-    evaluate: true,
-    if_return: true,
-    join_vars: true,
-  },
-  // mangle: {
-  //   screw_ie8: true,
-  //   props: {
-  //     // regex: /^(refreshManifest|handleRefreshManifestRequest|loading|handleRangeUpdate|handleUpdateFilter|sorts|fields|missionStats|photoManifest|reducerName|listLength|roverName|listToRender|initialCount|solsToRender|updateList|handleSort)$/,
-  //     debug: 'DEBUG9',
-  //   },
-  // },
-  output: {
     comments: false,
-  },
-  comments: false,
-});
+  }, {
+    sourceMap: false,
+  });
 
 const nodeEnvDev = { 'process.env.NODE_ENV': JSON.stringify('development') };
 const nodeEnvProd = { 'process.env.NODE_ENV': JSON.stringify('production') };
@@ -157,9 +101,10 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
     // babiliPlugin,
-    namedChunksPlugin,
-    nameAllModulesPlugin,
+    // namedChunksPlugin,
+    // nameAllModulesPlugin,
     ...(prod ? [] : [hmrPlugin]),
+    // analyzerPlugin,
     limitChunkCountPlugin,
     caseSensitivePathsPlugin,
     buildEnvPlugin({ server: true, prod }),
@@ -167,9 +112,8 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
   ];
 
   const prodPlugins = [
-    // uglifyPlugin,
     babiliPlugin,
-    moduleConcatenationPlugin,
+    // moduleConcatenationPlugin,
     // hashAllModulesNamesPlugin,
     // hashChunkNamesPlugin,
     loaderOptions,
@@ -186,20 +130,15 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
-    new ExtractCssChunks(),
-    ...buildCommonChunksPlugin(prod),
+    new ExtractCssChunks({ hot: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
     analyzerPlugin,
-    namedChunksPlugin,
-    nameAllModulesPlugin,
   ];
 
   const prodPlugins = [
     swPrecachePlugin,
     statsPlugin,
-    uglifyPlugin,
-    moduleConcatenationPlugin,
     // hashAllModulesNamesPlugin,
     // hashChunkNamesPlugin,
     loaderOptions,
@@ -224,7 +163,6 @@ const buildWorkerPlugins = ({ prod = false, worker = false }) => {
   ];
 
   const prodPlugins = [
-    uglifyPlugin,
     loaderOptions,
   ];
 
