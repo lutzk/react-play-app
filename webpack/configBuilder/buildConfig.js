@@ -34,16 +34,69 @@ export function buildConfig(env) {
   } else if (envConfig.server) {
     rawConfig.target = targetNode;
     rawConfig.name = 'server';
-
+    rawConfig.mode = 'development';
+    // rawConfig.recordsPath = '/Users/jonny/Desktop/do/server-records.json';
   } else {
     rawConfig.name = 'client';
     // setting all explictly false is ok
     // setting 'node = false' not
     // rawConfig.node = false;
+    rawConfig.mode = 'development';
     rawConfig.node = nodeFalse;
     rawConfig.output.crossOriginLoading = 'anonymous';
     rawConfig.target = { target: 'web' };
     // rawConfig.recordsPath = `${context}/records.json`;
+    rawConfig.optimization = {
+      // FOR PRODUCTION
+      // minimizer: [
+      //     // new UglifyJSPlugin({
+      //     //     uglifyOptions: {
+      //     //         output: {
+      //     //             comments: false,
+      //     //             ascii_only: true
+      //     //         },
+      //     //         compress: {
+      //     //             comparisons: false
+      //     //         }
+      //     //     }
+      //     // })
+      // ],
+      // END
+      // NEEDED BOTH IN PROD AND DEV BUILDS
+      runtimeChunk: {
+        name: 'bootstrap',
+      },
+      // splitChunks: {
+      //   chunks: 'initial',
+      //   cacheGroups: {
+      //     vendors: {
+      //       test: /[\\/]node_modules[\\/]/,
+      //       name: 'vendor',
+      //     },
+      //   },
+      // },
+      splitChunks: {
+        chunks: 'all',
+        minSize: 30000,
+        minChunks: 1,
+        maxAsyncRequests: 8,
+        maxInitialRequests: 8,
+        automaticNameDelimiter: '~',
+        name: true,
+        cacheGroups: {
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            // chunks: 'all',
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    };
   }
 
   if (!envConfig.prod) {

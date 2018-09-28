@@ -78,7 +78,12 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
     res.locals.clientStats,
     {
       chunkNames,
-      before: ['runtime', 'vendor'],
+      /**
+       * 'vendors~main' is auto generated name by webpack splitchunks config
+       * 'cacheGroups.vendors'
+       * atm it needs to be manualy put here
+       */
+      before: ['bootstrap', 'vendors~main'],
       after: ['main'],
     });
 
