@@ -1,7 +1,7 @@
-require('babel-register')({ // eslint-disable-line
-  ignore: '/node_modules/',
+require('@babel/register')({ // eslint-disable-line
+  ignore: ['/node_modules/'],
   babelrc: false,
-  presets: ['es2015', 'stage-0'],
+  presets: ['@babel/preset-env'],
 });
 
 const buildConfig = require('./configBuilder/buildConfig').buildConfig;

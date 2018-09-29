@@ -3,8 +3,8 @@ import CleanPlugin from 'clean-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
-import NameAllModulesPlugin from 'name-all-modules-plugin';
-import BabiliPlugin from 'babili-webpack-plugin';
+// import NameAllModulesPlugin from 'name-all-modules-plugin';
+// import BabiliPlugin from 'babili-webpack-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
 
@@ -58,13 +58,13 @@ const loaderOptions = new webpack.LoaderOptionsPlugin({
   debug: false,
 });
 
-const babiliPlugin = new BabiliPlugin({
-  removeDebugger: true,
-}, {
-    comments: false,
-  }, {
-    sourceMap: false,
-  });
+// const babiliPlugin = new BabiliPlugin({
+//   removeDebugger: true,
+// }, {
+//     comments: false,
+//   }, {
+//     sourceMap: false,
+//   });
 
 const nodeEnvDev = { 'process.env.NODE_ENV': JSON.stringify('development') };
 const nodeEnvProd = { 'process.env.NODE_ENV': JSON.stringify('production') };
@@ -112,7 +112,7 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
   ];
 
   const prodPlugins = [
-    babiliPlugin,
+    // babiliPlugin,
     // moduleConcatenationPlugin,
     // hashAllModulesNamesPlugin,
     // hashChunkNamesPlugin,

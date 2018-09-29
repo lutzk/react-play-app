@@ -1,10 +1,10 @@
 const fs = require('fs');
 
 // to compile getAssetsFromStats on the fly
-require('babel-register')({
+require('@babel/register')({
   ignore: '/node_modules/',
   babelrc: false,
-  presets: ['es2015']
+  presets: ['@babel/preset-env'],
 });
 
 const formatAssets = require('../../src/appServer/serverAssets.js').formatAssets;
