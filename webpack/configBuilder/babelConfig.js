@@ -1,6 +1,6 @@
 const babelConfigBase = {
-  ignore: ['/node_modules/'],
-  babelrc: false,
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
   presets: ['@babel/preset-react', /* 'stage-0-without-async' */ '@babel/preset-env'],
   plugins: [
     'universal-import',
@@ -21,8 +21,8 @@ const devPlugins = [
 ];
 
 const babelConfigApiBase = {
-  ignore: ['/node_modules/'],
-  babelrc: false,
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
   presets: ['@babel/preset-env'],
   // 'plugins': [
   //   'transform-runtime'

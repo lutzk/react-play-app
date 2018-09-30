@@ -1,6 +1,6 @@
 require('@babel/register')({ // eslint-disable-line
-  ignore: ['/node_modules/'],
-  babelrc: false,
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
   presets: ['@babel/preset-env'],
 });
 

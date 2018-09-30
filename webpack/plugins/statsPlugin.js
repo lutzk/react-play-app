@@ -2,8 +2,8 @@ const fs = require('fs');
 
 // to compile getAssetsFromStats on the fly
 require('@babel/register')({
-  ignore: '/node_modules/',
-  babelrc: false,
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
   presets: ['@babel/preset-env'],
 });
 
