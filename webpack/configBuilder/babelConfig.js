@@ -1,7 +1,19 @@
 const babelConfigBase = {
   // ignore: ['/node_modules/'],
   // babelrc: false,
-  presets: ['@babel/preset-react', /* 'stage-0-without-async' */ '@babel/preset-env'],
+  presets: [
+    '@babel/preset-react',
+    /* 'stage-0-without-async'. */
+    ['@babel/preset-env', {
+      targets: {
+        node: 'current',
+      },
+      debug: true,
+      // modules: false,
+      // useBuiltIns: 'usage',
+    }]
+    // '@babel/typescript',
+  ],
   plugins: [
     'universal-import',
     '@babel/plugin-syntax-dynamic-import',
@@ -23,10 +35,20 @@ const devPlugins = [
 const babelConfigApiBase = {
   // ignore: ['/node_modules/'],
   // babelrc: false,
-  presets: ['@babel/preset-env'],
-  // 'plugins': [
-  //   'transform-runtime'
-  // ]
+  presets: [['@babel/preset-env', {
+    targets: {
+      node: 'current',
+    },
+    debug: true,
+    // modules: false,
+    // useBuiltIns: 'usage',
+  }]],
+  
+  'plugins': [
+    '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-proposal-export-default-from',
+    // 'transform-runtime'
+  ]
 }
 
 const removePropTypes = [
