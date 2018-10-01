@@ -103,7 +103,7 @@
     "react-dom": "^16.0.0",
     "react-hot-loader": "^4.3.11",
     "react-redux": "^5.0.3",
-    "react-universal-component": "^5.0.0-alpha.0",
+    "react-universal-component": "^4.0.0-alpha.0",
     "redis": "^2.7.1",
     "redux": "^3.7.2",
     "redux-connect": "^5.0.0",
