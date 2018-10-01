@@ -9,27 +9,6 @@ const webpackConfig = require('./webpackConfig.js');
 
 const clientConfig = webpackConfig('dev.client');
 const compiler = webpack(clientConfig);
-const StatsToJsonConfig = {
-  assets: true,
-  entrypoints: false,
-  reasons: false,
-  chached: false,
-  children: false,
-  chunks: false,
-  chunkModules: false,
-  chunkOrigins: false,
-  chunksSort: false,
-  context: clientConfig.context,
-  colors: false,
-  errors: false,
-  errorDetails: false,
-  hash: false,
-  modules: false,
-  source: false,
-  timings: false,
-  version: false,
-  warnings: false
-};
 
 const serverOptions = {
   contentBase: `http://${appConfig.host}:${appConfig.devAssetServerPort}`,
@@ -52,11 +31,8 @@ app
   .use(webpackDevMiddleware(compiler, serverOptions))
   .use(webpackHotMiddleware(compiler))
   .get(appConfig.ssrAssetsRoute, (req, res, next) => {
-    const json = res.locals.webpackStats.toJson(StatsToJsonConfig);
-    res.send({
-      publicPath: json.publicPath,
-      assetsByChunkName: json.assetsByChunkName
-    });
+    const json = res.locals.webpackStats.toJson();
+    res.send(json);
     next();
   })
   .listen(
