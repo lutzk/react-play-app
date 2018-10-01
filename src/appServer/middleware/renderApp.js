@@ -73,7 +73,7 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
 
   const app = createApp(App, store);
   const chunkNames = flushChunkNames();
-  const { Js, publicPath, cssHashRaw, stylesheets } = flushChunks(
+  const { Js, publicPath, stylesheets } = flushChunks(
     res.locals.clientStats,
     {
       chunkNames,
@@ -87,7 +87,7 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
     });
 
   const assets = {
-    Js, publicPath, cssHashRaw, stylesheets,
+    Js, publicPath, stylesheets,
   };
 
   const html = renderHtml({ app, store, assets });
