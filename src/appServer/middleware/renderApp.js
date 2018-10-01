@@ -6,7 +6,7 @@ import { NOT_FOUND } from 'redux-first-router';
 import { flushChunkNames } from 'react-universal-component/server';
 // import { END } from 'redux-saga';
 
-import { ApiClient } from '../../helpers/ApiClient';
+import ApiClient from '../../helpers/ApiClient';
 import { Html /* , logJSON */ } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { App } from '../../app/containers/App/App';

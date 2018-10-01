@@ -1,4 +1,4 @@
-import { ApiClient } from '../../helpers/ApiClient';
+import ApiClient from '../../helpers/ApiClient';
 import { asyncWrap as aw } from '../../helpers/utils';
 
 export const getCouchDocs = () => aw(async (req, res, next) => {

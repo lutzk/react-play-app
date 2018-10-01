@@ -4,7 +4,7 @@ import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 import { AppContainer as HotReloader } from 'react-hot-loader';
 
-import { ApiClient } from '../helpers/ApiClient';
+import ApiClient from '../helpers/ApiClient';
 import { App } from './containers/App/App';
 import { createReduxStore } from './redux/store/createReduxStore';
 
