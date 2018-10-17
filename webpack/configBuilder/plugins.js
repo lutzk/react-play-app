@@ -130,7 +130,7 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
-    new ExtractCssChunks({ hot: true }),
+    new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
     analyzerPlugin,
