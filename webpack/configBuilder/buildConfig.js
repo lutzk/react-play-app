@@ -8,6 +8,8 @@ import {
   nodeFalse, targetNode, targetWebworker,
 } from './common';
 
+import { context } from '../settings';
+
 export function buildConfig(env) {
 
   const rawConfig = {};
@@ -28,8 +30,28 @@ export function buildConfig(env) {
     rawConfig.target = targetWebworker;
     // to fix https://github.com/webpack/webpack/issues/4998
     // as otherwise there would be no global obj available
+    rawConfig.mode = 'development';
     rawConfig.node = nodeFalse;
     rawConfig.node.global = true;
+    rawConfig.optimization = {
+      // FOR PRODUCTION
+      // minimizer: [
+      //     // new UglifyJSPlugin({
+      //     //     uglifyOptions: {
+      //     //         output: {
+      //     //             comments: false,
+      //     //             ascii_only: true
+      //     //         },
+      //     //         compress: {
+      //     //             comparisons: false
+      //     //         }
+      //     //     }
+      //     // })
+      // ],
+      // END
+      // NEEDED BOTH IN PROD AND DEV BUILDS
+      runtimeChunk: false,
+    }
 
   } else if (envConfig.server) {
     rawConfig.target = targetNode;
@@ -103,6 +125,6 @@ export function buildConfig(env) {
   if (!envConfig.prod) {
     rawConfig.devtool = 'inline-source-map';
   }
-  // console.log(JSON.stringify(rawConfig, 0, 2));
+  console.log(JSON.stringify(rawConfig, 0, 2));
   return configBuilder(rawConfig);
 }

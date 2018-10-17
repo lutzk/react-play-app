@@ -159,7 +159,6 @@ const buildWorkerPlugins = ({ prod = false, worker = false }) => {
     limitChunkCountPlugin,
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-
   ];
 
   const prodPlugins = [
