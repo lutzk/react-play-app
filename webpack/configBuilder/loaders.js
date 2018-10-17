@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 import pathIsInside from 'path-is-inside';
@@ -145,7 +146,8 @@ function hasPkgEsnext(filepath) {
 }
 
 const buildJsLoader = ({ server = false, prod = false, api = false, worker = false } = {}) => ({
-  ...jsTest,
+  test: /\.(js|jsx|mjs)$/,
+  // ...jsTest,
   // exclude: /node_modules/,
   include: (filepath) =>
     pathIsInside(filepath, dirJs) ||
@@ -153,11 +155,27 @@ const buildJsLoader = ({ server = false, prod = false, api = false, worker = fal
       hasPkgEsnext(filepath)),
   use: [
     setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
-    setUse(eslintLoader, { fix: true }),
+    // setUse(eslintLoader, { fix: true }),
   ],
 });
 
+const buildTsloader = _ => ({
+    test: /\.(ts|tsx)$/,
+    // include: [path.resolve(__dirname, 'src')],
+    // exclude: [path.resolve(__dirname, 'node_modules')],
+    use: [
+      {
+        loader: 'ts-loader',
+        options: {
+          // disable type checker - we will use it in fork plugin
+          transpileOnly: true,
+        },
+      },
+    ],
+  });
+
 const loaders = [
+  buildTsloader,
   buildJsLoader,
   ...styleLoaders,
   buildImageLoader,
@@ -165,8 +183,10 @@ const loaders = [
 
 const buildLoaders = ({ server = false, prod = false, api = false, worker = false } = {}) =>
   (api || worker)
+    // ? [buildTsloader, buildJsLoader({ server, prod, api, worker })]
     ? [buildJsLoader({ server, prod, api, worker })]
-    : loaders.map(loader =>
-        loader({ server, prod, api }));
+    : [{
+          oneOf: loaders.map(loader => loader({ server, prod, api })),
+      }];
 
 export { buildLoaders };
