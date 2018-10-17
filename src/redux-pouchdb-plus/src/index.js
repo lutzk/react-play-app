@@ -97,8 +97,8 @@ const persistentStore = () => createStore => (reducer, initialState) => {
   return store;
 };
 
-const isUserPresent = (store) => { // eslint-disable-line
-  const userState = store ? store.getState().user : false;
+const isUserPresent = state => { // eslint-disable-line
+  const userState = state ? state.user : false;
   return (userState && userState.user && userState.user.userId);
 };
 
@@ -193,7 +193,7 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
         sendMsgToWorker = action.sendMsgToWorker;
 
       case REINIT: // eslint-disable-line
-        if (isUserPresent(store)) {
+        if (isUserPresent(state)) {
           sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           nextState = reducer(state, action);
           reinitReducerInWorker(reducerName, nextState, currentState, store.getState().user);
@@ -208,14 +208,14 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
         return currentState = nextState;
 
       case SET_REDUCER:
-        if ((action.reducer === reducerName && action.state) && isUserPresent(store)) {
+        if ((action.reducer === reducerName && action.state) && isUserPresent(state)) {
           currentState = reducer(action.state, action);
           return currentState;
         }
 
       default:// eslint-disable-line
         nextState = reducer(state, action);
-        if (!isUserPresent(store)) {
+        if (!isUserPresent(state)) {
           return nextState;
         }
         if (!initialState) {
