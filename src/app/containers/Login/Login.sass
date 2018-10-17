@@ -1,56 +1,60 @@
-@import "../../theme/styles/theme"
+@import ../../theme/styles/theme
 
 .login
-  // +clearfix
+    // +clearfix
 
-  .login_content
-    margin: getRythm(2) 0
+    .login_content
+        margin: getRythm(2) 0
 
-    .login_headline
-      +font_size(40px)
-      font-family: $font-family_bold
+        .login_headline
+            color: red
+            +font_size(40px)
+
+            font-family: $font-family_bold
 
 .has-float-label
-  display: block
-  position: relative
+    display: block
+    position: relative
 
-  label
-    position: absolute
-    left: 5px
-    top: 5px
-    cursor: text
-    // font-size: 75%
-    opacity: .7
-    // -webkit-transition: opacity .2s
-    // transition: opacity .2s
-    // top: .25em
-    transform: translateY(0%) scale(.7)
-    transform-origin: 0 0
-    transition: transform 100ms ease-out
-    will-change: transform
+    label
+        position: absolute
+        left: 5px
+        top: 5px
+        cursor: text
 
-  input
-    font-size: inherit
-    padding: getRythm(.7) getRythm(.5) getRythm(.5)
+        font-size: 75%
+        opacity: 0.7
 
-    &::placeholder
-      opacity: 0
-      transition: all .2s
+        // -webkit-transition: opacity .2s
+        // transition: opacity .2s
+        // top: .25em
+        transform: translateY(0%) scale(0.7)
+        transform-origin: 0 0
+        transition: transform 100ms ease-out
+        will-change: transform
 
-    &:placeholder-shown:not(:focus)::placeholder
-      opacity: 0
+    input
+        font-size: inherit
+        padding: getRythm(0.7) getRythm(0.5) getRythm(0.5)
 
-    // out
-    &:placeholder-shown:not(:focus) + *,
-      opacity: .5
-      transform: scale(1.1) translateY(40%)
-      transform-origin: 0 0
-      transition: transform 200ms ease-out
-      will-change: transform
+        &::placeholder
+            opacity: 0
+            transition: all 0.2s
 
-    &:focus,
-      outline: 0
-      border-color: rgba(0, 0, 0, .5)
+        &:placeholder-shown:not(:focus)::placeholder
+            opacity: 0
+
+        // out
+        &:placeholder-shown:not(:focus) + *
+            opacity: 0.5
+            transform: scale(1.1) translateY(40%)
+            transform-origin: 0 0
+            transition: transform 200ms ease-out
+            will-change: transform
+
+        &:focus
+            outline: 0
+            border-color: rgba(0, 0, 0, 0.5)
 
 // .has-float-label select
 //   padding-right: 1em

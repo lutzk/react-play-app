@@ -55,14 +55,14 @@ const buildExtractCssChunksLoader = ({ kind = 'css', prod = false }) => {
   const sassLoaderUse = setUse(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions);
 
   if (kind === 'css') {
-    options.use = [cssLoaderUse];
+    options.use = [ExtractCssChunks.loader, cssLoaderUse];
   } else if (kind === 'sass') {
-    options.use = [cssLoaderUse, sassLoaderUse];
+    options.use = [ExtractCssChunks.loader, cssLoaderUse, sassLoaderUse];
   }
 
   return {
     test,
-    loader: ExtractCssChunks.extract(options),
+    use: options.use,
   };
 };
 

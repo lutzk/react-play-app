@@ -1,7 +1,12 @@
 extends:
   - airbnb-base
+  - eslint:recommended
   - plugin:react/recommended
   # - plugin:jsx-a11y/recommended
+
+settings:
+  react:
+    version: '15.0'
 
 plugins:
   - react
@@ -48,6 +53,9 @@ rules:
   react/forbid-prop-types: 0
   react/jsx-closing-bracket-location: 0
   react/jsx-filename-extension: 0
+  react/no-unescaped-entities: 0
+  no-restricted-globals: 1
+  prefer-destructuring: 1
   jsx-a11y/html-has-lang: 0
   import/prefer-default-export: 0
   import/no-extraneous-dependencies:

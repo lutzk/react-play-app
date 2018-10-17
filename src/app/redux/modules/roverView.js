@@ -214,13 +214,14 @@ const initPage = () => (dispatch, getState) => {
       console.log('__RVI__', 2.1);
       const _rover = getRover();
       return dispatch(getManifest(_rover, false))
-          .then(dispatch(endLoading()))
-          .then(NAME);
+        .then(dispatch(endLoading()))
+        .then(NAME);
     }
     dispatch(endLoading());
     return NAME;
 
-  } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
+  }
+  if (roverViewState.reinitializing || roverViewState.reinitRequested) {
     console.log('__RVI__', 3);
     // const waiter = new Deferred();
     // const selector = state => state.roverView.ready;
@@ -235,12 +236,12 @@ const initPage = () => (dispatch, getState) => {
     if (!getState().roverView.loaded) {
       const _rover = getRover();
       return dispatch(getManifest(_rover, false))
-          .then(dispatch(endLoading()))
-          .then(NAME);
+        .then(dispatch(endLoading()))
+        .then(NAME);
     }
     console.log('__RVI__', 5);
     return dispatch(endLoading())
-        .then(() => name);
+      .then(() => NAME);
     // });
   }
   console.log('__RVI__', 6);

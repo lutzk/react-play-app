@@ -1,11 +1,30 @@
 const babelConfigBase = {
-  ignore: '/node_modules/',
-  babelrc: false,
-  presets: ['react', 'stage-0-without-async'],
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
+  presets: [
+    '@babel/preset-react',
+    /* 'stage-0-without-async'. */
+    ['@babel/preset-env', {
+      targets: {
+        node: 'current',
+      },
+      debug: true,
+      // modules: false,
+      // useBuiltIns: 'usage',
+    }]
+    // '@babel/typescript',
+  ],
   plugins: [
-    // 'transform-runtime',
     'universal-import',
-    'transform-decorators-legacy',
+    '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-proposal-export-default-from',
+    '@babel/plugin-proposal-function-bind',
+    // '@babel/plugin-proposal-decorators',
+    // {
+    //   // legacy: true,
+    //   decoratorsBeforeExport: false,
+    // },
   ],
 };
 
@@ -14,12 +33,22 @@ const devPlugins = [
 ];
 
 const babelConfigApiBase = {
-  ignore: '/node_modules/',
-  babelrc: false,
-  'presets': ['stage-0-without-async'],
-  // 'plugins': [
-  //   'transform-runtime'
-  // ]
+  // ignore: ['/node_modules/'],
+  // babelrc: false,
+  presets: [['@babel/preset-env', {
+    targets: {
+      node: 'current',
+    },
+    debug: true,
+    // modules: false,
+    // useBuiltIns: 'usage',
+  }]],
+  
+  'plugins': [
+    '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-proposal-export-default-from',
+    // 'transform-runtime'
+  ]
 }
 
 const removePropTypes = [

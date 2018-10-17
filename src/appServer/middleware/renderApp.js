@@ -6,13 +6,11 @@ import { NOT_FOUND } from 'redux-first-router';
 import { flushChunkNames } from 'react-universal-component/server';
 // import { END } from 'redux-saga';
 
-import { ApiClient } from '../../helpers/ApiClient';
+import ApiClient from '../../helpers/ApiClient';
 import { Html /* , logJSON */ } from '../../helpers';
 import { asyncWrap as aw } from '../../helpers/utils';
 import { App } from '../../app/containers/App/App';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
-
-require('../../helpers/reactTapEventPlugin');
 
 
 const doctype = '<!doctype html>\n';
@@ -34,15 +32,16 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   // if (__DEVELOPMENT__ && res.locals.devAssets) {
   //   assets = res.locals.devAssets;
   // }
-
-  const renderHtml = ({ app, store, assets }) =>// eslint-disable-line
+  // eslint-disable-next-line no-shadow
+  const renderHtml = ({ app, store, assets }) =>
     `${doctype}${renderToString((<Html
-      app={ app }
-      store={ store }
-      assets={ assets } />
-  ))}`;
+      app={app}
+      store={store}
+      assets={assets} />
+    ))}`;
 
-  const createApp = (App, store) =>// eslint-disable-line
+  // eslint-disable-next-line no-shadow
+  const createApp = (App, store) =>
     renderToString(
       (<Provider store={store}>
         <App />
@@ -74,16 +73,13 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
 
   const app = createApp(App, store);
   const chunkNames = flushChunkNames();
-  const { Js, publicPath, cssHashRaw, stylesheets } = flushChunks(
+  const { Js, publicPath, stylesheets } = flushChunks(
     res.locals.clientStats,
-    {
-      chunkNames,
-      before: ['runtime', 'vendor'],
-      after: ['main'],
-    });
+    { chunkNames });
 
+  console.log('chunkNames:', chunkNames);
   const assets = {
-    Js, publicPath, cssHashRaw, stylesheets,
+    Js, publicPath, stylesheets,
   };
 
   const html = renderHtml({ app, store, assets });

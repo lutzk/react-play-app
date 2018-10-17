@@ -88,8 +88,7 @@ class RoverView extends Component {
   }
 
   handleUpdateFilter(e) {
-    const field = e.target.dataset.field;
-    const toggle = e.target.dataset.toggle;
+    const { field, toggle } = e.target.dataset;
     const filter = {};
 
     if (toggle) {

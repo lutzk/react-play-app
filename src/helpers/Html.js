@@ -25,20 +25,14 @@ const Html = args => {
   */
 
   const { app, store, assets:
-    { Js, publicPath, cssHashRaw, stylesheets },
+    { Js, publicPath, stylesheets },
   } = args;
-  const windowCss = setWindowData('__CSS_CHUNKS__', cssHashRaw);
   const windowData = setWindowData('__data', store.getState());
 
   const windowDataScript = (
     <script
       charSet="UTF-8"
       dangerouslySetInnerHTML={windowData} />);
-
-  const windowCSSHash = (
-    <script
-      charSet="UTF-8"
-      dangerouslySetInnerHTML={windowCss} />);
 
   const htmlContent = (
     <div
@@ -57,7 +51,6 @@ const Html = args => {
       </head>
       <body>
         {htmlContent}
-        {windowCSSHash}
         {windowDataScript}
         <Js />
       </body>
