@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-// import { reducer as reduxAsyncConnect } from 'redux-connect';
 
 import { app } from './app';
 import { user } from './user';
@@ -16,7 +15,6 @@ const createRootReducer = location => combineReducers({
   location,
   roverView,
   pageLoadBar,
-  // reduxAsyncConnect,
 });
 
 export { createRootReducer };

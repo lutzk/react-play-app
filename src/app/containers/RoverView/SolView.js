@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'redux-first-router-link';
-// import { asyncConnect } from 'redux-connect';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
