@@ -15,7 +15,6 @@ import { linkToSpirit, linkToLogin } from '../../redux/routing/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
-import { func } from '../../../helpers/tstest';
 
 // import UniversalComponent from './universalComponent';
 
@@ -145,7 +144,6 @@ class AppComponent extends  React.Component {
   }
 
   render() {
-    console.log('func', func());
     const loaderProps = {
       mount: mounted,
       loading: this.props.loading,
