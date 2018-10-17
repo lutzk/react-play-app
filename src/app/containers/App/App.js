@@ -55,6 +55,7 @@ const options = {
   loading,
   minDelay,
   loadingTransition,
+  ignoreBabelRename: true,
 };
 
 const UniversalComponent = universal(props =>
@@ -144,6 +145,11 @@ class AppComponent extends Component {
       loadEnd: this.props.loadEnded,
       loadError: this.props.loadError,
     };
+
+    // const getA = page => import(`../asynC2/${page}`).then(
+    //   m => console.log('MODULE FUNC', m.default)
+    // );
+    // getA('a');
 
     return (
       <div className="app">
