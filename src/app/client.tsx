@@ -1,12 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import FastClick from 'fastclick';
+// import React from 'react';
+// import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+// import * as FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 import { AppContainer as HotReloader } from 'react-hot-loader';
 
 import ApiClient from '../helpers/ApiClient';
 import { App } from './containers/App/App';
 import { createReduxStore } from './redux/store/createReduxStore';
+
+declare var __DEVTOOLS__: any;
+declare var __DEVELOPMENT__: any;
+declare global {
+  interface Window { 
+    __data: any;
+    React: any;
+  }
+}
 
 const client = new ApiClient();
 const preloadedState = window.__data;
@@ -16,7 +27,7 @@ const { store /* , thunk */ } = createReduxStore({
 });
 
 const rootDomNode = document.getElementById('root');
-const render = (App, store, hydrate = true) => {// eslint-disable-line
+const render = (App: any, store: any, hydrate = true) => {// eslint-disable-line
   let dom = null;
   const renderFn = hydrate ? ReactDOM.hydrate : ReactDOM.render;
   const app = (
@@ -58,11 +69,11 @@ const renderDevStuff = () => {
   }
 };
 
-FastClick.attach(document.body);
+// FastClick.attach(document.body);
 
 render(App, store);
 renderDevStuff();
-
+// (module as any)
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
     render(App, store, false);

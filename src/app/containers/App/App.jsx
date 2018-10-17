@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 // import { redirect, NOT_FOUND, push } from 'redux-first-router';
@@ -13,6 +15,7 @@ import { linkToSpirit, linkToLogin } from '../../redux/routing/navTypes';
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 import { makeGetUserState, makeGetUserMeta } from '../../redux/selectors/userSelector';
+import { func } from '../../../helpers/tstest';
 
 // import UniversalComponent from './universalComponent';
 
@@ -56,10 +59,14 @@ const options = {
   minDelay,
   loadingTransition,
   ignoreBabelRename: true,
+  chunkName: data => {
+    console.log('DATA chunkName:', data);
+    return data.page;
+  },
 };
 
 const UniversalComponent = universal(props =>
-  import(`../asyncContext/${props.page}`),
+  import(/* webpackChunkName: [request] */ `../asyncContext/${props.page}`),
   options
 );
 
@@ -84,7 +91,7 @@ let mounted = false;
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ ...{ loadAuth, logout, goToPage } }, dispatch);
 
-class AppComponent extends Component {
+class AppComponent extends  React.Component {
 
   static propTypes = {
     user: PropTypes.object,
@@ -138,7 +145,7 @@ class AppComponent extends Component {
   }
 
   render() {
-
+    console.log('func', func());
     const loaderProps = {
       mount: mounted,
       loading: this.props.loading,
