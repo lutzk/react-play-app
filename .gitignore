@@ -17,3 +17,5 @@ report.html
 outputRecords.json
 static/*hot-update*
 .vscode/settings.json
+static/0.pouch.js
+static/worker.pouch.js
