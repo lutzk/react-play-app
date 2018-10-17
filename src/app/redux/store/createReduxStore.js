@@ -20,7 +20,7 @@ import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';// esl
 // };
 // createSagaMonitor(config);
 
-function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disable-line
+function createReduxStore({ client, preloadedState, reqPath = null  }) { // eslint-disable-line
   let composeFuncs;
   const createRootReducer = require('../modules/reducer').createRootReducer;
   const options = {
