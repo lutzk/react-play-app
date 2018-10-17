@@ -3,6 +3,7 @@ import CleanPlugin from 'clean-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 // import NameAllModulesPlugin from 'name-all-modules-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 
@@ -134,6 +135,12 @@ const buildClientPlugins = ({ prod = false }) => {
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
     analyzerPlugin,
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      watch: './src',
+      tsconfig: './tsconfig.json',
+      // tslint: paths.appTsLint,
+    }),
   ];
 
   const prodPlugins = [
