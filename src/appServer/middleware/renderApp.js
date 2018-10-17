@@ -75,17 +75,9 @@ const renderApp = (/* { serverAssets } = {} */) => aw(async (req, res, next) => 
   const chunkNames = flushChunkNames();
   const { Js, publicPath, stylesheets } = flushChunks(
     res.locals.clientStats,
-    {
-      chunkNames,
-      /**
-       * 'vendors~main' is auto generated name by webpack splitchunks config
-       * 'cacheGroups.vendors'
-       * atm it needs to be manualy put here
-       */
-      before: ['bootstrap', 'vendors~main'],
-      after: ['main'],
-    });
+    { chunkNames });
 
+  console.log('chunkNames:', chunkNames);
   const assets = {
     Js, publicPath, stylesheets,
   };
