@@ -1,1 +1,2 @@
-export default from '../RoverView/RoverView';
+import RoverView from '../RoverView/RoverView';
+export default RoverView;

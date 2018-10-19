@@ -1,3 +1,4 @@
+import redisSession from './redisSession';
 export { getCouchDocs } from './getCouchDocs';
 export {
   setAuth,
@@ -5,4 +6,5 @@ export {
   errorHandler,
   checkRedisSession,
 } from './middleware';
-export redisSession from './redisSession';
+
+export { redisSession };

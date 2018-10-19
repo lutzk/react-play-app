@@ -1,1 +1,2 @@
-export default from '../RoverView/SolView';
+import SolView from '../RoverView/SolView';
+export default SolView;
