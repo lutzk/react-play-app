@@ -1,8 +1,30 @@
+import { AnyAction, Reducer } from 'redux'
 import { SYNC, SYNC_SUCCESS /* , SYNC_FAIL */ } from '../../../redux-pouchdb-plus/src/index';
 
-const initialState = {};
+interface AppState {
+  data: any;
+  pouchWorker: any;
+  reducerName: string;
+  sendMsgToWorker: any;
+  syncing: boolean;
+}
 
-export function app(state = initialState, action = {}) {
+interface AppAction extends AnyAction {
+  data: any;
+  pouchWorker: any;
+  reducerName: any;
+  sendMsgToWorker: any;
+}
+
+const initialState: AppState = {
+  data: null,
+  pouchWorker: null,
+  reducerName: null,
+  sendMsgToWorker: null,
+  syncing: false,
+}
+
+const app: Reducer<AppState> =(state = initialState, action: AppAction) => {
   switch (action.type) {
     case '@@redux-pouchdb-plus/INIT':
       return {
@@ -11,7 +33,6 @@ export function app(state = initialState, action = {}) {
         ...state,
       };
     case SYNC:
-      console.log('___SYNC_ACTION___', action);
       return {
         ...state,
         syncing: true,
@@ -19,7 +40,6 @@ export function app(state = initialState, action = {}) {
       };
 
     case SYNC_SUCCESS:
-      console.log('___SYNC_ACTION__2_', action);
       return {
         ...state,
         syncing: false,
@@ -30,3 +50,5 @@ export function app(state = initialState, action = {}) {
       return state;
   }
 }
+
+export { app, AppState, AppAction };

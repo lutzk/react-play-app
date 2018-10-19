@@ -1,3 +1,4 @@
+import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from './pageLoadBar';
 // import { Deferred } from '../../../helpers/deferred';
@@ -16,6 +17,42 @@ const SORT_SOLS = 'roverView/SORT_SOLS';
 const GET_MANIFEST = 'roverView/GET_MANIFEST';
 const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
+
+interface RoverViewState {
+  rover: any;
+  error: any;
+  rovers: any;
+  loaded: boolean;
+  loading: boolean;
+  roverName: string;
+  listLength: number;
+  list: any;
+  listToRender: any;
+  missionStats: any;
+  maxShown: boolean;
+  maxSol: number;
+  defaultRover: string; //rovers[spirit.label];
+  moreShown: boolean;
+  sorts: any;
+  filter: any;
+  defaultSorts: any;
+  range: any; // defaultRange,
+  reducerName?: string;
+};
+
+interface RoverResult {
+  photoManifest: any;
+};
+
+interface RoverViewAction extends AnyAction {
+  reducerName: string;
+  range: any;
+  sorts: any;
+  filter: any;
+  list: any;
+  result: RoverResult;
+  error: any;
+};
 
 const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
@@ -49,7 +86,7 @@ const defaultRange = {
   on: true,
 };
 
-const initialState = {
+const initialState: RoverViewState = {
   rover: null,
   error: null,
   rovers,
@@ -77,7 +114,7 @@ const getStats = (data) => {
   return stats;
 };
 
-function roverView(state = initialState, action = {}) {
+const roverView: Reducer<RoverViewState> = (state = initialState, action: RoverViewAction) => {
   switch (action.type) {
 
     // case '@@redux-pouchdb-plus/INIT':
@@ -188,7 +225,7 @@ const getManifest = (_rover, offline) => {
   });
 };
 
-const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range }: any = {}) => {
   const type = SORT_SOLS;
   const stateKey = 'roverView';
   return _updateList({ type, stateKey, sorts, filter, range });
@@ -255,6 +292,8 @@ const initPage = () => (dispatch, getState) => {
 const roverViewReducer = persistentReducer(roverView, reducerName);
 
 export {
+  RoverViewState,
+  RoverViewAction,
   initPage,
   updateList,
   getManifest,

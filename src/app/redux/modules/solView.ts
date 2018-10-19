@@ -1,3 +1,4 @@
+import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 import {
   sortList,
@@ -11,6 +12,39 @@ const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 
 const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
 // const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
+
+interface SolViewState {
+  sol: any;
+  error: any;
+  loaded: boolean;
+  loading: boolean;
+  listLength: number;
+  list: any;
+  listToRender: any;
+  maxShown: boolean;
+  moreShown: boolean;
+  sorts?: any;
+  filter: any;
+  defaultSorts: any;
+  range: any; // defaultRange,
+  reducerName?: string;
+  initialCount: number;
+  availableSorts: any;
+};
+
+interface SolResult {
+  photos: any;
+};
+
+interface SolViewAction extends AnyAction {
+  reducerName: string;
+  range: any;
+  sorts: any;
+  filter: any;
+  list: any;
+  result: SolResult;
+  error: any;
+};
 
 const availableSorts = { fields: ['id', 'earthDate', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
@@ -48,7 +82,7 @@ const defaultRange = {
   on: true,
 };
 
-const initialState = {
+const initialState: SolViewState = {
   sol: null,
   error: null,
   loaded: false,
@@ -59,7 +93,7 @@ const initialState = {
   listToRender: null,
   maxShown: false,
   moreShown: false,
-  sorts: availableSorts,
+  availableSorts,
   filter: defaultFilter,
   defaultSorts,
   range: defaultRange,
@@ -77,7 +111,7 @@ const cleanUpData = data =>
     return returnObj;
   });
 
-function solView(state = initialState, action = {}) {
+const solView: Reducer<SolViewState> = (state = initialState, action: SolViewAction) => {
   switch (action.type) {
 
     case '@@redux-pouchdb-plus/RESET':
@@ -160,7 +194,7 @@ const getSolManifest = (rover, sol, offline) => {
   return getManifestFor({ sol, rover, types, offline });
 };
 
-const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range }: any = {}) => {
   const type = SORT_SOL_PHOTOS;
   const stateKey = 'solView';
   return _updateList({ type, stateKey, sorts, filter, range });
@@ -169,6 +203,9 @@ const updateList = ({ sorts, filter, range } = {}) => {
 const solViewReducer = persistentReducer(solView, reducerName);
 
 export {
+  SolViewState,
+  SolResult,
+  SolViewAction,
   updateList,
   getSolManifest,
   solViewReducer,

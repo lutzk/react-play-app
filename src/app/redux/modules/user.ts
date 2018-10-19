@@ -1,3 +1,4 @@
+import { AnyAction, Reducer } from 'redux';
 import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import { linkToLogin } from '../routing/navTypes';
 
@@ -19,14 +20,39 @@ const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
 
 const KILL_USER = 'user/KILL_USER';
 
-const initialState = {
-  loggedIn: false,
-  loggingIn: false,
-  error: false,
-  lastLoaded: null,
+interface UserState {
+  user: any;
+  savedPath?: any;
+  loading: boolean;
+  loaded: boolean;
+  error?: any;
+  loggingOut: boolean;
+  loggingIn: boolean;
+  signedUp: boolean;
+  signingUp: boolean;
 };
 
-function user(state = initialState, action = {}) {
+interface Result {
+  savedPath: any;
+};
+
+interface UserAction extends AnyAction {
+  result?: any;
+  lastLoaded?: any;
+  error?: any;
+};
+
+const initialState: UserState = {
+  user: null,
+  loading: false,
+  loaded: false,
+  loggingOut: false,
+  loggingIn: false,
+  signedUp: false,
+  signingUp: false,
+};
+
+const user: Reducer<UserState> = (state = initialState, action: AnyAction) => {
   switch (action.type) {
     case KILL_USER:
       return {
@@ -139,18 +165,19 @@ const logout = () => dispatch => {
 const shouldRefreshOrLogout = (state, timeNow) => {
   const lastLoaded = state.user.lastLoaded;
   let justLoaded = false;
-  let expires = false;
+  let expires: number;
+  const _timeNow = Number(timeNow);
   // let issued = false;
   if (state.user.user) {
     // issued = state.user.user.issued;
-    expires = state.user.user.expires;
-    if (((timeNow - expires) / 1000) > 0) {
+    expires = Number(state.user.user.expires);
+    if (((_timeNow - expires) / 1000) > 0) {
       return logout();
     }
   }
 
   if (lastLoaded) {
-    if (((timeNow - lastLoaded) / 1000) < 10) {
+    if (((_timeNow - lastLoaded) / 1000) < 10) {
       justLoaded = true;
     }
   }
@@ -199,6 +226,9 @@ const requireLogin = () => (dispatch, getState) =>
     .then((r) => dispatch(checkAuth()));
 
 export {
+  Result,
+  UserState,
+  UserAction,
   user,
   login,
   logout,

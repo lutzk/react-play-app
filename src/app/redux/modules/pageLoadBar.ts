@@ -1,15 +1,38 @@
+import { AnyAction, Reducer } from 'redux'
+
 const LOADING = 'pageLoadBar/LOADING';
 const END_LOADING = 'pageLoadBar/END_LOADING';
 const RESET_LOADING = 'pageLoadBar/RESET_LOADING';
 const END_LOADING_FROM_ERROR = 'pageLoadBar/END_LOADING_FROM_ERROR';
 
-const initialState = {
+interface PageLoadBarState {
+  loading?: boolean;
+  loadEnd?: boolean;
+  error?: boolean;
+};
+
+interface PageLoadBarAction extends AnyAction {
+  loading?: boolean;
+  loadEnd?: boolean;
+  error?: boolean;
+  type: string;
+}
+
+// const initialState: AppState = {
+//   data: null,
+//   pouchWorker: null,
+//   reducerName: null,
+//   sendMsgToWorker: null,
+//   syncing: false,
+// }
+
+const initialState: PageLoadBarState = {
   loading: false,
   loadEnd: false,
   error: false,
 };
 
-function pageLoadBar(state = initialState, action = {}) {
+const pageLoadBar: Reducer<PageLoadBarState> = (state = initialState, action: PageLoadBarAction) => {
   switch (action.type) {
     case LOADING:
       return {
@@ -88,6 +111,8 @@ function endLoading(fromError = false, rewindOnError = true) {
 }
 
 export {
+  PageLoadBarState,
+  PageLoadBarAction,
   endLoading,
   pageLoadBar,
   startLoading,
