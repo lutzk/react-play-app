@@ -1,0 +1,32 @@
+{
+  "rulesDirectory": ["tslint-plugin-prettier"],
+  "extends": ["tslint-plugin-prettier", "tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "prettier": true,
+    "object-literal-sort-keys": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "no-shadowed-variable": {
+      "severity": "warning"
+    }
+  },
+  "jsRules": {
+    "prettier": true,
+    "object-literal-sort-keys": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "no-shadowed-variable": {
+      "severity": "warning"
+    }
+  },
+  "linterOptions": {
+    "exclude": [
+      "webpack/**/*.*",
+      "node_modules/**/*.*",
+      "bin/**/*.*",
+      "static/**/*.*"
+    ]
+  }
+}
