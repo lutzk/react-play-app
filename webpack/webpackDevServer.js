@@ -21,8 +21,8 @@ const serverOptions = {
   headers: {
     'Access-Control-Allow-Origin': 'http://localhost:3010',
   },
-  stats: { chunks: false, colors: true },
-  serverSideRender: true
+  stats: { colors: true },
+  serverSideRender: true,
 };
 
 const app = new Express();
