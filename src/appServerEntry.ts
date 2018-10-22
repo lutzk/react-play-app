@@ -1,5 +1,5 @@
-import { getJsonData } from './helpers/utils';
 import { startServer } from './appServer/startServer';
+import { getJsonData } from './helpers/utils';
 
 let appServer;
 
@@ -12,17 +12,15 @@ if (dev && module && module.hot) {
 }
 
 const options = {
-  ...(dev ?
-      { empty: true, path: '' }
-      : { path: './webpack-assets.json', empty: false }),
+  ...(dev
+    ? { empty: true, path: '' }
+    : { path: './webpack-assets.json', empty: false }),
 };
 
 (async () => {
   const serverAssets = await getJsonData(options);
   appServer = startServer({ serverAssets });
 })();
-
-
 
 // TS2345: Argument of type '{ empty: boolean; } | { path: string; }' is not assignable to parameter of type '{ path: boolean; empty: boolean; }'.
 

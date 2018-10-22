@@ -56,7 +56,7 @@ const usersCouchPath = `${couchDBPath}${usersCouch}`;
 const couchDBApiPath = `${privateApiPath}${couchApi}`;
 
 const sessionSecret = process.env.SESSION_SECRET || 'se__!cRat__}?';
-const sessionTimeOut = (3600000 / 4);
+const sessionTimeOut = 3600000 / 4;
 
 const authTokenKey = 'x-authentication';
 

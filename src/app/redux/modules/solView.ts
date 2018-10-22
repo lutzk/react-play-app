@@ -1,10 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
-import {
-  sortList,
-  _updateList,
-  getManifestFor,
-} from './shared/shared';
+import { _updateList, getManifestFor, sortList } from './shared/shared';
 
 const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
 const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
@@ -30,11 +26,11 @@ interface SolViewState {
   reducerName?: string;
   initialCount: number;
   availableSorts: any;
-};
+}
 
 interface SolResult {
   photos: any;
-};
+}
 
 interface SolViewAction extends AnyAction {
   reducerName: string;
@@ -44,9 +40,12 @@ interface SolViewAction extends AnyAction {
   list: any;
   result: SolResult;
   error: any;
-};
+}
 
-const availableSorts = { fields: ['id', 'earthDate', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
+const availableSorts = {
+  fields: ['id', 'earthDate', 'camera', 'camera.id'],
+  orders: ['asc', 'desc'],
+};
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
 
 const reducerName = 'SolView';
@@ -100,20 +99,24 @@ const initialState: SolViewState = {
 };
 
 const cleanUpData = data =>
-  data.map((item) => {
+  data.map(item => {
     const fieldsWhiteList = ['id', 'sol', 'camera', 'imgSrc', 'earthDate'];
     const returnObj = {};
-    Object.keys(item).map(itemKey =>
-      fieldsWhiteList.indexOf(itemKey) > -1 ?
-        returnObj[itemKey] = item[itemKey]
-        : false);
+    Object.keys(item).map(
+      itemKey =>
+        fieldsWhiteList.indexOf(itemKey) > -1
+          ? (returnObj[itemKey] = item[itemKey])
+          : false,
+    );
 
     return returnObj;
   });
 
-const solView: Reducer<SolViewState> = (state = initialState, action: SolViewAction) => {
+const solView: Reducer<SolViewState> = (
+  state = initialState,
+  action: SolViewAction,
+) => {
   switch (action.type) {
-
     case '@@redux-pouchdb-plus/RESET':
       return {
         ...initialState,
@@ -186,10 +189,14 @@ const solView: Reducer<SolViewState> = (state = initialState, action: SolViewAct
     default:
       return state;
   }
-}
+};
 
 const getSolManifest = (rover, sol, offline) => {
-  const types = [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL];
+  const types = [
+    GET_SOL_MANIFEST,
+    GET_SOL_MANIFEST_SUCCESS,
+    GET_SOL_MANIFEST_FAIL,
+  ];
 
   return getManifestFor({ sol, rover, types, offline });
 };

@@ -1,4 +1,4 @@
-import { AnyAction, Reducer } from 'redux'
+import { AnyAction, Reducer } from 'redux';
 
 const LOADING = 'pageLoadBar/LOADING';
 const END_LOADING = 'pageLoadBar/END_LOADING';
@@ -9,7 +9,7 @@ interface PageLoadBarState {
   loading?: boolean;
   loadEnd?: boolean;
   error?: boolean;
-};
+}
 
 interface PageLoadBarAction extends AnyAction {
   loading?: boolean;
@@ -32,7 +32,10 @@ const initialState: PageLoadBarState = {
   error: false,
 };
 
-const pageLoadBar: Reducer<PageLoadBarState> = (state = initialState, action: PageLoadBarAction) => {
+const pageLoadBar: Reducer<PageLoadBarState> = (
+  state = initialState,
+  action: PageLoadBarAction,
+) => {
   switch (action.type) {
     case LOADING:
       return {
@@ -64,7 +67,7 @@ const pageLoadBar: Reducer<PageLoadBarState> = (state = initialState, action: Pa
     default:
       return state;
   }
-}
+};
 
 function startLoading() {
   return (dispatch, getState) => {
@@ -84,12 +87,12 @@ function endLoading(fromError = false, rewindOnError = true) {
       let endWithDelay;
       let resetWithDelay;
       if (state.loading && !state.loadEnd) {
-        clearTimeout(endWithDelay);// eslint-disable-line
+        clearTimeout(endWithDelay); // eslint-disable-line
         endWithDelay = setTimeout(() => {
           dispatch({ type: END_LOADING_FROM_ERROR });
         }, rewindDelay);
 
-        clearTimeout(resetWithDelay);// eslint-disable-line
+        clearTimeout(resetWithDelay); // eslint-disable-line
         resetWithDelay = setTimeout(() => {
           dispatch({ type: RESET_LOADING });
         }, resetDelay);
@@ -102,7 +105,7 @@ function endLoading(fromError = false, rewindOnError = true) {
     let resetWithDelay;
     if (state.loading && !state.loadEnd) {
       dispatch({ type: END_LOADING });
-      clearTimeout(resetWithDelay);// eslint-disable-line
+      clearTimeout(resetWithDelay); // eslint-disable-line
       resetWithDelay = setTimeout(() => {
         dispatch({ type: RESET_LOADING });
       }, resetDelay);

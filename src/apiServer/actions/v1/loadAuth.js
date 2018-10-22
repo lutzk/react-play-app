@@ -9,10 +9,14 @@ export default function loadAuth(req) {
   }
   if (req.session.user) {
     const client = new ApiClient(req);
-    const headers = { Authorization: `Bearer ${req.session.user.token}:${req.session.user.password}` };
+    const headers = {
+      Authorization: `Bearer ${req.session.user.token}:${
+        req.session.user.password
+      }`,
+    };
     client
       .post(slRefreshPath, { headers })
-      .then((r) => {
+      .then(r => {
         req.session.token = r.token;
         // return Promise.resolve(req.session.user);
       })

@@ -9,24 +9,24 @@ if (!socket) {
   throw Error('No SOCKET environment variable has been specified');
 }
 
-const app = express()
-  .use(api());
+const app = express().use(api());
 
 const startServer = () =>
-  app.listen(socket, (err) => {
+  app.listen(socket, err => {
     if (err) {
       console.error('SERVER START:', err);
     }
     console.info(`==>   api is up and listening on: ${socket}`);
   });
 
-
 // the socket file is not allways cleaned up
-const checkSocket = clb => promisedStat(socket).then(() => {
-  fs.unlinkSync(socket);
-  return clb();
-})
-.catch(() => clb());
+const checkSocket = clb =>
+  promisedStat(socket)
+    .then(() => {
+      fs.unlinkSync(socket);
+      return clb();
+    })
+    .catch(() => clb());
 
 const starter = () => checkSocket(startServer);
 

@@ -1,5 +1,8 @@
-import { AnyAction, Reducer } from 'redux'
-import { SYNC, SYNC_SUCCESS /* , SYNC_FAIL */ } from '../../../redux-pouchdb-plus/src/index';
+import { AnyAction, Reducer } from 'redux';
+import {
+  SYNC,
+  SYNC_SUCCESS /* , SYNC_FAIL */,
+} from '../../../redux-pouchdb-plus/src/index';
 
 interface AppState {
   data: any;
@@ -22,9 +25,9 @@ const initialState: AppState = {
   reducerName: null,
   sendMsgToWorker: null,
   syncing: false,
-}
+};
 
-const app: Reducer<AppState> =(state = initialState, action: AppAction) => {
+const app: Reducer<AppState> = (state = initialState, action: AppAction) => {
   switch (action.type) {
     case '@@redux-pouchdb-plus/INIT':
       return {
@@ -49,6 +52,6 @@ const app: Reducer<AppState> =(state = initialState, action: AppAction) => {
     default:
       return state;
   }
-}
+};
 
 export { app, AppState, AppAction };

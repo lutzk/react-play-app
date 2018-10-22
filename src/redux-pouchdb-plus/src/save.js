@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';// eslint-disable-line
+import { debounce } from 'lodash'; // eslint-disable-line
 
 const unpersistedQueue = {};
 const isSaving = {};
@@ -25,28 +25,34 @@ const save = (db, localId) => {
 
     isSaving[reducerName] = true;
 
-    return db.get(reducerName).catch((err) => {
-      if (err.status === 404) {
-        return { _id: reducerName };
-      }
-      throw err;
-    }).catch(err => console.error('SAVE_ERROR:', err))
-    .then((doc) => {
-      doc.localId = localId;
-      doc.state = reducerState;
-      return doc;
-    })
-    .then(doc => db.put(doc))
-    .then(() => { // eslint-disable-line
-      delete isSaving[reducerName];
+    return db
+      .get(reducerName)
+      .catch(err => {
+        if (err.status === 404) {
+          return { _id: reducerName };
+        }
+        throw err;
+      })
+      .catch(err => console.error('SAVE_ERROR:', err))
+      .then(doc => {
+        doc.localId = localId;
+        doc.state = reducerState;
+        return doc;
+      })
+      .then(doc => db.put(doc))
+      .then(() => {
+        // eslint-disable-line
+        delete isSaving[reducerName];
 
-      if (unpersistedQueue[reducerName] &&
-          unpersistedQueue[reducerName].length > 0) {
-        const next = unpersistedQueue[reducerName].shift();
-        return saveReducer(reducerName, next);
-      }
-    })
-    .catch(err => console.error(err));
+        if (
+          unpersistedQueue[reducerName] &&
+          unpersistedQueue[reducerName].length > 0
+        ) {
+          const next = unpersistedQueue[reducerName].shift();
+          return saveReducer(reducerName, next);
+        }
+      })
+      .catch(err => console.error(err));
   };
 
   const debouncedSaveReducer = debounce(saveReducer, 250, { leading: true });

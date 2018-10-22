@@ -2,9 +2,9 @@
 // import ReactDOM from 'react-dom';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { AppContainer as HotReloader } from 'react-hot-loader';
 // import * as FastClick from 'fastclick';
 import { Provider } from 'react-redux';
-import { AppContainer as HotReloader } from 'react-hot-loader';
 
 import ApiClient from '../helpers/ApiClient';
 import { App } from './containers/App/App';
@@ -13,7 +13,7 @@ import { createReduxStore } from './redux/store/createReduxStore';
 declare var __DEVTOOLS__: any;
 declare var __DEVELOPMENT__: any;
 declare global {
-  interface Window { 
+  interface Window {
     __data: any;
     React: any;
   }
@@ -27,22 +27,18 @@ const { store /* , thunk */ } = createReduxStore({
 });
 
 const rootDomNode = document.getElementById('root');
-const render = (App: any, store: any, hydrate = true) => {// eslint-disable-line
+const render = (App: any, store: any, hydrate = true) => {
+  // eslint-disable-line
   let dom = null;
   const renderFn = hydrate ? ReactDOM.hydrate : ReactDOM.render;
   const app = (
     <Provider store={store}>
       <App />
-    </Provider>);
+    </Provider>
+  );
 
   if (__DEVELOPMENT__) {
-    dom = renderFn(
-      <HotReloader>
-        {app}
-      </HotReloader>,
-      rootDomNode
-    );
-
+    dom = renderFn(<HotReloader>{app}</HotReloader>, rootDomNode);
   } else {
     dom = renderFn(app, rootDomNode);
   }
@@ -52,7 +48,6 @@ const render = (App: any, store: any, hydrate = true) => {// eslint-disable-line
 
 const renderDevStuff = () => {
   if (__DEVELOPMENT__) {
-
     window.React = React;
 
     if (__DEVTOOLS__) {
@@ -63,7 +58,7 @@ const renderDevStuff = () => {
         <Provider store={store} key="devToolsProvider">
           <DevTools />
         </Provider>,
-        devToolsDest
+        devToolsDest,
       );
     }
   }

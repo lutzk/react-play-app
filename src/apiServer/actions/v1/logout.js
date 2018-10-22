@@ -2,19 +2,22 @@ import ApiClient from '../../utils/ApiClient';
 import { slLogoutPath } from '../../config';
 
 export default function logout(req) {
-
   const client = new ApiClient(req);
-  const headers = { Authorization: `Bearer ${req.session.user.token}:${req.session.user.password}` };
+  const headers = {
+    Authorization: `Bearer ${req.session.user.token}:${
+      req.session.user.password
+    }`,
+  };
 
   return client
     .post(slLogoutPath, { headers })
-    .then((r) => {
+    .then(r => {
       if (r.ok && r.success) {
         req.session.user = null;
         req.session.token = null;
 
         return new Promise((resolve, reject) => {
-          req.session.destroy((err) => {
+          req.session.destroy(err => {
             if (err) {
               reject();
             }
@@ -25,5 +28,6 @@ export default function logout(req) {
       }
       return false;
       // return Promise.resolve(req.session.user);
-    }).catch(e => console.error('LogoutError', e));
+    })
+    .catch(e => console.error('LogoutError', e));
 }

@@ -10,7 +10,7 @@
       lutzk
 */
 
-import { debounce } from 'lodash';// eslint-disable-line
+import { debounce } from 'lodash';
 import { cloneDeep, isEqual } from 'lodash'; // eslint-disable-line
 import { initWorkerSync, currySendMsg } from '../../app/workers/utils';
 import {
@@ -26,8 +26,6 @@ import {
   REDUCER_READY as PW_REDUCER_READY,
   REDUCERS_READY,
 } from '../../app/workers/pouchWorkerMsgTypes';
-
-// export { inSync } from './save.js';
 
 // A client hash to filter out local database changes (as those
 // may lead to several race conditions).
@@ -51,25 +49,24 @@ let sendMsgToWorker;
 const initializedReducers = {};
 
 const setReducerInitialized = reducerName =>
-  initializedReducers[reducerName] = true;
-
+  (initializedReducers[reducerName] = true);
 
 const setReducerUninitialized = reducerName =>
-  initializedReducers[reducerName] = false;
-
+  (initializedReducers[reducerName] = false);
 
 const setReducersUninitialized = () =>
-  Object.keys(initializedReducers).map(name =>
-    initializedReducers[name] = false);
+  Object.keys(initializedReducers).map(
+    name => (initializedReducers[name] = false),
+  );
 
-const reinit = () => (dispatch) => {
+const reinit = () => dispatch => {
   setReducersUninitialized();
   return dispatch({
     type: REINIT,
   });
 };
 
-const reset = () => (dispatch) => {
+const reset = () => dispatch => {
   setReducersUninitialized();
   return dispatch({ type: RESET });
 };
@@ -82,14 +79,15 @@ const persistentStore = () => createStore => (reducer, initialState) => {
   pouchWorker = initWorkerSync('/worker.pouch.js', 'pouchWorker');
   if (pouchWorker) {
     sendMsgToWorker = currySendMsg(pouchWorker);
-    sendMsgToWorker({ ...STORE_INIT })
-      .then(reply => console.log('reply from pouch worker: ', reply));
+    sendMsgToWorker({ ...STORE_INIT }).then(reply =>
+      console.log('reply from pouch worker: ', reply),
+    );
   }
 
   store.dispatch({
-    type: INIT,
     store,
     state,
+    type: INIT,
     pouchWorker,
     sendMsgToWorker,
   });
@@ -97,21 +95,22 @@ const persistentStore = () => createStore => (reducer, initialState) => {
   return store;
 };
 
-const isUserPresent = state => { // eslint-disable-line
+const isUserPresent = state => {
+  // eslint-disable-line
   const userState = state ? state.user : false;
-  return (userState && userState.user && userState.user.userId);
+  return userState && userState.user && userState.user.userId;
 };
 
-const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
-
+const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   let store;
   let initialState;
   let currentState;
 
   const workerMsgHandler = e => {
-    const { data: { type, doc, reducerName } } = e;// eslint-disable-line
+    const {
+      data: { type, doc, reducerName },
+    } = e; // eslint-disable-line
     if (type) {
-
       switch (type) {
         case PW_REDUCER_READY.type:
           setReducerInitialized(reducerName);
@@ -137,8 +136,8 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
     }
   };
 
-  const setReducer = (doc) => {
-    const { _rev, _id: reducer, state: dbState } = doc;// eslint-disable-line
+  const setReducer = doc => {
+    const { _rev, _id: reducer, state: dbState } = doc; // eslint-disable-line
     const state = cloneDeep(dbState);
     // const state = dbState;
 
@@ -151,19 +150,23 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
   };
 
   const setReady = () => store.dispatch({ type: REINIT_SUCCESS });
-  const setReducerReady = (reducerName, initFrom) => store.dispatch({// eslint-disable-line
-    reducerName,
-    type: REDUCER_READY,
-  });
+  const setReducerReady = (reducerName, initFrom) =>
+    store.dispatch({
+      // eslint-disable-line
+      reducerName,
+      type: REDUCER_READY,
+    });
 
-  const reinitReducerInWorker = (reducerName, state, currentState, user) => {// eslint-disable-line
+  const reinitReducerInWorker = (reducerName, state, currentState, user) => {
+    // eslint-disable-line
     if (pouchWorker) {
       const msg = { reducerName, ...REDUCER_REINIT, state, currentState, user };
       sendMsgToWorker(msg);
     }
   };
 
-  const sendChangeToWorker = async (reducerName, nextState) => {// eslint-disable-line
+  const sendChangeToWorker = async (reducerName, nextState) => {
+    // eslint-disable-line
     try {
       const msg = { reducerName, nextState, ...REDUCER_CHANGE };
       await sendMsgToWorker(msg);
@@ -172,23 +175,24 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
     }
   };
 
-  const debouncedSignalChangeToWorker = debounce(sendChangeToWorker, 250, { leading: true });
+  const debouncedSignalChangeToWorker = debounce(sendChangeToWorker, 250, {
+    leading: true,
+  });
   const reducerName = name;
   setReducerUninitialized(reducerName);
 
   // the proxy function that wraps the real reducer
-  return (state, action) => { // eslint-disable-line
+  return (state, action) => {
+    // eslint-disable-line
 
     let nextState;
     let isInitialized;
 
     switch (action.type) {
-
       case INIT:
         store = action.store;
         pouchWorker = action.pouchWorker;
-        pouchWorker.onmessage = e =>
-          workerMsgHandler(e);
+        pouchWorker.onmessage = e => workerMsgHandler(e);
 
         sendMsgToWorker = action.sendMsgToWorker;
 
@@ -196,8 +200,13 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
         if (isUserPresent(state)) {
           sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           nextState = reducer(state, action);
-          reinitReducerInWorker(reducerName, nextState, currentState, store.getState().user);
-          return currentState = nextState;
+          reinitReducerInWorker(
+            reducerName,
+            nextState,
+            currentState,
+            store.getState().user,
+          );
+          return (currentState = nextState);
         }
 
         return state;
@@ -205,15 +214,20 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
       case RESET:
         sendMsgToWorker({ ...REDUCER_RESET });
         nextState = reducer(state, action);
-        return currentState = nextState;
+        return (currentState = nextState);
 
       case SET_REDUCER:
-        if ((action.reducer === reducerName && action.state) && isUserPresent(state)) {
+        if (
+          action.reducer === reducerName &&
+          action.state &&
+          isUserPresent(state)
+        ) {
           currentState = reducer(action.state, action);
           return currentState;
         }
 
-      default:// eslint-disable-line
+      default:
+        // eslint-disable-line
         nextState = reducer(state, action);
         if (!isUserPresent(state)) {
           return nextState;
@@ -227,7 +241,6 @@ const persistentReducer = (reducer, name/* , reducerOptions = {} */) => {
           currentState = nextState;
 
           debouncedSignalChangeToWorker(reducerName, nextState);
-
         } else {
           currentState = nextState;
         }

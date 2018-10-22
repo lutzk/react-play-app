@@ -13,16 +13,15 @@ import { devAssetsMiddleware } from './middleware/devAssetsMiddleware';
 const app = express();
 const staticDir = path.join(process.cwd(), './static');
 
-const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
+const startServer = ({ serverAssets } = {}) => {
+  // eslint-disable-line
 
   if (!port) {
     throw Error('ERROR: No PORT environment variable has been specified');
   }
 
   if (__DEVELOPMENT__) {
-    app
-      .use(faviconReqKiller())
-      .use(devAssetsMiddleware());
+    app.use(faviconReqKiller()).use(devAssetsMiddleware());
   }
 
   app
@@ -31,16 +30,18 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
     .use(faviconReqKiller())
-    .use(express.static(staticDir, {
-      // etag: false,
-      // maxAge: '1y',
-      // setHeaders: setCustomCacheControl
-    }))
+    .use(
+      express.static(staticDir, {
+        // etag: false,
+        // maxAge: '1y',
+        // setHeaders: setCustomCacheControl
+      }),
+    )
     .use(getCouchDocs())
     .use(renderApp({ serverAssets }))
     .use(errorHandler());
 
-  return app.listen(port, (err) => {
+  return app.listen(port, err => {
     if (err) {
       console.log('start app server error', err);
       throw Error(err);
@@ -50,6 +51,4 @@ const startServer = ({ serverAssets } = {}) => { // eslint-disable-line
   });
 };
 
-export {
-  startServer,
-};
+export { startServer };

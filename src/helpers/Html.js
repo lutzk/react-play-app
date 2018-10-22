@@ -12,11 +12,11 @@ import serialize from 'serialize-javascript';
  * by the server.js file.
  */
 
-const setWindowData = (key, data) =>
-  ({ __html: `window.${key} = ${serialize(data)};` });
+const setWindowData = (key, data) => ({
+  __html: `window.${key} = ${serialize(data)};`,
+});
 
 const Html = args => {
-
   /*
   * args:
   *   store: object
@@ -24,40 +24,40 @@ const Html = args => {
   *   component: node
   */
 
-  const { app, store, assets:
-    { Js, publicPath, stylesheets },
+  const {
+    app,
+    store,
+    assets: { Js, publicPath, stylesheets },
   } = args;
   const windowData = setWindowData('__data', store.getState());
 
   const windowDataScript = (
-    <script
-      charSet="UTF-8"
-      dangerouslySetInnerHTML={windowData} />);
+    <script charSet="UTF-8" dangerouslySetInnerHTML={windowData} />
+  );
 
   const htmlContent = (
-    <div
-      id="root"
-      className="root"
-      dangerouslySetInnerHTML={{ __html: app }} />);
+    <div id="root" className="root" dangerouslySetInnerHTML={{ __html: app }} />
+  );
 
-  const css = stylesheets.map((file, key) =>
-    <link rel="stylesheet" href={`${publicPath}/${file}`} key={key} />);
+  const css = stylesheets.map((file, key) => (
+    <link rel="stylesheet" href={`${publicPath}/${file}`} key={key} />
+  ));
 
   const html = (
     <html>
       <head>
-      <link rel="manifest" href="/manifest.json" />
-      {css}
+        <link rel="manifest" href="/manifest.json" />
+        {css}
       </head>
       <body>
         {htmlContent}
         {windowDataScript}
         <Js />
       </body>
-    </html>);
+    </html>
+  );
 
   return html;
 };
 
 export default Html;
-

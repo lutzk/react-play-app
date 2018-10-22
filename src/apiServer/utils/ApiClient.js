@@ -3,9 +3,7 @@ import superagent from 'superagent';
 const verbs = ['get', 'post'];
 
 function ApiClient(incomingReq) {
-
   const client = verb => async (path, { params, data, headers } = {}) => {
-
     let request = null;
     let result = null;
 
@@ -30,7 +28,6 @@ function ApiClient(incomingReq) {
 
       result = await request;
     } catch (error) {
-
       if (error && error.code) {
         result = error.code;
       } else if (error.response && error.response.text) {
@@ -45,9 +42,11 @@ function ApiClient(incomingReq) {
     return result.body;
   };
 
-  verbs.map(verb =>// eslint-disable-line
-    ApiClient.prototype[verb] = client(verb));
+  verbs.map(
+    (
+      verb, // eslint-disable-line
+    ) => (ApiClient.prototype[verb] = client(verb)),
+  );
 }
-
 
 export default ApiClient;

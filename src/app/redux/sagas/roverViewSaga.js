@@ -18,11 +18,12 @@ import {
 
 // import { REDUCER_READY } from '../../../redux-pouchdb-plus/src/index';
 
-function* getManifestFor({ client, rover, offline, sol }) {// eslint-disable-line
+function* getManifestFor({ client, rover, offline, sol }) {
+  // eslint-disable-line
   try {
     const params = { rover, offline, sol };
     const requestPath = '/nasa';
-    const promise = client => client.get(requestPath, { params });// eslint-disable-line
+    const promise = client => client.get(requestPath, { params }); // eslint-disable-line
     yield put({ type: GET_MANIFEST });
     yield put({ type: LOADING });
     const result = yield call(promise, client);
@@ -34,7 +35,8 @@ function* getManifestFor({ client, rover, offline, sol }) {// eslint-disable-lin
   }
 }
 
-const getRover = (rover, state) => roverMatcher(rover) ? rover : state.defaultRover;
+const getRover = (rover, state) =>
+  roverMatcher(rover) ? rover : state.defaultRover;
 // const roverReadySelector = state => state.roverView.ready;
 // const roverLoadedSelector = state => state.roverView.loaded;
 // const roverLoadingSelector = state => state.roverView.loading;
@@ -70,8 +72,10 @@ const roverNotReadySelector = state => !state.roverView.ready;
 
 // dispatch(startLoading());
 let coun = 0;
-function* waitForRoverReady({ client, rover }) {// eslint-disable-line
-  if (yield select(roverNotReadySelector)) {// eslint-disable-line
+function* waitForRoverReady({ client, rover }) {
+  // eslint-disable-line
+  if (yield select(roverNotReadySelector)) {
+    // eslint-disable-line
     console.log('__RVI__', 5);
     // if (yield select(roverNotLoadingSelector)) {
     //   console.log('__RVI__', 5.1);
@@ -90,18 +94,22 @@ function* waitForRoverReady({ client, rover }) {// eslint-disable-line
 }
 
 function* initPageFlow(client) {
-
   // const roverViewChannel = yield actionChannel('ROVER_VIEW');
   // const roverReadyChannel = yield actionChannel('@@redux-pouchdb-plus/REINIT_SUCCESS');
 
-  while (yield take('ROVER_VIEW')) {// eslint-disable-line
+  while (yield take('ROVER_VIEW')) {
+    // eslint-disable-line
     // debugger;// eslint-disable-line
     console.log('__RVI__', 1);
     // const { action } = yield take('ROVER_VIEW');
     // const action = yield take(roverViewChannel);
     yield put({ type: LOADING });
     const state = yield select();
-    const { location: { payload: { rover } } } = state;
+    const {
+      location: {
+        payload: { rover },
+      },
+    } = state;
     // const NAME = 'RoverView';
     const roverViewState = state.roverView;
     console.log('__STATE__', { ...roverViewState });
@@ -110,8 +118,10 @@ function* initPageFlow(client) {
     if (roverViewState.loaded) {
       console.log('__RVI__', 2);
       yield put({ type: END_LOADING });
-
-    } else if (roverViewState.reinitializing || roverViewState.reinitRequested) {
+    } else if (
+      roverViewState.reinitializing ||
+      roverViewState.reinitRequested
+    ) {
       console.log('__RVI__', 3);
       yield put({ type: LOADING });
       console.log('__RVI__', 4);
@@ -158,6 +168,4 @@ function* initPageFlow(client) {
   }
 }
 
-export {
-  initPageFlow,
-};
+export { initPageFlow };

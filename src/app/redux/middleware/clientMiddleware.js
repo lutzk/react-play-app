@@ -1,9 +1,22 @@
-import { reinit, reset, requestReinit } from '../../../redux-pouchdb-plus/src/index';
+import {
+  reinit,
+  reset,
+  requestReinit,
+} from '../../../redux-pouchdb-plus/src/index';
 import { startLoading, endLoading } from '../modules/pageLoadBar';
-import { KILL_USER, SIGNUP_SUCCESS, LOGIN_SUCCESS, LOGOUT_SUCCESS } from '../modules/user';
+import {
+  KILL_USER,
+  SIGNUP_SUCCESS,
+  LOGIN_SUCCESS,
+  LOGOUT_SUCCESS,
+} from '../modules/user';
 import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
 
-const clientMiddleware = client => ({ dispatch, getState }) => next => action => {// eslint-disable-line
+const clientMiddleware = client => ({
+  dispatch,
+  getState,
+}) => next => action => {
+  // eslint-disable-line
 
   const { promise, types, ...rest } = action;
 
@@ -16,8 +29,7 @@ const clientMiddleware = client => ({ dispatch, getState }) => next => action =>
 
   next({ ...rest, type: REQUEST });
   dispatch(startLoading());
-  return promise(client).then((result) => {
-
+  return promise(client).then(result => {
     const { error } = result;
 
     if (error) {

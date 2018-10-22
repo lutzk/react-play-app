@@ -11,11 +11,4 @@ const PATHS = {
   [ROVER_VIEW]: '/rover-view',
 };
 
-
-export {
-  HOME,
-  PATHS,
-  LOGIN,
-  SOL_VIEW,
-  ROVER_VIEW,
-};
+export { HOME, PATHS, LOGIN, SOL_VIEW, ROVER_VIEW };
