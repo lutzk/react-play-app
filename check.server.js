@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-(function () {
+(function() {
   require('./setEnv');
   let filePath;
   let found = false;
   let checker = null;
   const fs = require('fs');
   const keys = ['app', 'api'];
-  const checKey = key => (key && keys.indexOf(key) > -1);
+  const checKey = key => key && keys.indexOf(key) > -1;
   const getFilePath = (key = 'app') => `./bin/${key}Server.js`;
 
   if (process.argv.length > 2 && checKey(process.argv[2])) {
@@ -44,5 +44,4 @@
     checker = setInterval(check, 1111);
     clearTimeout(waitInitial);
   }, 2222);
-
-}());
+})();
