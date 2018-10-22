@@ -3,7 +3,6 @@ import Link from 'redux-first-router-link';
 import { createSolLink } from '../../redux/routing/navTypes';
 
 const RoverMissionSols = args => {
-
   /*
   * args:
   *  rover: string
@@ -21,21 +20,33 @@ const RoverMissionSols = args => {
   const { rover, sols } = args;
 
   const solsCards = sols.map((sol, index) => (
-    <Link key={index} data-sol={sol.sol} className="solCard" to={createSolLink({ rover, sol: sol.sol })}>
-      <span className={'sol_card_sol'}>sol:&nbsp;{sol.sol}</span>
-      <span className={'sol_card_totalPhotos'}>totalPhotos:&nbsp;{sol.totalPhotos}</span>
+    <Link
+      key={index}
+      data-sol={sol.sol}
+      className="solCard"
+      to={createSolLink({ rover, sol: sol.sol })}
+    >
+      <span className={'sol_card_sol'}>
+        sol:&nbsp;
+        {sol.sol}
+      </span>
+      <span className={'sol_card_totalPhotos'}>
+        totalPhotos:&nbsp;
+        {sol.totalPhotos}
+      </span>
       <span className={'sol_card_cameras'}>
         cams:&nbsp;
         {sol.cameras.map((cam, j) => (
-          <span key={j}>{cam}&nbsp;</span>)
-        )}
+          <span key={j}>
+            {cam}
+            &nbsp;
+          </span>
+        ))}
       </span>
-    </Link>));
+    </Link>
+  ));
 
-  return (
-    <div className="roverPhotoData">
-      {solsCards}
-    </div>);
+  return <div className="roverPhotoData">{solsCards}</div>;
 };
 
 export default RoverMissionSols;

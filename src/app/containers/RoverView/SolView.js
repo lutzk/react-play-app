@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getSolManifest, getSolManifest as refreshManifest, updateList } from '../../redux/modules/solView';
+import {
+  getSolManifest,
+  getSolManifest as refreshManifest,
+  updateList,
+} from '../../redux/modules/solView';
 import { createRoverLink, linkToHome } from '../../redux/routing/navTypes';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
@@ -24,11 +28,14 @@ const mapStateToProps = state => ({
   location: state.location,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators(
-  Object.assign({}, { refreshManifest, updateList }), dispatch
-);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    Object.assign({}, { refreshManifest, updateList }),
+    dispatch,
+  );
 
-class SolView extends Component { // eslint-disable-line react/prefer-stateless-function
+class SolView extends Component {
+  // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
     location: PropTypes.object,
@@ -46,28 +53,36 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
     updateList: PropTypes.func,
     refreshManifest: PropTypes.func,
     listLength: PropTypes.number,
-  }
+  };
 
   constructor(props) {
     super(props);
 
-    this.handleSort = ::this.handleSort;
-    this.handleRangeUpdate = ::this.handleRangeUpdate;
-    this.handleUpdateFilter = ::this.handleUpdateFilter;
-    this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
+    this.handleSort = this.handleSort.bind(this);
+    this.handleRangeUpdate = this.handleRangeUpdate.bind(this);
+    this.handleUpdateFilter = this.handleUpdateFilter.bind(this);
+    this.handleRefreshManifestRequest = this.handleRefreshManifestRequest.bind(
+      this,
+    );
   }
 
   handleRefreshManifestRequest(e) {
     const offline = !!e.target.dataset.offline;
-    return this.props.refreshManifest(this.props.location.payload.rover, this.props.location.payload.sol, offline);
+    return this.props.refreshManifest(
+      this.props.location.payload.rover,
+      this.props.location.payload.sol,
+      offline,
+    );
   }
 
   handleSort(e) {
-    const fields = e.currentTarget.dataset.sortfield ?
-      [e.currentTarget.dataset.sortfield] : this.props.sorts.fields;
+    const fields = e.currentTarget.dataset.sortfield
+      ? [e.currentTarget.dataset.sortfield]
+      : this.props.sorts.fields;
 
-    const orders = e.currentTarget.dataset.sortorder ?
-      [e.currentTarget.dataset.sortorder] : this.props.sorts.orders;
+    const orders = e.currentTarget.dataset.sortorder
+      ? [e.currentTarget.dataset.sortorder]
+      : this.props.sorts.orders;
 
     const sorts = { fields, orders };
     return this.props.updateList({ sorts });
@@ -79,14 +94,11 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
 
     if (toggle) {
       filter.on = !this.props.filter.on;
-
     } else if (field && !toggle) {
       if (e.target.type === 'checkbox') {
         filter[field] = { on: e.target.checked };
-
       } else if (e.target.type === 'number') {
         filter[field] = { value: parseInt(e.target.value, 10) };
-
       } else {
         filter[field] = { value: e.target.value };
       }
@@ -102,7 +114,6 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
   }
 
   render() {
-
     const {
       // minShown,
       // maxShown,
@@ -117,57 +128,92 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
     const loadPane = (
       <div className="loadPane">
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-        <button onClick={this.handleRefreshManifestRequest} data-offline>refresh (offline)</button>
-      </div>);
+        <button onClick={this.handleRefreshManifestRequest} data-offline>
+          refresh (offline)
+        </button>
+      </div>
+    );
 
     const renderFilterPane = () => {
-      const filterPane = Object.keys(this.props.filter.fields)
-        .map((field, i) =>
-          (<div key={i}>
+      const filterPane = Object.keys(this.props.filter.fields).map(
+        (field, i) => (
+          <div key={i}>
             <label htmlFor={`${field}`}>
               {`${field}`}
               &nbsp;
-              <input type="checkbox"
+              <input
+                type="checkbox"
                 id={`${field}`}
                 onClick={this.handleUpdateFilter}
-                data-field={`${field}`}/>
+                data-field={`${field}`}
+              />
             </label>
             &nbsp;
-            {this.props.filter.fields[field].on &&
+            {this.props.filter.fields[field].on && (
               <input
-                type={typeof this.props.filter.fields[field].value === 'number' ? 'number' : 'text'}
+                type={
+                  typeof this.props.filter.fields[field].value === 'number'
+                    ? 'number'
+                    : 'text'
+                }
                 value={this.props.filter.fields[field].value}
                 onChange={this.handleUpdateFilter}
-                data-field={`${field}`}/>}
-          </div>));
+                data-field={`${field}`}
+              />
+            )}
+          </div>
+        ),
+      );
 
       return (
         <div className="filterPane">
-          <a data-toggle onClick={this.handleUpdateFilter}>toggle filter</a>
-          {this.props.filter.on &&
-            <div>
-              {filterPane}
-            </div>}
-        </div>);
+          <a data-toggle onClick={this.handleUpdateFilter}>
+            toggle filter
+          </a>
+          {this.props.filter.on && <div>{filterPane}</div>}
+        </div>
+      );
     };
 
     const renderRangePane = () => {
-      const { listLength, range: { start, end } } = this.props;
+      const {
+        listLength,
+        range: { start, end },
+      } = this.props;
       const currentRange = end - start;
       // maxSol
       if (this.props.list && this.props.list.length) {
         return (
           <div className="rangePane">
-            {currentRange > 0 && <button data-range="next" onClick={this.handleRangeUpdate}>next {currentRange}</button>}
-            {currentRange > 0 && start >= currentRange && <button data-range="prev" onClick={this.handleRangeUpdate}>prev {currentRange}</button>}
-            {currentRange > 0 && <button data-range="less" onClick={this.handleRangeUpdate}>show less</button>}
-            {end < listLength && <button data-range="more" onClick={this.handleRangeUpdate}>show more</button>}
-          </div>);
+            {currentRange > 0 && (
+              <button data-range="next" onClick={this.handleRangeUpdate}>
+                next {currentRange}
+              </button>
+            )}
+            {currentRange > 0 &&
+              start >= currentRange && (
+                <button data-range="prev" onClick={this.handleRangeUpdate}>
+                  prev {currentRange}
+                </button>
+              )}
+            {currentRange > 0 && (
+              <button data-range="less" onClick={this.handleRangeUpdate}>
+                show less
+              </button>
+            )}
+            {end < listLength && (
+              <button data-range="more" onClick={this.handleRangeUpdate}>
+                show more
+              </button>
+            )}
+          </div>
+        );
       }
       return null;
     };
 
-    const renderSortPane = () => {// eslint-disable-line
+    const renderSortPane = () => {
+      // eslint-disable-line
       const sortOrder = this.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
       const sortField = this.props.sorts.fields[0];
@@ -176,13 +222,23 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
       if (this.props.list && this.props.list.length) {
         sortButtons = (
           <div className="sortPane">
-            {Object.keys(this.props.list[0]).map((key, i) =>
-              <button key={i} className={sortField === key ? 'enabled' : ''} disabled={sortField === key} data-sortfield={key} onClick={this.handleSort}>sort by {key}</button>)
-            }
-            <button data-sortorder={newSortOrder} onClick={this.handleSort}>sort {newSortOrder}</button>
-            { /* <div>
+            {Object.keys(this.props.list[0]).map((key, i) => (
+              <button
+                key={i}
+                className={sortField === key ? 'enabled' : ''}
+                disabled={sortField === key}
+                data-sortfield={key}
+                onClick={this.handleSort}
+              >
+                sort by {key}
+              </button>
+            ))}
+            <button data-sortorder={newSortOrder} onClick={this.handleSort}>
+              sort {newSortOrder}
+            </button>
+            {/* <div>
               current sort: {sortField} - {sortOrder}
-            </div> */ }
+            </div> */}
           </div>
         );
       }
@@ -197,46 +253,75 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
       </div>
     );
 
-    const photoPane = (this.props.list && this.props.list.length) ?
-      <div className="solsImgs">
-        {this.props.list.map((photo, i) => (
-          <div key={i} className="solImg">
-            <h4 className="headline">photo id:&nbsp;{photo.id}</h4>
-            <div className="cameraData">
-              <h5 className="subHeadline">camera:&nbsp;{photo.camera.name}</h5>
-              <p>id:&nbsp;{photo.camera.id}</p>
-              <p>full name:&nbsp;{photo.camera.fullName}</p>
+    const photoPane =
+      this.props.list && this.props.list.length ? (
+        <div className="solsImgs">
+          {this.props.list.map((photo, i) => (
+            <div key={i} className="solImg">
+              <h4 className="headline">
+                photo id:&nbsp;
+                {photo.id}
+              </h4>
+              <div className="cameraData">
+                <h5 className="subHeadline">
+                  camera:&nbsp;
+                  {photo.camera.name}
+                </h5>
+                <p>
+                  id:&nbsp;
+                  {photo.camera.id}
+                </p>
+                <p>
+                  full name:&nbsp;
+                  {photo.camera.fullName}
+                </p>
+              </div>
+              <p>
+                earth_date:&nbsp;
+                {photo.earthDate}
+              </p>
+              <img className="image" src={photo.imgSrc} alt={photo.imgSrc} />
             </div>
-            <p>earth_date:&nbsp;{photo.earthDate}</p>
-            <img className="image" src={photo.imgSrc} alt={photo.imgSrc}/>
-          </div>
-        ))}
-      </div>
-      : null;
+          ))}
+        </div>
+      ) : null;
 
     return (
       <div className="page roverView">
         <div className="pageHeader">
-          <h1><Link to={createRoverLink({ rover })}>{rover}</Link></h1>
+          <h1>
+            <Link to={createRoverLink({ rover })}>{rover}</Link>
+          </h1>
           <h3>sol: {sol}</h3>
-          <p><Link to={createRoverLink({ rover })}>back to rover</Link></p>
-          <p><Link to={linkToHome}>go home</Link></p>
-          <p>{this.props.listLength && <span>total pics: {this.props.listLength}</span>}</p>
+          <p>
+            <Link to={createRoverLink({ rover })}>back to rover</Link>
+          </p>
+          <p>
+            <Link to={linkToHome}>go home</Link>
+          </p>
+          <p>
+            {this.props.listLength && (
+              <span>total pics: {this.props.listLength}</span>
+            )}
+          </p>
 
           {loadPane}
 
-          {manifestLoading && !manifestLoadError &&
-            <div className="pageContent manifestLoading"><h3>loading ...</h3></div>
-          }
+          {manifestLoading &&
+            !manifestLoadError && (
+              <div className="pageContent manifestLoading">
+                <h3>loading ...</h3>
+              </div>
+            )}
 
-          {manifestLoadError &&
+          {manifestLoadError && (
             <div className="pageContent error">
               something went wrong loading photos
             </div>
-          }
+          )}
         </div>
 
-        {manifestLoaded &&
+        {manifestLoaded && (
           <div className="pageContent">
             {buttonPane}
             {renderFilterPane()}
@@ -244,10 +329,13 @@ class SolView extends Component { // eslint-disable-line react/prefer-stateless-
             {buttonPane}
             {loadPane}
           </div>
-        }
-
-      </div>);
+        )}
+      </div>
+    );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SolView);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SolView);
