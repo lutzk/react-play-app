@@ -39,42 +39,41 @@ const setDBS = async user => {
 };
 
 const setReducerInitialized = reducerName =>
-  initializedReducers[reducerName] = true;
-
+  (initializedReducers[reducerName] = true);
 
 const setReducerUninitialized = reducerName =>
-  initializedReducers[reducerName] = false;
-
+  (initializedReducers[reducerName] = false);
 
 const setReducersUninitialized = () =>
-  Object.keys(initializedReducers).map(name =>
-    initializedReducers[name] = false);
+  Object.keys(initializedReducers).map(
+    name => (initializedReducers[name] = false),
+  );
 
+const notify = msg =>
+  new Notification('Msg from pouchWorker', {
+    body: msg,
+    vibrate: [200, 100, 200, 100],
+    tag: 'noti sample',
+  });
 
-const notify = msg => new Notification('Msg from pouchWorker', {
-  body: msg,
-  vibrate: [200, 100, 200, 100],
-  tag: 'noti sample',
-});
-
-
-const cancelSync = () => syncHandler && !syncHandler.cancelled ?
-  syncHandler.cancel()
-  : Promise.resolve(false);
-
+const cancelSync = () =>
+  syncHandler && !syncHandler.cancelled
+    ? syncHandler.cancel()
+    : Promise.resolve(false);
 
 const destroyDBS = reply =>
-  DBS.local.destroy()
+  DBS.local
+    .destroy()
     .then(result => {
       DBS = false;
       reply('destroyd');
       return result;
     })
-    .catch((e) => {// eslint-disable-line
+    .catch(e => {
+      // eslint-disable-line
       console.log('DB DESTROY ERROR', e);
       return e;
     });
-
 
 const resetReducer = async reply => {
   if (DBS) {
@@ -83,15 +82,14 @@ const resetReducer = async reply => {
   }
 };
 
-
 const initialSync = reply =>
-  DBS.remote.replicate.to(DBS.local, { live: false })
+  DBS.remote.replicate
+    .to(DBS.local, { live: false })
     .then(r => {
       // DBS.local.get('RoverView').then((rr) => console.log('initialSyncResult', rr));
       reply({ ...SYNC_INITIAL_SUCCESS });
     })
     .catch(error => reply({ ...SYNC_INITIAL_FAIL, error }));
-
 
 const syncInitial = async (user, reply) => {
   if (!DBS) {
@@ -100,10 +98,9 @@ const syncInitial = async (user, reply) => {
   }
 };
 
-
 const initSync = (localDb, remoteDb, docIds) =>
-  localDb
-    .replicate.to(remoteDb, {
+  localDb.replicate
+    .to(remoteDb, {
       live: true,
       retry: true,
       since: 'now',
@@ -114,19 +111,18 @@ const initSync = (localDb, remoteDb, docIds) =>
     .on('active', () => {
       console.log('__ACTIVE_W');
     })
-    .on('paused', (s) => {
+    .on('paused', s => {
       console.log('__PAUSED', s);
     })
-    .on('change', (b) => {
+    .on('change', b => {
       console.log('__CHANGE', b);
     })
-    .on('complete', (d) => {
+    .on('complete', d => {
       console.log('__COMPLETE', d);
     })
-    .on('error', (e) => {
+    .on('error', e => {
       console.log('__ERROR', e);
     });
-
 
 // const setUpSyncEvents = handler =>
 //   handler
@@ -146,12 +142,14 @@ const initSync = (localDb, remoteDb, docIds) =>
 //       console.log('__ERROR', e);
 //     });
 
+const setReducer = doc => sendMsgToClient({ doc, ...REDUCER_SET });
 
-const setReducer = doc =>
-  sendMsgToClient({ doc, ...REDUCER_SET });
-
-
-const initChanges = (db, docId, save, currentState) =>// eslint-disable-line
+const initChanges = (
+  db,
+  docId,
+  save,
+  currentState, // eslint-disable-line
+) =>
   db
     .changes({
       live: true,
@@ -160,7 +158,7 @@ const initChanges = (db, docId, save, currentState) =>// eslint-disable-line
       include_docs: true,
       conflicts: true,
     })
-    .on('change', (change) => {
+    .on('change', change => {
       if (change.doc.localId !== CLIENT_HASH) {
         if (!change.doc.state) {
           save(change.doc._id, currentState);
@@ -173,7 +171,6 @@ const initChanges = (db, docId, save, currentState) =>// eslint-disable-line
       }
     });
 
-
 const initFromDB = (db, docName) =>
   db
     .get(docName)
@@ -182,8 +179,8 @@ const initFromDB = (db, docName) =>
     })
     .catch(err => err);
 
-
-const initDBState = async (state, localDb, remoteDb, docName, save) => {// eslint-disable-line
+const initDBState = async (state, localDb, remoteDb, docName, save) => {
+  // eslint-disable-line
   let remoteInitError;
   const localInitError = await initFromDB(localDb, docName);
 
@@ -193,7 +190,7 @@ const initDBState = async (state, localDb, remoteDb, docName, save) => {// eslin
       if (remoteInitError && remoteInitError.status === 404) {
         await save(docName, state);
       }
-      return;// eslint-disable-line
+      return; // eslint-disable-line
     }
     await save(docName, state);
   }
@@ -202,10 +199,10 @@ const initDBState = async (state, localDb, remoteDb, docName, save) => {// eslin
   }
 };
 
-
 const checkReady = (keys, reducers) => {
   let ready = true;
-  keys.map(reducerName => { // eslint-disable-line
+  keys.map(reducerName => {
+    // eslint-disable-line
     let exit = false;
     if (!reducers[reducerName] && !exit) {
       ready = false;
@@ -215,17 +212,15 @@ const checkReady = (keys, reducers) => {
   return ready;
 };
 
-
 const setReady = () => {
   sendMsgToClient({ ...REDUCERS_READY });
 };
 
-
 const setReducerReady = reducerName =>
   sendMsgToClient({ ...REDUCER_READY, reducerName });
 
-
-async function reinitReducer(reducerName, state, currentState, user) {// eslint-disable-line
+async function reinitReducer(reducerName, state, currentState, user) {
+  // eslint-disable-line
   // console.log('___REINIT__', reducerName);
   // setReducerUninitialized(reducerName);
   if (changes) {
@@ -266,7 +261,6 @@ async function reinitReducer(reducerName, state, currentState, user) {// eslint-
 }
 
 const handleMsg = async e => {
-
   const {
     ports: [replyPort],
     data: { user, type, state, currentState, nextState, reducerName },
@@ -279,7 +273,6 @@ const handleMsg = async e => {
   // _handler[type](payload);
   if (type) {
     switch (type) {
-
       case STORE_INIT.type:
         reply(hello);
         break;

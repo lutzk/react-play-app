@@ -12,11 +12,15 @@ const rovers = {
 
 const filterByFieldValue = (list, filter) => {
   const newList = [];
-  list.map(listItem => { // eslint-disable-line
+  list.map(listItem => {
+    // eslint-disable-line
     const combinedFilterMatrix = [];
-    filter.map((filterItem) => { // eslint-disable-line
+    filter.map(filterItem => {
+      // eslint-disable-line
       if (filterItem !== undefined) {
-        if (get(listItem, filterItem.field) === parseInt(filterItem.value, 10)) {
+        if (
+          get(listItem, filterItem.field) === parseInt(filterItem.value, 10)
+        ) {
           return combinedFilterMatrix.push(1);
         }
         return combinedFilterMatrix.push(0);
@@ -52,23 +56,25 @@ const filterList = ({ list, range } = {}) => {
     return [];
   }
 
-  return list.filter((item, index) => (index + 1) >= start && (index + 1) <= end);
+  return list.filter((item, index) => index + 1 >= start && index + 1 <= end);
 };
 
 const formatFilters = filters =>
-  Object.keys(filters).map((field) => { // eslint-disable-line
+  Object.keys(filters).map(field => {
+    // eslint-disable-line
     if (filters[field].on) {
       return { field, value: filters[field].value };
     }
   });
 
-const isFilterOn = (filter) => {
+const isFilterOn = filter => {
   let on = false;
   const globalOn = filter.on;
-  Object.keys(filter.fields).map((field) => { // eslint-disable-line
+  Object.keys(filter.fields).map(field => {
+    // eslint-disable-line
     if (filter.fields[field].on) {
       on = true;
-      return on;// eslint-disable-line
+      return on; // eslint-disable-line
     }
 
     return on;
@@ -89,8 +95,10 @@ const updateRange = (range, stateRange, listLength) => {
     newRange.end += rangeLength;
     // newRange.start = newRange.start > listLength ? listLength : newRange.start;
     newRange.end = newRange.end > listLength ? listLength : newRange.end;
-    newRange.start = newRange.end === listLength ?
-      newRange.start - rangeLength : newRange.start;
+    newRange.start =
+      newRange.end === listLength
+        ? newRange.start - rangeLength
+        : newRange.start;
   }
 
   if (range.action && range.action === 'prev') {
@@ -113,30 +121,32 @@ const updateRange = (range, stateRange, listLength) => {
 };
 
 const updateFilter = (filter, currentFilter) => {
-
   const newFilter = { ...currentFilter };
   const filterKeys = Object.keys(filter);
 
   if (filter.on !== undefined && filter.on !== newFilter.on) {
     newFilter.on = filter.on;
-
-  } else { // eslint-disable-line
-    Object.keys(currentFilter.fields).map((key) => {
+  } else {
+    // eslint-disable-line
+    Object.keys(currentFilter.fields).map(key => {
       const item = newFilter.fields[key];
       const filterKey = filterKeys[filterKeys.indexOf(key)];
 
       if (key === filterKey) {
-        const _filter = filter[key];
+        const filterKey = filter[key];
 
-        if (_filter.value || _filter.value === 0) {
-          if (typeof _filter.value === 'number' && !isNaN(_filter.value) && _filter.value > -1) {
-            item.value = _filter.value;
-          } else if (typeof _filter.value === 'string') {
-            item.value = _filter.value;
+        if (filterKey.value || filterKey.value === 0) {
+          if (
+            typeof filterKey.value === 'number' &&
+            !isNaN(filterKey.value) &&
+            filterKey.value > -1
+          ) {
+            item.value = filterKey.value;
+          } else if (typeof filterKey.value === 'string') {
+            item.value = filterKey.value;
           }
-
-        } else if (_filter.on !== undefined && _filter.on !== item.on) {
-          item.on = _filter.on;
+        } else if (filterKey.on !== undefined && filterKey.on !== item.on) {
+          item.on = filterKey.on;
         }
       }
 
@@ -164,20 +174,30 @@ const sortList = ({ list, sorts, filter, range } = {}) => {
   return sortedList;
 };
 
-const sortListAction = ({ list, sorts, type, filter, range } = {}) =>
-  dispatch =>
-    dispatch({
-      type,
+const sortListAction = ({
+  list,
+  sorts,
+  type,
+  filter,
+  range,
+} = {}) => dispatch =>
+  dispatch({
+    type,
+    sorts,
+    filter,
+    range,
+    list: sortList({
+      list,
       sorts,
       filter,
       range,
-      list: sortList({
-        list, sorts, filter, range,
-      }),
-    });
+    }),
+  });
 
-const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch, getState) => {
-
+const getManifestFor = ({ rover, sol = null, types, offline } = {}) => (
+  dispatch,
+  getState,
+) => {
   // const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
   const params = { rover, sol, offline };
   const requestPath = '/nasa';
@@ -189,37 +209,46 @@ const getManifestFor = ({ rover, sol, types, offline } = {}) => (dispatch, getSt
   });
 };
 
-const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) =>
-  (dispatch, getState) => {
-    const {
-      list: stateList,
-      filter: stateFilter,
-      sorts: stateSorts,
-      range: stateRange,
-    } = getState()[stateKey];
+const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) => (
+  dispatch,
+  getState,
+) => {
+  const {
+    list: stateList,
+    filter: stateFilter,
+    sorts: stateSorts,
+    range: stateRange,
+  } = getState()[stateKey];
 
-    const list = stateList;
-    const listLength = list.length || 0;
-    const type = _type;
-    const newSorts = sorts || stateSorts;
-    let newFilter = null;
-    let newRange = null;
+  const list = stateList;
+  const listLength = list.length || 0;
+  const type = _type;
+  const newSorts = sorts || stateSorts;
+  let newFilter = null;
+  let newRange = null;
 
-    if (filter) {
-      newFilter = updateFilter(filter, stateFilter);
+  if (filter) {
+    newFilter = updateFilter(filter, stateFilter);
+  } else {
+    newFilter = stateFilter;
+  }
 
-    } else {
-      newFilter = stateFilter;
-    }
+  if (range) {
+    newRange = updateRange(range, stateRange, listLength);
+  } else {
+    newRange = stateRange;
+  }
 
-    if (range) {
-      newRange = updateRange(range, stateRange, listLength);
-    } else {
-      newRange = stateRange;
-    }
-
-    return dispatch(sortListAction({ list, type, sorts: newSorts, filter: newFilter, range: newRange }));
-  };
+  return dispatch(
+    sortListAction({
+      list,
+      type,
+      sorts: newSorts,
+      filter: newFilter,
+      range: newRange,
+    }),
+  );
+};
 
 export {
   rovers,
@@ -235,4 +264,3 @@ export {
   getManifestFor,
   filterByFieldValue,
 };
-

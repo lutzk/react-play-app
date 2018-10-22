@@ -1,4 +1,5 @@
 import nodeExternals from 'webpack-node-externals';
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import fs from 'fs';
 import path from 'path';
 import {
@@ -20,14 +21,14 @@ const baseConfig = {
 const getServerEntry = ({ kind, prod }) => ({ // eslint-disable-line
   [`${kind}Server`]: [
     ...(!prod ? ['webpack/hot/poll?1000'] : []),
-    `${kind}ServerEntry.js`,
+    `${kind}ServerEntry.ts`,
   ],
 });
 
 const clientEntry = {
   main: [
     'app/theme/styles/main.sass',
-    'app/client.js',
+    'app/client.tsx',
   ],
 };
 
@@ -43,6 +44,12 @@ const getWorkerEntry = ({ prod, worker }) => ({
 });
 
 // output
+const setServerOutput = ({ kind }) => ({
+  path: serverBuildPath,
+  filename: `${kind}Server.js`,
+  libraryTarget: 'commonjs2',
+});
+
 const serverOutput = {
   path: serverBuildPath,
   filename: '[name].js',
@@ -106,7 +113,18 @@ const targetWebworker = {
   target: 'webworker',
 };
 
-const extensions = ['.js'];
+const extensions = [
+      '.mjs',
+      '.web.ts',
+      '.ts',
+      '.web.tsx',
+      '.tsx',
+      '.web.js',
+      '.js',
+      '.json',
+      '.web.jsx',
+      '.jsx',
+      ];
 const assetsExtensions = ['.css', '.scss', '.sass'];
 
 const resolve = {
@@ -116,14 +134,17 @@ const resolve = {
   ],
   mainFields: ['esnext', 'jsnext', 'browser', 'module', 'main'],
   extensions,
+  plugins: [
+      new TsconfigPathsPlugin({ configFile: './tsconfig.json' }),
+    ],
 };
 
-const buildOutput = ({ server = false, prod = false, worker = false } = {}) => ({
+const buildOutput = ({ server = false, prod = false, worker = false, api = false } = {}) => ({
   ...(() => {
     if (worker) {
       return getWorkerOutput(worker);
     }
-    return server ? serverOutput : getClientOutput(prod);
+    return server ? setServerOutput({ kind: api ? 'api' : 'app' }) : getClientOutput(prod);
   })(),
   publicPath: prod ? publicPathProd : publicPathDev,
 });

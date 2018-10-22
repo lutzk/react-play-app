@@ -5,8 +5,7 @@ import PouchdbAdapterIdb from 'pouchdb-adapter-idb';
 import PouchdbAdapterHttp from 'pouchdb-adapter-http';
 import PouchdbReplication from 'pouchdb-replication';
 
-PouchDB
-  .plugin(PouchdbAdapterIdb)
+PouchDB.plugin(PouchdbAdapterIdb)
   .plugin(PouchdbAdapterHttp)
   .plugin(PouchdbReplication);
 

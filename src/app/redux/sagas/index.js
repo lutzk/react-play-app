@@ -13,17 +13,15 @@ import {
   LOGOUT_FAIL,
 } from '../modules/user';
 
-const getRootSaga = client => function* rootSaga() {
-  yield all([
-    pingHandler(),
-    loginFlow(client),
-    reinitFlow(client),
-    loadAuthFlow(client),
-    initPageFlow(client),
-  ]);
-};
+const getRootSaga = client =>
+  function* rootSaga() {
+    yield all([
+      pingHandler(),
+      loginFlow(client),
+      reinitFlow(client),
+      loadAuthFlow(client),
+      initPageFlow(client),
+    ]);
+  };
 
-export {
-  getRootSaga,
-};
-
+export { getRootSaga };

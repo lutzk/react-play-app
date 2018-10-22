@@ -1,0 +1,43 @@
+{
+  "rulesDirectory": ["tslint-plugin-prettier"],
+  "extends": ["tslint-plugin-prettier", "tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "variable-name": {
+      "severity": "warning"
+    },
+    "interface-name": false,
+    "prettier": true,
+    "object-literal-sort-keys": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "no-shadowed-variable": {
+      "severity": "warning"
+    }
+  },
+  "jsRules": {
+    "variable-name": {
+      "severity": "warning"
+    },
+    "prettier": true,
+    "object-literal-sort-keys": false,
+    "no-console": {
+      "severity": "warning"
+    },
+    "no-shadowed-variable": {
+      "severity": "warning"
+    }
+  },
+  "linterOptions": {
+    "exclude": [
+      "src/app/redux/sagas/sagaMonitor.js",
+      "src/redux-pouchdb-plus/tests/**/*.*",
+      "superlogin-lib-util-js.patch.js",
+      "babel-plugin-universal-import.patch.js",
+      "webpack/**/*.*",
+      "node_modules/**/*.*",
+      "bin/**/*.*",
+      "static/**/*.*"
+    ]
+  }
+}

@@ -1,13 +1,14 @@
+import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
-import { startLoading, endLoading } from './pageLoadBar';
+import { endLoading, startLoading } from './pageLoadBar';
 // import { Deferred } from '../../../helpers/deferred';
 
 import {
-  rovers,
-  spirit,
-  sortList,
   _updateList,
   getManifestFor,
+  rovers,
+  sortList,
+  spirit,
 } from './shared/shared';
 
 const reducerName = 'RoverView';
@@ -17,10 +18,49 @@ const GET_MANIFEST = 'roverView/GET_MANIFEST';
 const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
 const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
 
+interface RoverViewState {
+  rover: any;
+  error: any;
+  rovers: any;
+  loaded: boolean;
+  loading: boolean;
+  roverName: string;
+  listLength: number;
+  list: any;
+  listToRender: any;
+  missionStats: any;
+  maxShown: boolean;
+  maxSol: number;
+  defaultRover: string; // rovers[spirit.label];
+  moreShown: boolean;
+  sorts: any;
+  filter: any;
+  defaultSorts: any;
+  range: any; // defaultRange,
+  reducerName?: string;
+}
+
+interface RoverResult {
+  photoManifest: any;
+}
+
+interface RoverViewAction extends AnyAction {
+  reducerName: string;
+  range: any;
+  sorts: any;
+  filter: any;
+  list: any;
+  result: RoverResult;
+  error: any;
+}
+
 const roverMatcher = roverToMatch =>
   Object.keys(rovers).indexOf(roverToMatch) > -1;
 
-const availableSorts = { fields: ['sol', 'totalPhotos', 'cameras'], orders: ['asc', 'desc'] };
+const availableSorts = {
+  fields: ['sol', 'totalPhotos', 'cameras'],
+  orders: ['asc', 'desc'],
+};
 const defaultSorts = { fields: ['sol'], orders: ['asc', 'desc'] };
 const defaultFilter = {
   fields: {
@@ -49,7 +89,7 @@ const defaultRange = {
   on: true,
 };
 
-const initialState = {
+const initialState: RoverViewState = {
   rover: null,
   error: null,
   rovers,
@@ -70,16 +110,18 @@ const initialState = {
   range: defaultRange,
 };
 
-const getStats = (data) => {
+const getStats = data => {
   const stats = { ...data };
   delete stats.name;
   delete stats.photos;
   return stats;
 };
 
-function roverView(state = initialState, action = {}) {
+const roverView: Reducer<RoverViewState> = (
+  state = initialState,
+  action: RoverViewAction,
+) => {
   switch (action.type) {
-
     // case '@@redux-pouchdb-plus/INIT':
     //   // if (action.state.solView.prefetched) {
     //   //   return {
@@ -150,7 +192,10 @@ function roverView(state = initialState, action = {}) {
         error: null,
         loaded: true,
         loading: false,
-        maxSol: action.result.photoManifest.photos[action.result.photoManifest.photos.length - 1].sol,
+        maxSol:
+          action.result.photoManifest.photos[
+            action.result.photoManifest.photos.length - 1
+          ].sol,
         roverName: action.result.photoManifest.name,
         listLength: action.result.photoManifest.photos.length,
         list: action.result.photoManifest.photos,
@@ -174,11 +219,10 @@ function roverView(state = initialState, action = {}) {
     default:
       return state;
   }
-}
+};
 
-const getManifest = (_rover, offline) => {
-
-  const rover = _rover || initialState.defaultRover;
+const getManifest = (roverName, offline) => {
+  const rover = roverName || initialState.defaultRover;
   const types = [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL];
 
   return getManifestFor({
@@ -188,7 +232,7 @@ const getManifest = (_rover, offline) => {
   });
 };
 
-const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range }: any = {}) => {
   const type = SORT_SOLS;
   const stateKey = 'roverView';
   return _updateList({ type, stateKey, sorts, filter, range });
@@ -202,24 +246,28 @@ const updateList = ({ sorts, filter, range } = {}) => {
 //   };
 
 const initPage = () => (dispatch, getState) => {
-  const { location: { payload: { rover } } } = getState();
+  const {
+    location: {
+      payload: { rover },
+    },
+  } = getState();
   console.log('__RVI__', 0.1, rover);
   const NAME = reducerName;
   const roverViewState = getState().roverView;
-  const getRover = () => roverMatcher(rover) ? rover : roverViewState.defaultRover;
+  const getRover = () =>
+    roverMatcher(rover) ? rover : roverViewState.defaultRover;
   console.log('__RVI__', 1, getRover());
   if (roverViewState.loaded) {
     console.log('__RVI__', 2);
     if (roverViewState.roverName !== rover) {
       console.log('__RVI__', 2.1);
-      const _rover = getRover();
-      return dispatch(getManifest(_rover, false))
+      // const _rover = getRover();
+      return dispatch(getManifest(getRover(), false))
         .then(dispatch(endLoading()))
         .then(NAME);
     }
     dispatch(endLoading());
     return NAME;
-
   }
   if (roverViewState.reinitializing || roverViewState.reinitRequested) {
     console.log('__RVI__', 3);
@@ -234,27 +282,27 @@ const initPage = () => (dispatch, getState) => {
     //   unsubscribe();
     //   console.log('__RVI__', 4);
     if (!getState().roverView.loaded) {
-      const _rover = getRover();
-      return dispatch(getManifest(_rover, false))
+      // const _rover = getRover();
+      return dispatch(getManifest(getRover(), false))
         .then(dispatch(endLoading()))
         .then(NAME);
     }
     console.log('__RVI__', 5);
-    return dispatch(endLoading())
-      .then(() => NAME);
+    return dispatch(endLoading()).then(() => NAME);
     // });
   }
   console.log('__RVI__', 6);
-  const _rover = getRover();
-  return dispatch(getManifest(_rover, false))
+  // const _rover = getRover();
+  return dispatch(getManifest(getRover(), false))
     .then(() => dispatch(endLoading()))
     .then(NAME);
 };
 
-
 const roverViewReducer = persistentReducer(roverView, reducerName);
 
 export {
+  RoverViewState,
+  RoverViewAction,
   initPage,
   updateList,
   getManifest,

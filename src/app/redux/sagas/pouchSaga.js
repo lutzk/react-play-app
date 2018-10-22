@@ -1,19 +1,29 @@
 import { take, put, call, fork, select } from 'redux-saga/effects';
 import { eventChannel /* , delay */ } from 'redux-saga';
 
-import { initWorkerSync, currySendMsg, hasWindow } from '../../../app/workers/utils';
-import { REQUEST_REINIT, REINIT } from '../../../redux-pouchdb-plus/src/index';
-import { SYNC_INITIAL, SYNC_INITIAL_SUCCESS, /* SYNC_INITIAL_FAIL, */ STORE_INIT } from '../../workers/pouchWorkerMsgTypes';
-
 import {
-  LOGIN_SUCCESS,
-  SIGNUP_SUCCESS,
-} from '../modules/user';
+  initWorkerSync,
+  currySendMsg,
+  hasWindow,
+} from '../../../app/workers/utils';
+import { REQUEST_REINIT, REINIT } from '../../../redux-pouchdb-plus/src/index';
+import {
+  SYNC_INITIAL,
+  SYNC_INITIAL_SUCCESS,
+  /* SYNC_INITIAL_FAIL, */ STORE_INIT,
+} from '../../workers/pouchWorkerMsgTypes';
+
+import { LOGIN_SUCCESS, SIGNUP_SUCCESS } from '../modules/user';
 
 function* reinitFlow(client) {
-  const pouchWorker = yield call(initWorkerSync, '/worker.pouch.js', 'pouchWorker');
+  const pouchWorker = yield call(
+    initWorkerSync,
+    '/worker.pouch.js',
+    'pouchWorker',
+  );
   const sendMsgToWorker = currySendMsg(pouchWorker);
-  while (true) {// eslint-disable-line
+  while (true) {
+    // eslint-disable-line
     const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
     yield take(reinitReducerTypes);
     yield put({ type: REQUEST_REINIT });
@@ -54,6 +64,7 @@ const createWorkerOnMessageHandler = worker =>
       emit({ data, port });
     };
 
+    // tslint:disable-next-line:no-empty
     const unsubscribe = () => {};
     return unsubscribe;
   });
@@ -64,19 +75,25 @@ function* replyToWorkerMsg(msg) {
 
 function* pingHandler() {
   if (hasWindow()) {
-    const pouchWorker = yield call(initWorkerSync, '/worker.pouch.js', 'pouchWorker');
+    const pouchWorker = yield call(
+      initWorkerSync,
+      '/worker.pouch.js',
+      'pouchWorker',
+    );
     const sendMsgToWorker = currySendMsg(pouchWorker);
-    const workerOnMessageHandler = yield call(createWorkerOnMessageHandler, pouchWorker);
-    const res = yield call(sendMsgToWorker, { ...STORE_INIT });// eslint-disable-line
-    while (true) {// eslint-disable-line
+    const workerOnMessageHandler = yield call(
+      createWorkerOnMessageHandler,
+      pouchWorker,
+    );
+    const res = yield call(sendMsgToWorker, { ...STORE_INIT }); // eslint-disable-line
+    while (true) {
+      // eslint-disable-line
       const { data: workerMsg, port } = yield take(workerOnMessageHandler);
       const d = { ...workerMsg, ...port };
       yield put({ type: 'GOT_WORKER_MSG', d });
       yield fork(replyToWorkerMsg, 'replyMsg');
     }
   }
-
 }
-
 
 export { reinitFlow, pingHandler };

@@ -1,9 +1,6 @@
+import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
-import {
-  sortList,
-  _updateList,
-  getManifestFor,
-} from './shared/shared';
+import { _updateList, getManifestFor, sortList } from './shared/shared';
 
 const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
 const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
@@ -12,7 +9,43 @@ const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
 const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
 // const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
 
-const availableSorts = { fields: ['id', 'earthDate', 'camera', 'camera.id'], orders: ['asc', 'desc'] };
+interface SolViewState {
+  sol: any;
+  error: any;
+  loaded: boolean;
+  loading: boolean;
+  listLength: number;
+  list: any;
+  listToRender: any;
+  maxShown: boolean;
+  moreShown: boolean;
+  sorts?: any;
+  filter: any;
+  defaultSorts: any;
+  range: any; // defaultRange,
+  reducerName?: string;
+  initialCount: number;
+  availableSorts: any;
+}
+
+interface SolResult {
+  photos: any;
+}
+
+interface SolViewAction extends AnyAction {
+  reducerName: string;
+  range: any;
+  sorts: any;
+  filter: any;
+  list: any;
+  result: SolResult;
+  error: any;
+}
+
+const availableSorts = {
+  fields: ['id', 'earthDate', 'camera', 'camera.id'],
+  orders: ['asc', 'desc'],
+};
 const defaultSorts = { fields: ['id'], orders: ['asc', 'desc'] };
 
 const reducerName = 'SolView';
@@ -48,7 +81,7 @@ const defaultRange = {
   on: true,
 };
 
-const initialState = {
+const initialState: SolViewState = {
   sol: null,
   error: null,
   loaded: false,
@@ -59,27 +92,31 @@ const initialState = {
   listToRender: null,
   maxShown: false,
   moreShown: false,
-  sorts: availableSorts,
+  availableSorts,
   filter: defaultFilter,
   defaultSorts,
   range: defaultRange,
 };
 
 const cleanUpData = data =>
-  data.map((item) => {
+  data.map(item => {
     const fieldsWhiteList = ['id', 'sol', 'camera', 'imgSrc', 'earthDate'];
     const returnObj = {};
-    Object.keys(item).map(itemKey =>
-      fieldsWhiteList.indexOf(itemKey) > -1 ?
-        returnObj[itemKey] = item[itemKey]
-        : false);
+    Object.keys(item).map(
+      itemKey =>
+        fieldsWhiteList.indexOf(itemKey) > -1
+          ? (returnObj[itemKey] = item[itemKey])
+          : false,
+    );
 
     return returnObj;
   });
 
-function solView(state = initialState, action = {}) {
+const solView: Reducer<SolViewState> = (
+  state = initialState,
+  action: SolViewAction,
+) => {
   switch (action.type) {
-
     case '@@redux-pouchdb-plus/RESET':
       return {
         ...initialState,
@@ -152,15 +189,19 @@ function solView(state = initialState, action = {}) {
     default:
       return state;
   }
-}
+};
 
 const getSolManifest = (rover, sol, offline) => {
-  const types = [GET_SOL_MANIFEST, GET_SOL_MANIFEST_SUCCESS, GET_SOL_MANIFEST_FAIL];
+  const types = [
+    GET_SOL_MANIFEST,
+    GET_SOL_MANIFEST_SUCCESS,
+    GET_SOL_MANIFEST_FAIL,
+  ];
 
   return getManifestFor({ sol, rover, types, offline });
 };
 
-const updateList = ({ sorts, filter, range } = {}) => {
+const updateList = ({ sorts, filter, range }: any = {}) => {
   const type = SORT_SOL_PHOTOS;
   const stateKey = 'solView';
   return _updateList({ type, stateKey, sorts, filter, range });
@@ -169,6 +210,9 @@ const updateList = ({ sorts, filter, range } = {}) => {
 const solViewReducer = persistentReducer(solView, reducerName);
 
 export {
+  SolViewState,
+  SolResult,
+  SolViewAction,
   updateList,
   getSolManifest,
   solViewReducer,

@@ -7,7 +7,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { routesMap } from '../routing/routesMap';
 import { linkToLogin } from '../routing/navTypes';
 import { clientMiddleware } from '../middleware/clientMiddleware';
-import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';// eslint-disable-line
+import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user'; // eslint-disable-line
 
 // import { getRootSaga } from '../sagas';
 // import createSagaMonitor from '../sagas/sagaMonitor';
@@ -20,21 +20,28 @@ import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';// esl
 // };
 // createSagaMonitor(config);
 
-function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disable-line
+function createReduxStore({ client, preloadedState, reqPath = null }) {
+  // eslint-disable-line
   let composeFuncs;
   const createRootReducer = require('../modules/reducer').createRootReducer;
   const options = {
     initialEntries: reqPath,
     initialDispatch: false,
-    onBeforeChange: (dispatch, getState, bag) => { // eslint-disable-line
+    onBeforeChange: (dispatch, getState, bag) => {
+      // eslint-disable-line
       const userRequiredRoutes = ['HOME', 'ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
         // not async https://github.com/faceyspacey/redux-first-router/issues/90
         // return checkAuth(dispatch, getState);
-        const { user: { user } } = getState(); // eslint-disable-line
+        const {
+          user: { user },
+        } = getState(); // eslint-disable-line
         if (!user) {
-          const action = redirect({ ...linkToLogin, nextPathname: getState().location.pathname });
+          const action = redirect({
+            ...linkToLogin,
+            nextPathname: getState().location.pathname,
+          });
           dispatch(redirect(action));
         }
       }
@@ -48,20 +55,25 @@ function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disab
   //   }),
   // });
   // applyMiddleware(sagaMiddleware)
-  const { reducer, middleware, enhancer, thunk, initialDispatch } = connectRoutes(routesMap, options);
-  const rootReducer = createRootReducer(reducer);
-  const middlewares = [
+  const {
+    reducer,
     middleware,
-    thunkMiddleware,
-    clientMiddleware(client),
-  ];
+    enhancer,
+    thunk,
+    initialDispatch,
+  } = connectRoutes(routesMap, options);
+  const rootReducer = createRootReducer(reducer);
+  const middlewares = [middleware, thunkMiddleware, clientMiddleware(client)];
 
-  const moduleHot = (__DEVELOPMENT__ && module.hot);
-  const addDevTools = (__DEVELOPMENT__ && __DEVTOOLS__);
-  const DevTools = addDevTools ? require('../../containers/DevTools/DevTools').default : false;
+  const moduleHot = __DEVELOPMENT__ && module.hot;
+  const addDevTools = __DEVELOPMENT__ && __DEVTOOLS__;
+  const DevTools = addDevTools
+    ? require('../../containers/DevTools/DevTools').default
+    : false;
 
   if (__CLIENT__) {
-    const persistentStore = require('../../../redux-pouchdb-plus/src/index').persistentStore;
+    const persistentStore = require('../../../redux-pouchdb-plus/src/index')
+      .persistentStore;
 
     composeFuncs = [
       persistentStore(),
@@ -69,16 +81,15 @@ function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disab
       enhancer,
       ...(addDevTools ? [DevTools.instrument()] : []),
     ];
-
   } else {
-    composeFuncs = [
-      applyMiddleware(...middlewares),
-      enhancer,
-    ];
+    composeFuncs = [applyMiddleware(...middlewares), enhancer];
   }
 
-
-  const store = createStore(rootReducer, preloadedState, compose(...composeFuncs));
+  const store = createStore(
+    rootReducer,
+    preloadedState,
+    compose(...composeFuncs),
+  );
 
   // sagaMiddleware.run().done
   // let rootTask;
@@ -88,13 +99,14 @@ function createReduxStore({ reqPath, client, preloadedState }) { // eslint-disab
 
   if (moduleHot) {
     module.hot.accept('../modules/reducer', () => {
-      const _rootReducer = require('../modules/reducer').createRootReducer(reducer);
-      store.replaceReducer(_rootReducer);
+      const newRootReducer = require('../modules/reducer').createRootReducer(
+        reducer,
+      );
+      store.replaceReducer(newRootReducer);
     });
   }
 
   return { store, thunk /* , rootTask */ };
-
 }
 
 export { createReduxStore };

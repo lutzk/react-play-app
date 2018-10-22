@@ -1,3 +1,5 @@
-export Html from './Html';
-export logJSON from './logJson';
-export ApiClient from './ApiClient';
+import Html from './Html';
+import logJSON from './logJson';
+import ApiClient from './ApiClient';
+
+export { Html, logJSON, ApiClient };

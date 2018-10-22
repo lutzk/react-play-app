@@ -1,3 +1,4 @@
+import { AnyAction, Reducer } from 'redux';
 import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import { linkToLogin } from '../routing/navTypes';
 
@@ -19,14 +20,39 @@ const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
 
 const KILL_USER = 'user/KILL_USER';
 
-const initialState = {
-  loggedIn: false,
+interface UserState {
+  user: any;
+  savedPath?: any;
+  loading: boolean;
+  loaded: boolean;
+  error?: any;
+  loggingOut: boolean;
+  loggingIn: boolean;
+  signedUp: boolean;
+  signingUp: boolean;
+}
+
+interface Result {
+  savedPath: any;
+}
+
+interface UserAction extends AnyAction {
+  result?: any;
+  lastLoaded?: any;
+  error?: any;
+}
+
+const initialState: UserState = {
+  user: null,
+  loading: false,
+  loaded: false,
+  loggingOut: false,
   loggingIn: false,
-  error: false,
-  lastLoaded: null,
+  signedUp: false,
+  signingUp: false,
 };
 
-function user(state = initialState, action = {}) {
+const user: Reducer<UserState> = (state = initialState, action: AnyAction) => {
   switch (action.type) {
     case KILL_USER:
       return {
@@ -46,7 +72,10 @@ function user(state = initialState, action = {}) {
         loading: false,
         loaded: true,
         error: null,
-        user: (typeof action.result === 'object' && Object.keys(action.result).length) ? action.result : null,
+        user:
+          typeof action.result === 'object' && Object.keys(action.result).length
+            ? action.result
+            : null,
       };
     case LOAD_AUTH_FAIL:
       return {
@@ -119,11 +148,12 @@ function user(state = initialState, action = {}) {
     default:
       return state;
   }
-}
+};
 
 const login = (username, password) => dispatch => {
   const types = [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL];
-  const promise = client => client.post('/login', { data: { username, password } });
+  const promise = client =>
+    client.post('/login', { data: { username, password } });
   return dispatch({
     types,
     promise,
@@ -139,18 +169,19 @@ const logout = () => dispatch => {
 const shouldRefreshOrLogout = (state, timeNow) => {
   const lastLoaded = state.user.lastLoaded;
   let justLoaded = false;
-  let expires = false;
+  let expires: number;
+  const _timeNow = Number(timeNow);
   // let issued = false;
   if (state.user.user) {
     // issued = state.user.user.issued;
-    expires = state.user.user.expires;
-    if (((timeNow - expires) / 1000) > 0) {
+    expires = Number(state.user.user.expires);
+    if ((_timeNow - expires) / 1000 > 0) {
       return logout();
     }
   }
 
   if (lastLoaded) {
-    if (((timeNow - lastLoaded) / 1000) < 10) {
+    if ((_timeNow - lastLoaded) / 1000 < 10) {
       justLoaded = true;
     }
   }
@@ -169,36 +200,53 @@ const loadAuth = () => (dispatch, getState) => {
   });
 };
 
-const killUser = () => (getState, dispatch) => dispatch({
-  type: [KILL_USER],
-});
+const killUser = () => (getState, dispatch) =>
+  dispatch({
+    type: [KILL_USER],
+  });
 
 function isLoaded(state) {
   return state.user && state.user.loaded;
 }
 
-const signup = (name, username, email, password, confirmPassword) => dispatch => {
-
+const signup = (
+  name,
+  username,
+  email,
+  password,
+  confirmPassword,
+) => dispatch => {
   const types = [SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAIL];
-  const promise = client => client.post('/signup', { data: { name, username, email, password, confirmPassword } });
+  const promise = client =>
+    client.post('/signup', {
+      data: { name, username, email, password, confirmPassword },
+    });
 
   return dispatch({ types, promise });
 };
 
-const checkAuth = () => (dispatch, getState) => { // eslint-disable-line
-  const { user: { user } } = getState(); // eslint-disable-line
+const checkAuth = () => (dispatch, getState) => {
+  // eslint-disable-line
+  const {
+    user: { user },
+  } = getState(); // eslint-disable-line
   if (!user) {
-    const action = redirect({ ...linkToLogin, nextPathname: getState().location.pathname });
+    const action = redirect({
+      ...linkToLogin,
+      nextPathname: getState().location.pathname,
+    });
     return dispatch(redirect(action));
   }
   return Promise.resolve(true);
 };
 
 const requireLogin = () => (dispatch, getState) =>
-  dispatch(loadAuth())
-    .then((r) => dispatch(checkAuth()));
+  dispatch(loadAuth()).then(r => dispatch(checkAuth()));
 
 export {
+  Result,
+  UserState,
+  UserAction,
   user,
   login,
   logout,

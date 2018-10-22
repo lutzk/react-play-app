@@ -5,22 +5,24 @@ export default function signup(req) {
   const client = new ApiClient(req);
   return client
     .post(slRegisterPath, { data: req.body })
-    .then((result) => {
+    .then(result => {
       if (result.error) {
         req.session.user = null;
         return Promise.reject(result.error);
       }
-      const userDB = result.userDBs.sl_user.replace(slCouchPath, couchDBProxyPath);
+      const userDB = result.userDBs.sl_user.replace(
+        slCouchPath,
+        couchDBProxyPath,
+      );
       delete result.userDBs;
-      req.session.token = result.token;// eslint-disable-line
+      req.session.token = result.token; // eslint-disable-line
       req.session.user = { ...result, userDB };
       const userAccount = { ...result, userDB };
 
       return userAccount;
     })
-    .catch((error) => {
+    .catch(error => {
       req.session.user = null;
       return Promise.reject(error);
-    })
-  ;
+    });
 }

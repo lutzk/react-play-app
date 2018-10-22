@@ -1,12 +1,15 @@
-import { take, put, call, fork, /* cancel, select */ cancelled } from 'redux-saga/effects';
-
 import {
-  LOAD_AUTH,
-  LOAD_AUTH_SUCCESS,
-  LOAD_AUTH_FAIL,
-} from '../modules/user';
+  take,
+  put,
+  call,
+  fork,
+  /* cancel, select */ cancelled,
+} from 'redux-saga/effects';
 
-function* loadAuth(promise, client) {// eslint-disable-line
+import { LOAD_AUTH, LOAD_AUTH_SUCCESS, LOAD_AUTH_FAIL } from '../modules/user';
+
+function* loadAuth(promise, client) {
+  // eslint-disable-line
   try {
     const result = yield call(promise, client);
     yield put({ type: LOAD_AUTH_SUCCESS, result });
@@ -20,7 +23,8 @@ function* loadAuth(promise, client) {// eslint-disable-line
   }
 }
 
-function* redirectToLogin(promise, client) {// eslint-disable-line
+function* redirectToLogin(promise, client) {
+  // eslint-disable-line
   try {
     const result = yield call(promise, client);
     yield put({ type: LOAD_AUTH_SUCCESS, result });
@@ -35,7 +39,8 @@ function* redirectToLogin(promise, client) {// eslint-disable-line
 }
 
 function* loadAuthFlow(client) {
-  while (true) {// eslint-disable-line
+  while (true) {
+    // eslint-disable-line
     const { promise } = yield take(LOAD_AUTH);
     // const task = yield fork(loadAuth, promise, client);
     // const action = yield take([LOAD_AUTH_FAIL]);
@@ -50,6 +55,4 @@ function* loadAuthFlow(client) {
   }
 }
 
-export {
-  loadAuthFlow,
-};
+export { loadAuthFlow };

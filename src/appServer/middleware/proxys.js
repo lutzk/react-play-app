@@ -1,5 +1,11 @@
 import http from 'http';
-import { apiSocket, apiBase, couchHost, couchProtocol, couchPort } from '../../config/appConfig';
+import {
+  apiSocket,
+  apiBase,
+  couchHost,
+  couchProtocol,
+  couchPort,
+} from '../../config/appConfig';
 
 /*
 
@@ -20,7 +26,7 @@ ProxyCreator.prototype.proxy = function proxy() {
   return (req, res) => {
     const clb = this.clb;
     const options = this.options;
-    const createErrorHandler = proxyReq => (err) => {
+    const createErrorHandler = proxyReq => err => {
       if (req.socket.destroyed && err.code === 'ECONNRESET') {
         return proxyReq.abort();
       }
@@ -54,8 +60,8 @@ ProxyCreator.prototype.proxy = function proxy() {
     proxyReq.on('error', proxyError);
     req.pipe(proxyReq);
 
-    proxyReq.on('response', (proxyRes) => {
-      Object.keys(proxyRes.headers).forEach((key) => {
+    proxyReq.on('response', proxyRes => {
+      Object.keys(proxyRes.headers).forEach(key => {
         const header = proxyRes.headers[key];
         res.setHeader(String(key).trim(), header);
       });
@@ -70,7 +76,6 @@ ProxyCreator.prototype.proxy = function proxy() {
   };
 };
 
-
 function errorHandler(err, req, res) {
   if (!res.headersSent) {
     res.writeHead(500, { 'content-type': 'application/json' });
@@ -79,16 +84,21 @@ function errorHandler(err, req, res) {
   res.end(JSON.stringify(json));
 }
 
-const apiProxy = new ProxyCreator({
-  path: apiBase,
-  socketPath: apiSocket,
-}, errorHandler);
+const apiProxy = new ProxyCreator(
+  {
+    path: apiBase,
+    socketPath: apiSocket,
+  },
+  errorHandler,
+);
 
-
-const couchProxy = new ProxyCreator({
-  host: `${couchProtocol}${couchHost}`,
-  hostName: couchHost,
-  port: couchPort,
-}, errorHandler);
+const couchProxy = new ProxyCreator(
+  {
+    host: `${couchProtocol}${couchHost}`,
+    hostName: couchHost,
+    port: couchPort,
+  },
+  errorHandler,
+);
 
 export { apiProxy, couchProxy };

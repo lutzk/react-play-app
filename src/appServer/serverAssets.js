@@ -1,5 +1,4 @@
 const isExtension = (file, ext) => {
-
   if (ext === `${file}`.substr(parseInt(`-${ext.length}`, 10))) {
     return true;
   }
@@ -7,12 +6,11 @@ const isExtension = (file, ext) => {
   return false;
 };
 
-const getAssetExtension = (file) => {
-
+const getAssetExtension = file => {
   let extension = null;
   const extensions = ['js', 'css'];
 
-  extensions.map((ext) => {
+  extensions.map(ext => {
     if (isExtension(file, ext)) {
       extension = ext;
     }
@@ -22,29 +20,30 @@ const getAssetExtension = (file) => {
   return extension;
 };
 
+const defineUndefined = (def, what = {}) => (def = def || what); // eslint-disable-line
 
-const defineUndefined = (def, what = {})  => def = def || what;// eslint-disable-line
-
-const getAssetsFromStats = (stats) => {
-
+const getAssetsFromStats = stats => {
   const assetsObj = {};
   const publicPath = stats.publicPath;
   const assetsChunks = stats.assetsByChunkName;
   const assetsChunksKeys = Object.keys(assetsChunks);
   const assetsChunksLength = assetsChunksKeys.length;
 
-  const loopChunkKeys = (index) => {
+  const loopChunkKeys = index => {
     const assetsChunkKey = assetsChunksKeys[index];
     let assets = assetsChunks[assetsChunkKey];
 
-    if (!(Array.isArray(assets))) {
+    if (!Array.isArray(assets)) {
       assets = [assets];
     }
 
-    assets.map((asset) => {
+    assets.map(asset => {
       const type = getAssetExtension(asset);
       assetsObj[type] = defineUndefined(assetsObj[type], {});
-      assetsObj[type][assetsChunkKey] = defineUndefined(assetsObj[type][assetsChunkKey], []);
+      assetsObj[type][assetsChunkKey] = defineUndefined(
+        assetsObj[type][assetsChunkKey],
+        [],
+      );
       assetsObj[type][assetsChunkKey].push(`${publicPath}${asset}`);
       return undefined;
     });
@@ -57,11 +56,15 @@ const getAssetsFromStats = (stats) => {
   return assetsObj;
 };
 
-const formatAssets = (assetsObj) => {
-
-  if (assetsObj.js !== undefined && assetsObj.js.vendor !== undefined && assetsObj.js.main !== undefined) {
+const formatAssets = assetsObj => {
+  if (
+    assetsObj.js !== undefined &&
+    assetsObj.js.vendor !== undefined &&
+    assetsObj.js.main !== undefined
+  ) {
     const formatedAssetsObj = JSON.parse(JSON.stringify(assetsObj));
-    formatedAssetsObj.js = { // eslint-disable-line
+    formatedAssetsObj.js = {
+      // eslint-disable-line
       manifest: assetsObj.js.manifest,
       vendor: assetsObj.js.vendor,
       main: assetsObj.js.main,
@@ -72,7 +75,4 @@ const formatAssets = (assetsObj) => {
   return assetsObj;
 };
 
-export {
-  formatAssets,
-  getAssetsFromStats,
-};
+export { formatAssets, getAssetsFromStats };

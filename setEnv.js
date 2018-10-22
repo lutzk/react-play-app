@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-(function () {
+(function() {
   let file = null;
   const envPath = require('path').resolve(__dirname, `${process.cwd()}/`);
   try {
@@ -14,4 +14,4 @@
       require('dotenv').load();
     }
   }
-}());
+})();

@@ -3,6 +3,7 @@ import CleanPlugin from 'clean-webpack-plugin';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 // import NameAllModulesPlugin from 'name-all-modules-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 
@@ -103,6 +104,12 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
     // babiliPlugin,
     // namedChunksPlugin,
     // nameAllModulesPlugin,
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      watch: './src',
+      tsconfig: './tsconfig.json',
+      // tslint: paths.appTsLint,
+    }),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
     limitChunkCountPlugin,
@@ -133,7 +140,14 @@ const buildClientPlugins = ({ prod = false }) => {
     new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-    analyzerPlugin,
+    // analyzerPlugin,
+    // new CheckerPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      watch: './src',
+      tsconfig: './tsconfig.json',
+      tslint: './tslint.json',
+    }),
   ];
 
   const prodPlugins = [
@@ -159,7 +173,6 @@ const buildWorkerPlugins = ({ prod = false, worker = false }) => {
     limitChunkCountPlugin,
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-
   ];
 
   const prodPlugins = [

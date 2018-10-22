@@ -1,10 +1,10 @@
 import { HOME, LOGIN, SOL_VIEW, ROVER_VIEW } from './nav';
 import { spirit } from '../modules/shared/shared';
 
-
 const createLinkType = (type, payload) => ({ type, payload });
 
 const linkToHome = createLinkType(HOME);
+const linkToHomer = createLinkType('HOMER');
 const linkToLogin = createLinkType(LOGIN);
 const linkToSpirit = createLinkType(ROVER_VIEW, { rover: spirit.name });
 
@@ -17,4 +17,5 @@ export {
   createSolLink,
   linkToLogin,
   createRoverLink,
+  linkToHomer,
 };

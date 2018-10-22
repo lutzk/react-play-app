@@ -4,7 +4,7 @@ import connectRedis from 'connect-redis';
 
 import { sessionConfig } from '../config';
 
-const redisClient = new RedisClient(/* { socket: '/tmp/redis.sock' } */);
+const redisClient = new RedisClient /* { socket: '/tmp/redis.sock' } */();
 const RedisStore = connectRedis(session);
 
 const redisOptions = {

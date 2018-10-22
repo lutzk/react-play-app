@@ -1,4 +1,3 @@
-
 /*
 
   adapted from:
@@ -77,7 +76,7 @@ function walkTree(element, context, visitor) {
     }
 
     if (element.props && element.props.children) {
-      Children.forEach(element.props.children, (child) => {
+      Children.forEach(element.props.children, child => {
         if (child) {
           walkTree(child, context, visitor);
         }
@@ -86,9 +85,13 @@ function walkTree(element, context, visitor) {
   }
 }
 
-function getPromisesFromTree({ rootElement, rootContext = {} }, fetchRoot = true) {
+function getPromisesFromTree(
+  { rootElement, rootContext = {} },
+  fetchRoot = true,
+) {
   const promises = [];
-  walkTree(rootElement, rootContext, (element, instance, context) => {// eslint-disable-line
+  walkTree(rootElement, rootContext, (element, instance, context) => {
+    // eslint-disable-line
     const skipRoot = !fetchRoot && element === rootElement;
     if (instance && typeof instance[FETCH] === 'function' && !skipRoot) {
       const promise = instance[FETCH]();
@@ -109,11 +112,13 @@ function getDataFromTree(rootElement, rootContext = {}, fetchRoot = true) {
   const promises = getPromisesFromTree({ rootElement, rootContext }, fetchRoot);
 
   // no promises found, nothing to do
-  if (!promises.length) return Promise.resolve();
+  if (!promises.length) {
+    return Promise.resolve();
+  }
   const errors = [];
   // wait on each query that we found, re-rendering the subtree when it's done
   const mappedPromises = promises.map(async ({ promise, element, context }) => {
-  //   // we've just grabbed the promise for element, so don't try and get it again
+    //   // we've just grabbed the promise for element, so don't try and get it again
     let action;
     let result;
     try {
@@ -140,22 +145,21 @@ function getDataFromTree(rootElement, rootContext = {}, fetchRoot = true) {
         errors.length === 1
           ? errors[0]
           : new Error(
-              `${errors.length} errors were thrown when executing your GraphQL queries.`
+              `${
+                errors.length
+              } errors were thrown when executing your GraphQL queries.`,
             );
       error.promiseErrors = errors;
       throw error;
     }
-
   });
 }
 
 async function renderToStringWithData(component, store) {
   dispatch = store.dispatch;
   // getState = store.getState;
-  await getDataFromTree(component);// .then(() =>
+  await getDataFromTree(component); // .then(() =>
   return renderToString(component);
 }
 
-export {
- renderToStringWithData,
-};
+export { renderToStringWithData };

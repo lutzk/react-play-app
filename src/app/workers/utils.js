@@ -1,18 +1,16 @@
-const getWorker = () =>
-  navigator.serviceWorker.ready.then(w => w.active);
+const getWorker = () => navigator.serviceWorker.ready.then(w => w.active);
 
-const getSWorkerRegistration = () =>
-  navigator.serviceWorker.ready.then(r => r);
+const getSWorkerRegistration = () => navigator.serviceWorker.ready.then(r => r);
 
 // const addMsgHandler = () =>
 //   navigator.serviceWorker.onmessage = event => event.data;
-    // event.ports[0].postMessage(['msg ack from window', event.data.data]);
-    // console.log('___GOT MSG FROM WORKER__', event);
+// event.ports[0].postMessage(['msg ack from window', event.data.data]);
+// console.log('___GOT MSG FROM WORKER__', event);
 
 const sendMsg = ({ msg, reciever }) =>
   new Promise((resolve, reject) => {
     const msgChannel = new MessageChannel();
-    msgChannel.port1.onmessage = (e) => {
+    msgChannel.port1.onmessage = e => {
       if (e.data.error) {
         reject(e.data.error);
       } else {
@@ -20,13 +18,14 @@ const sendMsg = ({ msg, reciever }) =>
       }
     };
     if (!reciever) {
-      throw new Error('`sendMsg` called without reciever, dont know where to send msg');
+      throw new Error(
+        '`sendMsg` called without reciever, dont know where to send msg',
+      );
     } else {
       // console.log('POST TO WORKERA__', msg);
       reciever.postMessage(msg, [msgChannel.port2]);
     }
-  })
-  .catch(e => console.error(e));
+  }).catch(e => console.error(e));
 
 const currySendMsg = reciever => msg => sendMsg({ msg, reciever });
 
@@ -47,7 +46,6 @@ const currySendMsg = reciever => msg => sendMsg({ msg, reciever });
 //       worker.postMessage(msg, [msgChannel.port2]);
 //     }
 //   });
-
 
 // const sendMsgToSharedWorker = ({ msg, worker }) =>
 //   new Promise((resolve, reject) => {
@@ -85,10 +83,9 @@ const cachePageOnEnter = (nextState, replace, cb) => {
   if (typeof window !== 'undefined') {
     const msg = { data: pathname };
     return getWorker()
-      .then(worker =>
-        sendMsg({ msg, worker }))
+      .then(worker => sendMsg({ msg, worker }))
       .then(() => cb())
-      .catch((e) => {
+      .catch(e => {
         console.log('SMTOWE:', e);
         return cb();
       });
@@ -100,13 +97,16 @@ const hasWindow = () => typeof window !== 'undefined';
 // let serviceWorkerRegistration;
 const serviceWorkersEnabled = () => 'serviceWorker' in navigator;
 const registerCacheWorker = worker =>
-  navigator.serviceWorker.register(worker)
-    .then(s =>
-      // addMsgHandler();
-       s)
+  navigator.serviceWorker
+    .register(worker)
+    .then(
+      s =>
+        // addMsgHandler();
+        s,
+    )
     .catch(e => console.log('____SWE:', e));
 
-const initCacheWorker = (worker) => {
+const initCacheWorker = worker => {
   if (serviceWorkersEnabled() /* && !serviceWorkerRegistration */) {
     return registerCacheWorker(worker);
   }
@@ -122,7 +122,7 @@ const initWorker = (worker, name) => {
   return Promise.resolve(false);
 };
 
-const getInlineWorker = (worker) => {
+const getInlineWorker = worker => {
   const src = `(${worker})();`;
   const blob = new Blob([src], { type: 'application/javascript' });
   const url = URL.createObjectURL(blob);
@@ -137,18 +137,19 @@ const initWorkerSync = (worker, name) => {
   return false;
 };
 
-const notify = (msg) => {
-  Notification.requestPermission((result) => {
+const notify = msg => {
+  Notification.requestPermission(result => {
     if (result === 'granted') {
-      getSWorkerRegistration().then(registration => registration.showNotification('its a notification', {
-        body: msg,
-        vibrate: [200, 100, 200, 100],
-        tag: 'noti sample',
-      }));
+      getSWorkerRegistration().then(registration =>
+        registration.showNotification('its a notification', {
+          body: msg,
+          vibrate: [200, 100, 200, 100],
+          tag: 'noti sample',
+        }),
+      );
     }
   });
 };
-
 
 export {
   notify,
