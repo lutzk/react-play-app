@@ -2,6 +2,7 @@ const babelConfigBase = {
   // ignore: ['/node_modules/'],
   // babelrc: false,
   presets: [
+    // '@babel/preset-typescript',
     '@babel/preset-react',
     /* 'stage-0-without-async'. */
     ['@babel/preset-env', {
@@ -16,6 +17,7 @@ const babelConfigBase = {
   ],
   plugins: [
     'universal-import',
+    'syntax-trailing-function-commas',
     '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-proposal-export-default-from',
