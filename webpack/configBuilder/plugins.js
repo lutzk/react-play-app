@@ -104,6 +104,12 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
     // babiliPlugin,
     // namedChunksPlugin,
     // nameAllModulesPlugin,
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      watch: './src',
+      tsconfig: './tsconfig.json',
+      // tslint: paths.appTsLint,
+    }),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
     limitChunkCountPlugin,
@@ -134,12 +140,13 @@ const buildClientPlugins = ({ prod = false }) => {
     new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-    analyzerPlugin,
+    // analyzerPlugin,
+    // new CheckerPlugin(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
       watch: './src',
       tsconfig: './tsconfig.json',
-      // tslint: paths.appTsLint,
+      tslint: './tslint.json',
     }),
   ];
 
