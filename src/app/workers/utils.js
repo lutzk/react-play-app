@@ -116,7 +116,7 @@ const initCacheWorker = worker => {
 const workersEnabled = () => 'Worker' in window;
 const initWorker = (worker, name) => {
   if (hasWindow() && workersEnabled()) {
-    const w = new Worker(worker, name);
+    const w = new Worker(worker, { name });
     return Promise.resolve(w);
   }
   return Promise.resolve(false);
@@ -131,7 +131,7 @@ const getInlineWorker = worker => {
 
 const initWorkerSync = (worker, name) => {
   if (hasWindow() && workersEnabled()) {
-    const w = new Worker(worker, { name });
+    const w = new Worker(worker, { name, type: 'module' });
     return w;
   }
   return false;

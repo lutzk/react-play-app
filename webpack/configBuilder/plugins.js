@@ -4,6 +4,7 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import WorkerPlugin from 'worker-plugin';
 // import NameAllModulesPlugin from 'name-all-modules-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 
@@ -140,14 +141,13 @@ const buildClientPlugins = ({ prod = false }) => {
     new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-    // analyzerPlugin,
-    // new CheckerPlugin(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
       watch: './src',
       tsconfig: './tsconfig.json',
       tslint: './tslint.json',
     }),
+    new WorkerPlugin(),
   ];
 
   const prodPlugins = [

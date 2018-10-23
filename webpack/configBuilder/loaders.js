@@ -16,7 +16,7 @@ const locals = '/locals';
 const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
 const babelLoader = 'babel-loader';
-const eslintLoader = 'eslint-loader';
+// const eslintLoader = 'eslint-loader';
 const cssLoaderLocal = cssLoader + locals;
 
 

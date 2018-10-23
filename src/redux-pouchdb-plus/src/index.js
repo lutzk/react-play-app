@@ -76,7 +76,7 @@ const persistentStore = () => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
   const state = store.getState();
 
-  pouchWorker = initWorkerSync('/worker.pouch.js', 'pouchWorker');
+  pouchWorker = initWorkerSync('../../app/workers/pouchWorker.js', 'pouchWorker');
   if (pouchWorker) {
     sendMsgToWorker = currySendMsg(pouchWorker);
     sendMsgToWorker({ ...STORE_INIT }).then(reply =>
