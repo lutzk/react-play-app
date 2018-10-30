@@ -46,7 +46,7 @@ const getWorkerEntry = ({ prod, worker }) => ({
 // output
 const setServerOutput = ({ kind }) => ({
   path: serverBuildPath,
-  filename: `${kind}Server.js`,
+  filename: '[name].js',
   libraryTarget: 'commonjs2',
 });
 
@@ -88,6 +88,7 @@ const nodeFalse = {
   console: false,
   global: false,
   process: false,
+  path: 'empty',
 };
 
 const filteredNodeModules = fs.readdirSync(`${context}/node_modules`)
