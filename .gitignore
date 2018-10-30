@@ -9,13 +9,9 @@ npm-debug.log
 .DS_Store
 .env
 bin/*
-
 report.html
-
-*.hot-update.*
-
 outputRecords.json
-static/*hot-update*
+static/*.hot-update.json
 .vscode/settings.json
 static/0.pouch.js
 static/worker.pouch.js
