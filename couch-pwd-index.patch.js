@@ -1,3 +1,4 @@
+// node_modules/couch-pwd/index.js
 var crypto = require('crypto');
 
 var iterations = 10;
