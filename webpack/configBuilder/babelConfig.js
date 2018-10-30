@@ -1,6 +1,7 @@
 const babelConfigBase = {
   // ignore: ['/node_modules/'],
-  // babelrc: false,
+  babelrc: false,
+  cacheDirectory: true,
   presets: [
     // '@babel/preset-typescript',
     '@babel/preset-react',
