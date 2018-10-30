@@ -16,6 +16,11 @@
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true
   },
+  "paths": {
+    "*": [
+      "src/types/*"
+    ]
+  },
   "exclude": [
     "node_modules",
     "build",
