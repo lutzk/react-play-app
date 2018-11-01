@@ -75,8 +75,7 @@ const requestReinit = () => dispatch => dispatch({ type: REQUEST_REINIT });
 const persistentStore = () => createStore => (reducer, initialState) => {
   const store = createStore(reducer, initialState);
   const state = store.getState();
-
-  pouchWorker = initWorkerSync('../../app/workers/pouchWorker.js', 'pouchWorker');
+  pouchWorker = initWorkerSync('/worker.pouch.js', 'pouchWorker');
   if (pouchWorker) {
     sendMsgToWorker = currySendMsg(pouchWorker);
     sendMsgToWorker({ ...STORE_INIT }).then(reply =>
@@ -95,11 +94,7 @@ const persistentStore = () => createStore => (reducer, initialState) => {
   return store;
 };
 
-const isUserPresent = state => {
-  // eslint-disable-line
-  const userState = state ? state.user : false;
-  return userState && userState.user && userState.user.userId;
-};
+const isUserPresent = user => user && user.user && user.user.userId;
 
 const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   let store;
@@ -183,11 +178,9 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
 
   // the proxy function that wraps the real reducer
   return (state, action) => {
-    // eslint-disable-line
-
     let nextState;
     let isInitialized;
-
+    const user = action.user || null;
     switch (action.type) {
       case INIT:
         store = action.store;
@@ -195,9 +188,8 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
         pouchWorker.onmessage = e => workerMsgHandler(e);
 
         sendMsgToWorker = action.sendMsgToWorker;
-
-      case REINIT: // eslint-disable-line
-        if (isUserPresent(state)) {
+      case REINIT:
+        if (isUserPresent(user)) {
           sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           nextState = reducer(state, action);
           reinitReducerInWorker(
@@ -220,16 +212,15 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
         if (
           action.reducer === reducerName &&
           action.state &&
-          isUserPresent(state)
+          isUserPresent(user)
         ) {
           currentState = reducer(action.state, action);
           return currentState;
         }
 
       default:
-        // eslint-disable-line
         nextState = reducer(state, action);
-        if (!isUserPresent(state)) {
+        if (!user) {
           return nextState;
         }
         if (!initialState) {
