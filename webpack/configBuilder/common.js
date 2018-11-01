@@ -34,7 +34,6 @@ const clientEntry = {
 
 const hmrSource = `webpack-hot-middleware/client?path=http://${host}:${assetServerPort}/__webpack_hmr&reload=true`;
 const clientDevHMR = [
-  'react-hot-loader/patch',
   hmrSource,
 ];
 
