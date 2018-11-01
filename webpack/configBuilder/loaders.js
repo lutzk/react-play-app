@@ -16,7 +16,8 @@ const locals = '/locals';
 const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
 const babelLoader = 'babel-loader';
-// const eslintLoader = 'eslint-loader';
+const tsLoader = 'ts-loader';
+const cacheLoader = 'cache-loader':
 const cssLoaderLocal = cssLoader + locals;
 
 
@@ -48,6 +49,10 @@ const devSassLoaderOptions = {
   ...sassLoaderOptions,
   sourceMap: true,
   outputStyle: 'expanded',
+};
+
+const tsLoaderOptions = {
+  transpileOnly: true,
 };
 
 const buildExtractCssChunksLoader = ({ kind = 'css', prod = false }) => {
@@ -129,6 +134,7 @@ const getBabelConfig = ({ server = false, prod = false, api = false, worker = fa
 
 */
 const jsTest = { test: fileTests.js };
+const tsTest = { test: fileTests.ts };
 const dirJs = path.resolve(process.cwd(), 'src');
 const dirNodeModules = path.resolve(process.cwd(), 'node_modules');
 /**
@@ -147,22 +153,16 @@ function hasPkgEsnext(filepath) {
 }
 
 const buildJsLoader = ({ server = false, prod = false, api = false, worker = false } = {}) => ({
-  test: /\.(ts|tsx|js|jsx)$/,
-  // ...jsTest,
+  ...tsTest,
   // exclude: /node_modules/,
-  // include: (filepath) =>
-  //   pathIsInside(filepath, dirJs) ||
-  //     (pathIsInside(filepath, dirNodeModules) &&
-  //     hasPkgEsnext(filepath)),
+  include: filepath =>
+    pathIsInside(filepath, dirJs) ||
+      (pathIsInside(filepath, dirNodeModules) &&
+      hasPkgEsnext(filepath)),
   use: [
+    setUse(cacheLoader),
     setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
-    {
-      loader: 'ts-loader',
-      options: {
-        // disable type checker - we will use it in fork plugin
-        transpileOnly: true,
-      },
-    },
+    setUse(tsLoader, tsLoaderOption),
   ],
 });
 

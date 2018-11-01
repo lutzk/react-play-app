@@ -25,6 +25,7 @@ const relativeApiServerBuildPath = `${relativeServerBuildPath}${apiServer}`;
 
 const fileTests = {
   js: /\.js$/,
+  ts: /\.(ts|tsx|js|jsx)$/,
   css: /\.css$/,
   sass: /\.(scss|sass)$/,
   img: /\.(jpg|png|gif|svg|ico)$/,
