@@ -18,6 +18,12 @@ const babelConfigBase = {
   ],
   plugins: [
     'universal-import',
+    ["transform-imports", {
+      "lodash": {
+          "transform": "lodash/${member}",
+          "preventFullImport": true
+      }
+    }],
     'syntax-trailing-function-commas',
     '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-proposal-class-properties',
