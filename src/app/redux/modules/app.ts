@@ -5,25 +5,21 @@ import {
 } from '../../../redux-pouchdb-plus/src/index';
 
 interface AppState {
-  data: any;
-  pouchWorker: any;
-  reducerName: string;
-  sendMsgToWorker: any;
-  syncing: boolean;
+  data?: any;
+  pouchWorker?: any;
+  reducerName?: string;
+  sendMsgToWorker?: any;
+  syncing?: boolean;
 }
 
 interface AppAction extends AnyAction {
-  data: any;
-  pouchWorker: any;
-  reducerName: any;
-  sendMsgToWorker: any;
+  data?: any;
+  pouchWorker?: any;
+  reducerName?: any;
+  sendMsgToWorker?: any;
 }
 
 const initialState: AppState = {
-  data: null,
-  pouchWorker: null,
-  reducerName: null,
-  sendMsgToWorker: null,
   syncing: false,
 };
 
