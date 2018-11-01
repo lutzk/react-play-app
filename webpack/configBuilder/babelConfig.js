@@ -60,15 +60,6 @@ const babelConfigApiBase = {
   ]
 }
 
-const removePropTypes = [
-  'transform-react-remove-prop-types',
-  {
-    mode: 'remove',
-    removeImport: true,
-    ignoreFilenames: ['node_modules'],
-  },
-];
-
 
 const transformReactConstantElements = "transform-react-constant-elements";
 
@@ -79,9 +70,6 @@ const babelConfigProdClient = JSON.parse(JSON.stringify(babelConfigBase));
 
 const babelConfigServer = JSON.parse(JSON.stringify(babelConfigBase));
 const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
-
-babelConfigProdClient.plugins.push(removePropTypes);
-babelConfigServerProd.plugins.push(removePropTypes);
 
 babelConfigProdClient.plugins.push(transformReactConstantElements);
 babelConfigServerProd.plugins.push(transformReactConstantElements);
