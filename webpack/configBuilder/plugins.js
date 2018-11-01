@@ -4,13 +4,18 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import WorkerPlugin from 'worker-plugin';
 // import NameAllModulesPlugin from 'name-all-modules-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 
 import StatsPlugin from '../plugins/statsPlugin';
 
-import { rootPath, relativeAppServerBuildPath, relativeApiServerBuildPath, relativeAssetsPath, ExtractCssChunks } from '../settings';
+import {
+  rootPath,
+  relativeAppServerBuildPath,
+  relativeApiServerBuildPath,
+  relativeAssetsPath, 
+  ExtractCssChunks,
+} from '../settings';
 
 const analyzerPlugin = new BundleAnalyzerPlugin({
   analyzerMode: 'static',
@@ -102,14 +107,11 @@ const createCleanPlugin = path => new CleanPlugin([path], {
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
-    // babiliPlugin,
-    // namedChunksPlugin,
-    // nameAllModulesPlugin,
     new ForkTsCheckerWebpackPlugin({
       async: false,
       watch: './src',
       tsconfig: './tsconfig.json',
-      // tslint: paths.appTsLint,
+      tslint: paths.appTsLint,
     }),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
@@ -147,7 +149,7 @@ const buildClientPlugins = ({ prod = false }) => {
       tsconfig: './tsconfig.json',
       tslint: './tslint.json',
     }),
-    new WorkerPlugin(),
+    analyzerPlugin,
   ];
 
   const prodPlugins = [
