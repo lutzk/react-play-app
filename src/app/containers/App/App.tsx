@@ -1,10 +1,9 @@
-// import React, { Component } from 'react';
 // import { redirect, NOT_FOUND, push } from 'redux-first-router';
 // import cn from 'classnames';
 import { get } from 'lodash'; // eslint-disable-line
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import PropTypes from 'prop-types';
+import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
 import universal from 'react-universal-component';
 import { bindActionCreators } from 'redux';
@@ -19,9 +18,9 @@ import {
 import { Footer } from './Footer';
 import { Loader } from './Loader/Loader';
 
-// import UniversalComponent from './universalComponent';
-
 import './App.sass';
+
+declare var module: any;
 
 // find out why server is executing react-universal-component module twice
 // wich results in following sequence:
@@ -43,7 +42,7 @@ import './App.sass';
 // without it would just get 'default' chunkname
 const setPluginEnabled = () => {
   const weakId = require.resolveWeak('react-universal-component');
-  const universal = __webpack_require__(weakId); // eslint-disable-line
+  const universal = __webpack_require__(weakId);
   universal.setHasBabelPlugin();
 };
 
@@ -60,16 +59,15 @@ const options = {
   minDelay,
   loadingTransition,
   ignoreBabelRename: true,
-  chunkName: data => {
-    console.log('DATA chunkName:', data);
-    return data.page;
-  },
+  chunkName: data => data.page,
 };
 
-const UniversalComponent = universal(
-  props =>
-    import(/* webpackChunkName: [request] */ `../asyncContext/${props.page}`),
-  options,
+const UniversalComponent = React.memo(
+  universal(
+    props =>
+      import(/* webpackChunkName: [request] */ `../asyncContext/${props.page}`),
+    options,
+  ),
 );
 
 const makeMapStateToProps = () => {
@@ -94,9 +92,9 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators({ ...{ loadAuth, logout, goToPage } }, dispatch);
 
 declare interface Props {
-  user: any; // PropTypes.object;
+  user: any;
   page: any;
-  logout: any; // PropTypes.func,
+  logout: any;
   loading: boolean;
   loadAuth: any; // PropTypes.func,
   userMeta: any; // PropTypes.object,
@@ -108,70 +106,24 @@ declare interface Props {
 }
 
 class AppComponent extends React.Component<Props> {
-  // static propTypes = {
-  //   user: PropTypes.object,
-  //   page: PropTypes.any,
-  //   logout: PropTypes.func,
-  //   loading: PropTypes.bool,
-  //   loadAuth: PropTypes.func,
-  //   userMeta: PropTypes.object,
-  //   goToPage: PropTypes.func,
-  //   location: PropTypes.object.isRequired,
-  //   loadError: PropTypes.bool,
-  //   loadEnded: PropTypes.bool,
-  //   isLoading: PropTypes.bool,
-  // };
-
-  // static contextTypes = {
-  //   store: PropTypes.object.isRequired,
-  // };
-
   public componentDidMount() {
     mounted = true;
-    console.log('mount');
     this.props.loadAuth();
   }
 
-  // componentDidMount() {
-  //   console.log('mount');
-  // }
-
   public componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('componentDidUpdate');
-    console.log({ ...prevProps });
-    console.log({ ...prevState });
-    console.log({ ...snapshot });
-    const { user } = prevProps; // this.props; // eslint-disable-line no-shadow
+    // console.log('componentDidUpdate');
+    // console.log('prevProps: ', { ...prevProps });
+    // console.log('newProps: ', { ...this.props });
+    const { user } = prevProps;
     const {
-      user: nextUser /* userMeta, */ /* location: nextLocation */,
+      user: nextUser,
+      /* userMeta, */ location: nextLocation,
     } = this.props;
     // const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
     // const dontPush = path => dontPushTo.indexOf(path) === -1;
     if (!user.id && nextUser.id) {
-      // const nextPathnameFromState = get(nextLocation, 'type', false);
-      return this.props.goToPage(linkToSpirit);
-      // check if it matches a route at all
-      // if (nextPathnameFromState && dontPush(nextPathnameFromState)) {
-      //   // return push(`${nextPathnameFromState}`);
-      //   return goToPage({ type: 'ROVER_VIEW', });
-      // }
-      //   return push(nextPath);
-    } else if (user.id && !nextUser.id) {
-      return this.props.goToPage(linkToLogin);
-    }
-  }
-
-  public componentWillReceiveProps(nextProps) {
-    // eslint-disable-line
-    console.log('componentWillReceiveProps');
-    const { user } = this.props; // eslint-disable-line no-shadow
-    const {
-      user: nextUser /* userMeta, */ /* location: nextLocation */,
-    } = nextProps;
-    // const dontPushTo = [PATHS.ROOT, PATHS.ROOT + PATHS.LOGIN];
-    // const dontPush = path => dontPushTo.indexOf(path) === -1;
-    if (!user.id && nextUser.id) {
-      // const nextPathnameFromState = get(nextLocation, 'type', false);
+      const nextPathnameFromState = get(nextLocation, 'type', false);
       return this.props.goToPage(linkToSpirit);
       // check if it matches a route at all
       // if (nextPathnameFromState && dontPush(nextPathnameFromState)) {
@@ -200,30 +152,27 @@ class AppComponent extends React.Component<Props> {
       loadError: this.props.loadError,
     };
 
-    // const getA = page => import(`../asynC2/${page}`).then(
-    //   m => console.log('MODULE FUNC', m.default)
-    // );
-    // getA('a');
-
     return (
-      <div className="app">
-        <Loader {...loaderProps} />
-        <UniversalComponent
-          key={this.props.page}
-          page={this.props.page}
-          isLoading={false}
-        />
-        <Footer showFooter={true} logout={this.props.logout} />
-      </div>
+      <React.StrictMode>
+        <div className="app">
+          <Loader {...loaderProps} />
+          <UniversalComponent
+            key={this.props.page}
+            page={this.props.page}
+            isLoading={false}
+          />
+          <Footer showFooter={true} logout={this.props.logout} />
+        </div>
+      </React.StrictMode>
     );
   }
 }
 
-const App = connect(
+const App = hot(module)(connect(
   makeMapStateToProps(),
   mapDispatchToProps,
   null,
   { withRef: true },
-)(AppComponent);
+)(AppComponent));
 
 export { App };

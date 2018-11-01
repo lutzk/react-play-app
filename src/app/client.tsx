@@ -1,9 +1,5 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { AppContainer as HotReloader } from 'react-hot-loader';
-// import * as FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 
 import ApiClient from '../helpers/ApiClient';
@@ -37,11 +33,7 @@ const render = (App: any, store: any, hydrate = true) => {
     </Provider>
   );
 
-  if (__DEVELOPMENT__) {
-    dom = renderFn(<HotReloader>{app}</HotReloader>, rootDomNode);
-  } else {
-    dom = renderFn(app, rootDomNode);
-  }
+  dom = renderFn(app, rootDomNode);
 
   return dom;
 };
@@ -64,11 +56,9 @@ const renderDevStuff = () => {
   }
 };
 
-// FastClick.attach(document.body);
-
 render(App, store);
 renderDevStuff();
-// (module as any)
+
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
     render(App, store, false);
