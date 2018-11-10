@@ -4,14 +4,24 @@
   "rules": {
     "variable-name": false,
     "interface-name": false,
-    "prettier": true,
+    "prettier": [true, {
+      "singleQuote": true,
+      "semi": true,
+      "printWidth": 80,
+      "trailingComma": "all"
+    }],
     "object-literal-sort-keys": false,
     "no-console": false,
     "no-shadowed-variable": false
   },
   "jsRules": {
     "variable-name": false,
-    "prettier": true,
+    "prettier": [true, {
+      "singleQuote": true,
+      "semi": true,
+      "printWidth": 80,
+      "trailingComma": "all"
+    }],
     "object-literal-sort-keys": false,
     "no-console": false,
     "no-shadowed-variable": false
