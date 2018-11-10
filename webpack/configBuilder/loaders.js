@@ -17,7 +17,7 @@ const cssLoader = 'css-loader';
 const sassLoader = 'sass-loader';
 const babelLoader = 'babel-loader';
 const tsLoader = 'ts-loader';
-const cacheLoader = 'cache-loader':
+const cacheLoader = 'cache-loader';
 const cssLoaderLocal = cssLoader + locals;
 
 
@@ -160,9 +160,9 @@ const buildJsLoader = ({ server = false, prod = false, api = false, worker = fal
       (pathIsInside(filepath, dirNodeModules) &&
       hasPkgEsnext(filepath)),
   use: [
-    setUse(cacheLoader),
     setUse(babelLoader, getBabelConfig({ server, prod, api, worker })),
-    setUse(tsLoader, tsLoaderOption),
+    setUse(cacheLoader),
+    setUse(tsLoader, tsLoaderOptions),
   ],
 });
 
