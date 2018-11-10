@@ -192,12 +192,7 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
         if (isUserPresent(user)) {
           sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           nextState = reducer(state, action);
-          reinitReducerInWorker(
-            reducerName,
-            nextState,
-            currentState,
-            store.getState().user,
-          );
+          reinitReducerInWorker(reducerName, nextState, currentState, user);
           return (currentState = nextState);
         }
 
