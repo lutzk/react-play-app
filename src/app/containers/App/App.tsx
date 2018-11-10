@@ -168,11 +168,13 @@ class AppComponent extends React.Component<Props> {
   }
 }
 
-const App = hot(module)(connect(
-  makeMapStateToProps(),
-  mapDispatchToProps,
-  null,
-  { withRef: true },
-)(AppComponent));
+const App = hot(module)(
+  connect(
+    makeMapStateToProps(),
+    mapDispatchToProps,
+    null,
+    { withRef: true },
+  )(AppComponent),
+);
 
 export { App };
