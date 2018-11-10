@@ -111,7 +111,7 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
       async: false,
       watch: './src',
       tsconfig: './tsconfig.json',
-      tslint: paths.appTsLint,
+      tslint: './tslint.json',
     }),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
