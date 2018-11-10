@@ -3,9 +3,8 @@ const babelConfigBase = {
   babelrc: false,
   cacheDirectory: true,
   presets: [
-    // '@babel/preset-typescript',
     '@babel/preset-react',
-    /* 'stage-0-without-async'. */
+    '@babel/preset-typescript',
     ['@babel/preset-env', {
       targets: {
         node: 'current',
@@ -27,6 +26,7 @@ const babelConfigBase = {
     'syntax-trailing-function-commas',
     '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-function-bind',
     // '@babel/plugin-proposal-decorators',
