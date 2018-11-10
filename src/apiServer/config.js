@@ -102,8 +102,8 @@ const slConfig = {
   dbServer: {
     protocol: apiProtocol,
     host: slCouchPath,
-    user: 'test',
-    password: 'test',
+    user: 'admin',
+    password: 'admin',
     userDB: 'sl_users',
     couchAuthDB: '_users',
   },
