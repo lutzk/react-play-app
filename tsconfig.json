@@ -3,23 +3,17 @@
     "baseUrl": ".",
     "outDir": "build/dist",
     "module": "esnext",
-    "target": "es6",
-    "lib": ["es7", "dom"],
+    "target": "ESNext",
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
     "sourceMap": true,
     "allowJs": true,
     "jsx": "preserve",
     "experimentalDecorators": true,
-    "moduleResolution": "node",
     "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true
-  },
-  "paths": {
-    "*": [
-      "src/types/*"
-    ]
   },
   "exclude": [
     "node_modules",
