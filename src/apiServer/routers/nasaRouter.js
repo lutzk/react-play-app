@@ -24,7 +24,6 @@ const getRoverManifestOffline = () =>
 
 const getSolManifestOffline = () =>
   wrap(async (req, res, next) => {
-    console.log('__here 2');
     let sol = 55;
     let rover = 'spirit';
     if (req.params && req.params.sol && req.params.rover) {
