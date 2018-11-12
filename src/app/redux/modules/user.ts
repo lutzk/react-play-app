@@ -20,8 +20,19 @@ const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
 
 const KILL_USER = 'user/KILL_USER';
 
+interface User {
+  issued: number;
+  expires: number;
+  token: string;
+  password: string;
+  provider: string;
+  userId: string;
+  userDB: string;
+  roles: string[];
+}
+
 interface UserState {
-  user: any;
+  user: User;
   savedPath?: any;
   loading: boolean;
   loaded: boolean;
@@ -32,12 +43,8 @@ interface UserState {
   signingUp: boolean;
 }
 
-interface Result {
-  savedPath: any;
-}
-
 interface UserAction extends AnyAction {
-  result?: any;
+  result?: User;
   lastLoaded?: any;
   error?: any;
 }
@@ -244,7 +251,7 @@ const requireLogin = () => (dispatch, getState) =>
   dispatch(loadAuth()).then(r => dispatch(checkAuth()));
 
 export {
-  Result,
+  User,
   UserState,
   UserAction,
   user,
