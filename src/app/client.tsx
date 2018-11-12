@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import ApiClient from '../helpers/ApiClient';
@@ -15,8 +15,6 @@ const { store /* , thunk */ } = createReduxStore({
 
 const rootDomNode = document.getElementById('root');
 const render = (App: any, store: any, hydrate = true) => {
-  // eslint-disable-line
-  let dom = null;
   const renderFn = hydrate ? ReactDOM.hydrate : ReactDOM.render;
   const app = (
     <Provider store={store}>
@@ -24,9 +22,7 @@ const render = (App: any, store: any, hydrate = true) => {
     </Provider>
   );
 
-  dom = renderFn(app, rootDomNode);
-
-  return dom;
+  return renderFn(app, rootDomNode);
 };
 
 const renderDevStuff = () => {
