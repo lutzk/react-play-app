@@ -1,6 +1,7 @@
 {
   "main": "bin/server.js",
   "scripts": {
+    "lf": "tslint --fix -p tsconfig.json",
     "check-app-server": "node ./check.server app",
     "check-api-server": "node ./check.server api",
     "dev-app-server-watch": "webpack --env dev.appServer --colors --display-error-details --config webpack/webpackConfig.js --watch",
