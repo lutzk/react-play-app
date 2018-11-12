@@ -2,10 +2,10 @@ import React from 'react';
 
 const RoverMissionStats = args => {
   /*
-  *  args:
-  *    roverName: string
-  *    missionStats: object
-  */
+   *  args:
+   *    roverName: string
+   *    missionStats: object
+   */
 
   if (!args.missionStats || !Object.keys(args.missionStats).length) {
     return null;

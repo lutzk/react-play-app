@@ -4,10 +4,10 @@ import { createSolLink } from '../../redux/routing/navTypes';
 
 const RoverMissionSols = args => {
   /*
-  * args:
-  *  rover: string
-  *  sols: array
-  */
+   * args:
+   *  rover: string
+   *  sols: array
+   */
 
   if (!args.sols) {
     return null;

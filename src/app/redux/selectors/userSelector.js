@@ -28,9 +28,16 @@ const getUserMeta = (state, props) => {
   return userMeta;
 };
 
-const makeGetUserState = () => createSelector([getUser], user => user);
+const makeGetUserState = () =>
+  createSelector(
+    [getUser],
+    user => user,
+  );
 
 const makeGetUserMeta = () =>
-  createSelector([getUserMeta], userMeta => userMeta);
+  createSelector(
+    [getUserMeta],
+    userMeta => userMeta,
+  );
 
 export { makeGetUserState, makeGetUserMeta };

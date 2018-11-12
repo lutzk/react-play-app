@@ -102,11 +102,10 @@ const cleanUpData = data =>
   data.map(item => {
     const fieldsWhiteList = ['id', 'sol', 'camera', 'imgSrc', 'earthDate'];
     const returnObj = {};
-    Object.keys(item).map(
-      itemKey =>
-        fieldsWhiteList.indexOf(itemKey) > -1
-          ? (returnObj[itemKey] = item[itemKey])
-          : false,
+    Object.keys(item).map(itemKey =>
+      fieldsWhiteList.indexOf(itemKey) > -1
+        ? (returnObj[itemKey] = item[itemKey])
+        : false,
     );
 
     return returnObj;

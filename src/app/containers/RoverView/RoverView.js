@@ -245,12 +245,11 @@ class RoverView extends Component {
                 next {currentRange}
               </button>
             )}
-            {currentRange > 0 &&
-              start >= currentRange && (
-                <button data-range="prev" onClick={this.handleRangeUpdate}>
-                  prev {currentRange}
-                </button>
-              )}
+            {currentRange > 0 && start >= currentRange && (
+              <button data-range="prev" onClick={this.handleRangeUpdate}>
+                prev {currentRange}
+              </button>
+            )}
             {currentRange > 0 && (
               <button data-range="less" onClick={this.handleRangeUpdate}>
                 show less
@@ -323,12 +322,11 @@ class RoverView extends Component {
 
           {loadPane}
 
-          {loading &&
-            !manifestLoadError && (
-              <div className="pageContent loading">
-                <h3>loading ...</h3>
-              </div>
-            )}
+          {loading && !manifestLoadError && (
+            <div className="pageContent loading">
+              <h3>loading ...</h3>
+            </div>
+          )}
 
           {manifestLoadError && (
             <div className="pageContent error">
@@ -337,17 +335,16 @@ class RoverView extends Component {
           )}
         </div>
 
-        {loaded &&
-          !manifestLoadError && (
-            <div className="pageContent">
-              <RoverMissionStats {...missionStatsProps} />
-              {buttonPane}
-              {renderFilterPane()}
-              <RoverMissionSols {...missionSolsProps} />
-              {buttonPane}
-              {loadPane}
-            </div>
-          )}
+        {loaded && !manifestLoadError && (
+          <div className="pageContent">
+            <RoverMissionStats {...missionStatsProps} />
+            {buttonPane}
+            {renderFilterPane()}
+            <RoverMissionSols {...missionSolsProps} />
+            {buttonPane}
+            {loadPane}
+          </div>
+        )}
       </div>
     );
   }

@@ -18,11 +18,11 @@ const setWindowData = (key, data) => ({
 
 const Html = args => {
   /*
-  * args:
-  *   store: object
-  *   assets: object
-  *   component: node
-  */
+   * args:
+   *   store: object
+   *   assets: object
+   *   component: node
+   */
 
   const {
     app,

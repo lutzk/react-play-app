@@ -190,12 +190,11 @@ class SolView extends Component {
                 next {currentRange}
               </button>
             )}
-            {currentRange > 0 &&
-              start >= currentRange && (
-                <button data-range="prev" onClick={this.handleRangeUpdate}>
-                  prev {currentRange}
-                </button>
-              )}
+            {currentRange > 0 && start >= currentRange && (
+              <button data-range="prev" onClick={this.handleRangeUpdate}>
+                prev {currentRange}
+              </button>
+            )}
             {currentRange > 0 && (
               <button data-range="less" onClick={this.handleRangeUpdate}>
                 show less
@@ -307,12 +306,11 @@ class SolView extends Component {
 
           {loadPane}
 
-          {manifestLoading &&
-            !manifestLoadError && (
-              <div className="pageContent manifestLoading">
-                <h3>loading ...</h3>
-              </div>
-            )}
+          {manifestLoading && !manifestLoadError && (
+            <div className="pageContent manifestLoading">
+              <h3>loading ...</h3>
+            </div>
+          )}
 
           {manifestLoadError && (
             <div className="pageContent error">
