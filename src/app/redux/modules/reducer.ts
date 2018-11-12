@@ -85,7 +85,6 @@ const _combineReducers = reducers => {
       const previousStateForKey = state[key];
       let nextStateForKey;
       if (key === 'roverView' || key === 'solView') {
-        console.log('YEAHAHAHAHAH', key);
         nextStateForKey = reducer(previousStateForKey, {
           ...action,
           user: state.user,

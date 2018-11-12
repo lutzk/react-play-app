@@ -22,12 +22,10 @@ const page: Reducer<string> = (
   action: PageAction = {},
 ) => components[action.type] || state;
 
-const goToPage = ({ type, payload }) => dispatch => {
-  console.log('__GO_TO_PAGE__', type, payload);
-  return dispatch({
+const goToPage = ({ type, payload }) => dispatch =>
+  dispatch({
     type,
     payload,
   });
-};
 
 export { page, goToPage, PageAction };

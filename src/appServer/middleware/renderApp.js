@@ -77,7 +77,6 @@ const renderApp = () =>
       { chunkNames },
     );
 
-    console.log('chunkNames:', chunkNames);
     const assets = {
       Js,
       publicPath,
