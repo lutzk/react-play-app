@@ -104,15 +104,17 @@ const createCleanPlugin = path => new CleanPlugin([path], {
   root: rootPath,
 });
 
+const buildForkTsCheckerWebpackPlugin = (wathDir = './src') => new ForkTsCheckerWebpackPlugin({
+  async: false,
+  watch: wathDir,
+  tsconfig: './tsconfig.json',
+  tslint: './tslint.json',
+});
+
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
-    new ForkTsCheckerWebpackPlugin({
-      async: false,
-      watch: './src',
-      tsconfig: './tsconfig.json',
-      tslint: './tslint.json',
-    }),
+    buildForkTsCheckerWebpackPlugin(),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
     limitChunkCountPlugin,
@@ -143,13 +145,8 @@ const buildClientPlugins = ({ prod = false }) => {
     new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
-    new ForkTsCheckerWebpackPlugin({
-      async: false,
-      watch: './src',
-      tsconfig: './tsconfig.json',
-      tslint: './tslint.json',
-    }),
-    analyzerPlugin,
+    buildForkTsCheckerWebpackPlugin(),
+    // analyzerPlugin,
   ];
 
   const prodPlugins = [
