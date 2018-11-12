@@ -16,7 +16,7 @@ const routesMap = {
   },
   [HOME]: {
     path: PATHS[HOME],
-    thunk,
+    // thunk,
   },
   [ROVER_VIEW]: {
     path: `${PATHS[ROVER_VIEW]}/:rover?`,

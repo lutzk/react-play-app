@@ -29,7 +29,7 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
     initialDispatch: false,
     onBeforeChange: (dispatch, getState, bag) => {
       // eslint-disable-line
-      const userRequiredRoutes = ['HOME', 'ROVER_VIEW'];
+      const userRequiredRoutes = ['ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
         // not async https://github.com/faceyspacey/redux-first-router/issues/90
