@@ -1,7 +1,6 @@
 node_modules
 static/dist
 webpack-assets.json
-yarn.lock
 do.sublime-project
 do.sublime-workspace
 yarn-error.log
@@ -12,6 +11,7 @@ bin/*
 report.html
 outputRecords.json
 static/*.hot-update.json
+static/*.hot-update.js
 .vscode/settings.json
 static/0.pouch.js
 static/worker.pouch.js
