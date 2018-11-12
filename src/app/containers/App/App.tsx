@@ -41,8 +41,8 @@ class AppComponent extends Component<Props> {
       <StrictMode>
         <div className="app">
           <Loader />
-          <UniversalComponent page={this.props.page} />
-          <Footer showFooter={true} logout={this.props.logout} />
+          <UniversalComponent />
+          <Footer logout={this.props.logout} />
         </div>
       </StrictMode>
     );

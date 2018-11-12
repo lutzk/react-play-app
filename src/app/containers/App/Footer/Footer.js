@@ -4,13 +4,7 @@ import Link from 'redux-first-router-link';
 import { linkToHome } from '../../../redux/routing/navTypes.js';
 import './Footer.sass';
 
-const Footer = args => {
-  const { showFooter, logout } = args;
-
-  if (!showFooter) {
-    return null;
-  }
-
+const Footer = ({ logout }) => {
   const handleLogout = () => logout();
 
   const footer = (
