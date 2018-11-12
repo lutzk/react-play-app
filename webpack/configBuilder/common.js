@@ -91,7 +91,7 @@ const nodeFalse = {
 };
 
 const filteredNodeModules = fs.readdirSync(`${context}/node_modules`)
-  .filter(x => !/\.bin|react-universal-component|webpack-flush-chunks/.test(x));
+.filter(x => !/\.bin|react-universal-component|webpack-flush-chunks|babel-plugin-universal-import|require-universal-module/.test(x));
 
 const targetNode = {
   target: 'node',
