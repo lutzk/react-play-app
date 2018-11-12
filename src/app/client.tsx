@@ -6,15 +6,6 @@ import ApiClient from '../helpers/ApiClient';
 import { App } from './containers/App/App';
 import { createReduxStore } from './redux/store/createReduxStore';
 
-declare var __DEVTOOLS__: any;
-declare var __DEVELOPMENT__: any;
-declare global {
-  interface Window {
-    __data: any;
-    React: any;
-  }
-}
-
 const client = new ApiClient();
 const preloadedState = window.__data;
 const { store /* , thunk */ } = createReduxStore({

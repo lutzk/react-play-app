@@ -20,7 +20,6 @@ import UniversalComponent from './UniversalComponent';
 
 import './App.sass';
 
-declare var module: any;
 
 // React.memo(
 

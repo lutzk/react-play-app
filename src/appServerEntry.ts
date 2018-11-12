@@ -3,7 +3,6 @@ import { getJsonData } from './helpers/utils';
 
 let appServer;
 
-declare var __DEVELOPMENT__: any;
 const dev = __DEVELOPMENT__;
 
 if (dev && module && module.hot) {
