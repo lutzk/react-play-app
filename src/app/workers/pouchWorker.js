@@ -27,6 +27,7 @@ let saveReducer;
 
 const CLIENT_HASH = uuid.v1();
 const initializedReducers = {};
+const reducers = {};
 const sendMsgToClient = currySendMsg(self);
 
 let settingDBS = false;
@@ -199,18 +200,8 @@ const initDBState = async (state, localDb, remoteDb, docName, save) => {
   }
 };
 
-const checkReady = (keys, reducers) => {
-  let ready = true;
-  keys.map(reducerName => {
-    // eslint-disable-line
-    let exit = false;
-    if (!reducers[reducerName] && !exit) {
-      ready = false;
-      exit = true;
-    }
-  });
-  return ready;
-};
+const checkReady = reducers =>
+  Object.values(reducers).every(reducer => reducer);
 
 const setReady = () => {
   sendMsgToClient({ ...REDUCERS_READY });
@@ -244,11 +235,9 @@ async function reinitReducer(reducerName, state, currentState, user) {
   } else {
     await initDBState(state, localDB, remoteDB, reducerName, saveReducer);
   }
-
-  setReducerInitialized(reducerName);
-
   const initializedReducerKeys = Object.keys(initializedReducers);
-  const ready = checkReady(initializedReducerKeys, initializedReducers);
+  setReducerInitialized(reducerName);
+  const ready = checkReady(initializedReducers);
 
   if (ready && !syncInit) {
     syncInit = true;

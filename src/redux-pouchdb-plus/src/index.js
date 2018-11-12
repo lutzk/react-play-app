@@ -117,8 +117,8 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
           break;
 
         case REDUCERS_READY.type:
-          store.dispatch(setReady()); // eslint-disable-line no-use-before-define
-          // console.log('_REINIT_SUCCESS_');
+          setReady(); // eslint-disable-line no-use-before-define
+          // store.dispatch({ type: REINIT_SUCCESS });
           break;
 
         case 'CLOSE':

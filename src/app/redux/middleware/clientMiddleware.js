@@ -11,12 +11,17 @@ import {
   LOGOUT_SUCCESS,
 } from '../modules/user';
 import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
+import { linkToSpirit } from '../routing/navTypes';
 
 const clientMiddleware = client => ({
   dispatch,
   getState,
 }) => next => action => {
-  // eslint-disable-line
+  //
+  if (__CLIENT__ && action.type === '@@redux-pouchdb-plus/REINIT_SUCCESS') {
+    dispatch(linkToSpirit);
+    return next(action);
+  }
 
   const { promise, types, ...rest } = action;
 
@@ -53,12 +58,12 @@ const clientMiddleware = client => ({
     }
 
     if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
+      dispatch(requestReinit());
       dispatch({ ...rest, result, type: SUCCESS });
+      const state = getState();
+      const msg = { user: state.user, ...SYNC_INITIAL };
+      const sendMsg = state.app.sendMsgToWorker;
       return (async () => {
-        dispatch(requestReinit());
-        const state = getState();
-        const msg = { user: state.user, ...SYNC_INITIAL };
-        const sendMsg = state.app.sendMsgToWorker;
         await sendMsg(msg);
         return dispatch(reinit());
       })();
