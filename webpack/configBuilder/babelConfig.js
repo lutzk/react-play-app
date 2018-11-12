@@ -3,7 +3,6 @@ const babelConfigBase = {
   babelrc: false,
   cacheDirectory: true,
   presets: [
-    '@babel/preset-react',
     '@babel/preset-typescript',
     ['@babel/preset-env', {
       targets: {
@@ -13,10 +12,8 @@ const babelConfigBase = {
       // modules: false,
       // useBuiltIns: 'usage',
     }]
-    // '@babel/typescript',
   ],
   plugins: [
-    'universal-import',
     ["transform-imports", {
       "lodash": {
           "transform": "lodash/${member}",
@@ -29,11 +26,6 @@ const babelConfigBase = {
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-function-bind',
-    // '@babel/plugin-proposal-decorators',
-    // {
-    //   // legacy: true,
-    //   decoratorsBeforeExport: false,
-    // },
   ],
 };
 
@@ -41,42 +33,35 @@ const devPlugins = [
   'react-hot-loader/babel',
 ];
 
-const babelConfigApiBase = {
-  // ignore: ['/node_modules/'],
-  // babelrc: false,
-  presets: [['@babel/preset-env', {
-    targets: {
-      node: 'current',
-    },
-    debug: true,
-    // modules: false,
-    // useBuiltIns: 'usage',
-  }]],
-  
-  'plugins': [
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-proposal-export-default-from',
-    // 'transform-runtime'
-  ]
-}
+const appPlugins = [
+  'universal-import',
+];
+
+const appPresets = [
+  '@babel/preset-react',
+];
 
 
 const transformReactConstantElements = "transform-react-constant-elements";
 
-const babelConfigApiServer = JSON.parse(JSON.stringify(babelConfigApiBase));
+const babelConfigApiServer = JSON.parse(JSON.stringify(babelConfigBase));
+const babelConfigApp = JSON.parse(JSON.stringify(babelConfigBase));
 
-const babelConfigClient = JSON.parse(JSON.stringify(babelConfigBase));
-const babelConfigProdClient = JSON.parse(JSON.stringify(babelConfigBase));
+babelConfigApp.presets.push(...appPresets);
+babelConfigApp.plugins.push(...appPlugins);
 
-const babelConfigServer = JSON.parse(JSON.stringify(babelConfigBase));
-const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigBase));
+const babelConfigClient = JSON.parse(JSON.stringify(babelConfigApp));
+const babelConfigProdClient = JSON.parse(JSON.stringify(babelConfigApp));
+
+const babelConfigServer = JSON.parse(JSON.stringify(babelConfigApp));
+const babelConfigServerProd = JSON.parse(JSON.stringify(babelConfigApp));
 
 babelConfigProdClient.plugins.push(transformReactConstantElements);
 babelConfigServerProd.plugins.push(transformReactConstantElements);
 
 babelConfigClient.plugins.push(...devPlugins);
 babelConfigServer.plugins.push(...devPlugins);
-
+console.log(JSON.stringify(babelConfigClient));
 export {
   babelConfigServer,
   babelConfigClient,
