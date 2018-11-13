@@ -112,7 +112,7 @@
     "react": "16.6.0",
     "react-dom": "16.6.0",
     "react-hot-loader": "^4.3.11",
-    "react-redux": "^5.1.1",
+    "react-redux": "^6.0.0-beta.2",
     "react-universal-component": "../react-universal-component",
     "redis": "^2.7.1",
     "redux": "^4.0.1",
