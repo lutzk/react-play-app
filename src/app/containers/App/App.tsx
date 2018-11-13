@@ -12,15 +12,10 @@ import UniversalComponent from './UniversalComponent';
 
 import './App.sass';
 
-const mapStateToProps = state => ({
-  page: state.page,
-});
-
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ ...{ loadAuth, logout, goToPage } }, dispatch);
 
 declare interface Props {
-  page: string;
   logout: any;
   loadAuth: any; // PropTypes.func,
   goToPage: any; // PropTypes.func,
@@ -50,7 +45,7 @@ class AppComponent extends Component<Props> {
 }
 
 const connectedApp = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
   null,
   { withRef: true },
