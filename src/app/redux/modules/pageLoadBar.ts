@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
 
 const LOADING = 'pageLoadBar/LOADING';
@@ -11,20 +12,9 @@ interface PageLoadBarState {
   error?: boolean;
 }
 
-interface PageLoadBarAction extends AnyAction {
-  loading?: boolean;
-  loadEnd?: boolean;
-  error?: boolean;
+interface PageLoadBarAction extends AnyAction, PageLoadBarState {
   type: string;
 }
-
-// const initialState: AppState = {
-//   data: null,
-//   pouchWorker: null,
-//   reducerName: null,
-//   sendMsgToWorker: null,
-//   syncing: false,
-// }
 
 const initialState: PageLoadBarState = {
   loading: false,
@@ -32,42 +22,44 @@ const initialState: PageLoadBarState = {
   error: false,
 };
 
+// produce(
+//   (draft, action) => {
+//       switch (action.type) {
+//           case CASE_JO:
+//               ...
+//       }
+//   },
+//   initialState
+// )
+
 const pageLoadBar: Reducer<PageLoadBarState> = (
   state = initialState,
   action: PageLoadBarAction,
-) => {
-  switch (action.type) {
-    case LOADING:
-      return {
-        ...state,
-        loading: true,
-        loadEnd: false,
-      };
-    case END_LOADING:
-      return {
-        ...state,
-        loading: false,
-        loadEnd: true,
-        error: false,
-      };
-    case END_LOADING_FROM_ERROR:
-      return {
-        ...state,
-        loading: false,
-        loadEnd: false,
-        error: true,
-      };
-    case RESET_LOADING:
-      return {
-        ...state,
-        loading: false,
-        loadEnd: false,
-        error: false,
-      };
-    default:
-      return state;
-  }
-};
+) =>
+  produce(state, draft => {
+    switch (action.type) {
+      case LOADING:
+        draft.loading = true;
+        draft.loadEnd = false;
+        return;
+
+      case END_LOADING:
+        draft.loading = false;
+        draft.loadEnd = true;
+        draft.error = false;
+        return;
+
+      case END_LOADING_FROM_ERROR:
+        draft.loading = false;
+        draft.loadEnd = false;
+        draft.error = true;
+        return;
+
+      case RESET_LOADING:
+        draft = initialState;
+        return;
+    }
+  });
 
 function startLoading() {
   return (dispatch, getState) => {
@@ -87,12 +79,12 @@ function endLoading(fromError = false, rewindOnError = true) {
       let endWithDelay;
       let resetWithDelay;
       if (state.loading && !state.loadEnd) {
-        clearTimeout(endWithDelay); // eslint-disable-line
+        clearTimeout(endWithDelay);
         endWithDelay = setTimeout(() => {
           dispatch({ type: END_LOADING_FROM_ERROR });
         }, rewindDelay);
 
-        clearTimeout(resetWithDelay); // eslint-disable-line
+        clearTimeout(resetWithDelay);
         resetWithDelay = setTimeout(() => {
           dispatch({ type: RESET_LOADING });
         }, resetDelay);
@@ -105,7 +97,7 @@ function endLoading(fromError = false, rewindOnError = true) {
     let resetWithDelay;
     if (state.loading && !state.loadEnd) {
       dispatch({ type: END_LOADING });
-      clearTimeout(resetWithDelay); // eslint-disable-line
+      clearTimeout(resetWithDelay);
       resetWithDelay = setTimeout(() => {
         dispatch({ type: RESET_LOADING });
       }, resetDelay);
