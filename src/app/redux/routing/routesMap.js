@@ -1,8 +1,8 @@
 // import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import {
   /* loadAuth, isLoaded, killUser, */ requireLogin,
-} from '../modules/user'; // eslint-disable-line
-import { initPage } from '../modules/roverView'; // eslint-disable-line
+} from '../modules/user';
+import { initPage } from '../modules/roverView';
 import { HOME, LOGIN, ROVER_VIEW, SOL_VIEW, PATHS } from './nav';
 
 const thunk = (dispatch, getState) => dispatch(requireLogin());

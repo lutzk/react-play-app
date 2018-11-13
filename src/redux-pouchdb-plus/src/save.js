@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'; // eslint-disable-line
+import { debounce } from 'lodash';
 
 const unpersistedQueue = {};
 const isSaving = {};
@@ -41,7 +41,6 @@ const save = (db, localId) => {
       })
       .then(doc => db.put(doc))
       .then(() => {
-        // eslint-disable-line
         delete isSaving[reducerName];
 
         if (

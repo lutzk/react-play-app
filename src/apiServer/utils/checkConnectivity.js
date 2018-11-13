@@ -7,6 +7,4 @@ const isCouchDBUp = () =>
     .get(couchDBPath)
     .then(res => !(res.error && res.error === 'ECONNREFUSED'));
 
-export {
-  isCouchDBUp, // eslint-disable-line
-};
+export { isCouchDBUp };

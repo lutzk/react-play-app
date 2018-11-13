@@ -4,8 +4,8 @@ import { filterParams, asyncWrap as aw } from '../utils/utils';
 import { errorHandler } from '../middleware/middleware';
 import { login, signup, loadAuth, logout, nasa, userCouch } from '../actions';
 
-const apiRouter = express.Router(); // eslint-disable-line
-const publicApiRouter = express.Router(); // eslint-disable-line
+const apiRouter = express.Router();
+const publicApiRouter = express.Router();
 
 const apiActions = { logout, nasa, userCouch };
 

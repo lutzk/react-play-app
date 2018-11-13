@@ -91,7 +91,6 @@ function getPromisesFromTree(
 ) {
   const promises = [];
   walkTree(rootElement, rootContext, (element, instance, context) => {
-    // eslint-disable-line
     const skipRoot = !fetchRoot && element === rootElement;
     if (instance && typeof instance[FETCH] === 'function' && !skipRoot) {
       const promise = instance[FETCH]();

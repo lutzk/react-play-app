@@ -26,10 +26,10 @@ const checkRedisSession = () =>
 
 const setAuth = () =>
   aw(async (req, res, next) => {
-    // res.locals.token = req.headers[authTokenKey]; // eslint-disable-line
+    // res.locals.token = req.headers[authTokenKey];
     res.locals.authenticated = !(
       req.session.user === null || req.session.user === undefined
-    ); // eslint-disable-line
+    );
     return next();
   });
 

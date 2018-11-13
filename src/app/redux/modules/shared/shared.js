@@ -1,4 +1,4 @@
-import { get, orderBy } from 'lodash'; // eslint-disable-line
+import { get, orderBy } from 'lodash';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
@@ -13,10 +13,8 @@ const rovers = {
 const filterByFieldValue = (list, filter) => {
   const newList = [];
   list.map(listItem => {
-    // eslint-disable-line
     const combinedFilterMatrix = [];
     filter.map(filterItem => {
-      // eslint-disable-line
       if (filterItem !== undefined) {
         if (
           get(listItem, filterItem.field) === parseInt(filterItem.value, 10)
@@ -61,7 +59,6 @@ const filterList = ({ list, range } = {}) => {
 
 const formatFilters = filters =>
   Object.keys(filters).map(field => {
-    // eslint-disable-line
     if (filters[field].on) {
       return { field, value: filters[field].value };
     }
@@ -71,10 +68,9 @@ const isFilterOn = filter => {
   let on = false;
   const globalOn = filter.on;
   Object.keys(filter.fields).map(field => {
-    // eslint-disable-line
     if (filter.fields[field].on) {
       on = true;
-      return on; // eslint-disable-line
+      return on;
     }
 
     return on;
@@ -127,7 +123,6 @@ const updateFilter = (filter, currentFilter) => {
   if (filter.on !== undefined && filter.on !== newFilter.on) {
     newFilter.on = filter.on;
   } else {
-    // eslint-disable-line
     Object.keys(currentFilter.fields).map(key => {
       const item = newFilter.fields[key];
       const filterKey = filterKeys[filterKeys.indexOf(key)];

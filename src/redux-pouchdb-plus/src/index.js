@@ -11,7 +11,7 @@
 */
 
 import { debounce } from 'lodash';
-import { cloneDeep, isEqual } from 'lodash'; // eslint-disable-line
+import { cloneDeep, isEqual } from 'lodash';
 import { initWorkerSync, currySendMsg } from '../../app/workers/utils';
 import {
   STORE_INIT,
@@ -104,20 +104,20 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   const workerMsgHandler = e => {
     const {
       data: { type, doc, reducerName },
-    } = e; // eslint-disable-line
+    } = e;
     if (type) {
       switch (type) {
         case PW_REDUCER_READY.type:
           setReducerInitialized(reducerName);
-          setReducerReady(reducerName); // eslint-disable-line no-use-before-define
+          setReducerReady(reducerName);
           break;
 
         case REDUCER_SET.type:
-          setReducer(doc); // eslint-disable-line no-use-before-define
+          setReducer(doc);
           break;
 
         case REDUCERS_READY.type:
-          setReady(); // eslint-disable-line no-use-before-define
+          setReady();
           // store.dispatch({ type: REINIT_SUCCESS });
           break;
 
@@ -132,7 +132,7 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   };
 
   const setReducer = doc => {
-    const { _rev, _id: reducer, state: dbState } = doc; // eslint-disable-line
+    const { _rev, _id: reducer, state: dbState } = doc;
     const state = cloneDeep(dbState);
     // const state = dbState;
 
@@ -147,13 +147,11 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   const setReady = () => store.dispatch({ type: REINIT_SUCCESS });
   const setReducerReady = (reducerName, initFrom) =>
     store.dispatch({
-      // eslint-disable-line
       reducerName,
       type: REDUCER_READY,
     });
 
   const reinitReducerInWorker = (reducerName, state, currentState, user) => {
-    // eslint-disable-line
     if (pouchWorker) {
       const msg = { reducerName, ...REDUCER_REINIT, state, currentState, user };
       sendMsgToWorker(msg);
@@ -161,7 +159,6 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   };
 
   const sendChangeToWorker = async (reducerName, nextState) => {
-    // eslint-disable-line
     try {
       const msg = { reducerName, nextState, ...REDUCER_CHANGE };
       await sendMsgToWorker(msg);

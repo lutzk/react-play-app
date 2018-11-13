@@ -34,8 +34,6 @@ const mapDispatchToProps = dispatch =>
   );
 
 class SolView extends Component {
-  // eslint-disable-line react/prefer-stateless-function
-
   static propTypes = {
     location: PropTypes.object,
     range: PropTypes.object,
@@ -211,7 +209,6 @@ class SolView extends Component {
     };
 
     const renderSortPane = () => {
-      // eslint-disable-line
       const sortOrder = this.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
       const sortField = this.props.sorts.fields[0];

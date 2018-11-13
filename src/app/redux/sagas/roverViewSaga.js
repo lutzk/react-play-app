@@ -19,11 +19,10 @@ import {
 // import { REDUCER_READY } from '../../../redux-pouchdb-plus/src/index';
 
 function* getManifestFor({ client, rover, offline, sol }) {
-  // eslint-disable-line
   try {
     const params = { rover, offline, sol };
     const requestPath = '/nasa';
-    const promise = client => client.get(requestPath, { params }); // eslint-disable-line
+    const promise = client => client.get(requestPath, { params });
     yield put({ type: GET_MANIFEST });
     yield put({ type: LOADING });
     const result = yield call(promise, client);
@@ -46,7 +45,7 @@ const roverNotReadySelector = state => !state.roverView.ready;
 // const roverNotLoadingSelector = state => !state.roverView.loading;
 
 // const subscribeWaiter = (waiter, store, selector, result) =>
-//   store => () => {// eslint-disable-line
+//   store => () => {
 //     if (selector(store.getState())) {
 //       waiter.resolve(result);
 //     }
@@ -73,9 +72,7 @@ const roverNotReadySelector = state => !state.roverView.ready;
 // dispatch(startLoading());
 let coun = 0;
 function* waitForRoverReady({ client, rover }) {
-  // eslint-disable-line
   if (yield select(roverNotReadySelector)) {
-    // eslint-disable-line
     console.log('__RVI__', 5);
     // if (yield select(roverNotLoadingSelector)) {
     //   console.log('__RVI__', 5.1);
@@ -98,8 +95,7 @@ function* initPageFlow(client) {
   // const roverReadyChannel = yield actionChannel('@@redux-pouchdb-plus/REINIT_SUCCESS');
 
   while (yield take('ROVER_VIEW')) {
-    // eslint-disable-line
-    // debugger;// eslint-disable-line
+    // debugger;
     console.log('__RVI__', 1);
     // const { action } = yield take('ROVER_VIEW');
     // const action = yield take(roverViewChannel);

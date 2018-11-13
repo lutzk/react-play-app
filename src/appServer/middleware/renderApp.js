@@ -31,13 +31,11 @@ const renderApp = () =>
     // if (__DEVELOPMENT__ && res.locals.devAssets) {
     //   assets = res.locals.devAssets;
     // }
-    // eslint-disable-next-line no-shadow
     const renderHtml = ({ app, store, assets }) =>
       `${doctype}${renderToString(
         <Html app={app} store={store} assets={assets} />,
       )}`;
 
-    // eslint-disable-next-line no-shadow
     const createApp = (App, store) =>
       renderToString(
         <Provider store={store}>
@@ -46,7 +44,6 @@ const renderApp = () =>
       );
 
     const doesRedirect = ({ kind, pathname }, res) => {
-      // eslint-disable-line
       if (kind === 'redirect') {
         res.redirect(302, pathname);
         return true;

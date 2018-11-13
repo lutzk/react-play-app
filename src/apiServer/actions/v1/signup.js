@@ -15,7 +15,7 @@ export default function signup(req) {
         couchDBProxyPath,
       );
       delete result.userDBs;
-      req.session.token = result.token; // eslint-disable-line
+      req.session.token = result.token;
       req.session.user = { ...result, userDB };
       const userAccount = { ...result, userDB };
 

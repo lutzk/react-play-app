@@ -22,7 +22,7 @@ const parseJsonFile = path =>
 const getJsonData = (options = { path: '', empty: true }) => {
   const { path, empty } = options;
   if (!empty && path.length) {
-    return parseJsonFile(path).then(assets => (assets ? assets : false)); // eslint-disable-line
+    return parseJsonFile(path).then(assets => (assets ? assets : false));
   }
 
   return Promise.resolve(false);

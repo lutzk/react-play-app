@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import { cloneDeep, isEqual, debounce } from 'lodash'; // eslint-disable-line
+import { cloneDeep, isEqual, debounce } from 'lodash';
 
 import { save } from '../../redux-pouchdb-plus/src/save';
 import { currySendMsg } from '../../app/workers/utils';
@@ -71,7 +71,6 @@ const destroyDBS = reply =>
       return result;
     })
     .catch(e => {
-      // eslint-disable-line
       console.log('DB DESTROY ERROR', e);
       return e;
     });
@@ -144,13 +143,7 @@ const initSync = (localDb, remoteDb, docIds) =>
 //     });
 
 const setReducer = doc => sendMsgToClient({ doc, ...REDUCER_SET });
-
-const initChanges = (
-  db,
-  docId,
-  save,
-  currentState, // eslint-disable-line
-) =>
+const initChanges = (db, docId, save, currentState) =>
   db
     .changes({
       live: true,
@@ -181,17 +174,15 @@ const initFromDB = (db, docName) =>
     .catch(err => err);
 
 const initDBState = async (state, localDb, remoteDb, docName, save) => {
-  // eslint-disable-line
   let remoteInitError;
   const localInitError = await initFromDB(localDb, docName);
-
   if (localInitError && localInitError.status === 404) {
     if (remoteDb) {
       remoteInitError = await initFromDB(remoteDb, docName);
       if (remoteInitError && remoteInitError.status === 404) {
         await save(docName, state);
       }
-      return; // eslint-disable-line
+      return;
     }
     await save(docName, state);
   }
@@ -211,7 +202,6 @@ const setReducerReady = reducerName =>
   sendMsgToClient({ ...REDUCER_READY, reducerName });
 
 async function reinitReducer(reducerName, state, currentState, user) {
-  // eslint-disable-line
   // console.log('___REINIT__', reducerName);
   // setReducerUninitialized(reducerName);
   if (changes) {

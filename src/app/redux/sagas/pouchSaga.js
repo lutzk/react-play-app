@@ -23,7 +23,6 @@ function* reinitFlow(client) {
   );
   const sendMsgToWorker = currySendMsg(pouchWorker);
   while (true) {
-    // eslint-disable-line
     const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
     yield take(reinitReducerTypes);
     yield put({ type: REQUEST_REINIT });
@@ -39,7 +38,7 @@ function* reinitFlow(client) {
 }
 
 // function* reinitOnLogin(client) {
-//   while (true) {// eslint-disable-line
+//   while (true) {
 //     const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
 //     yield take(reinitReducerTypes);
 //     yield put({ type: REQUEST_REINIT });
@@ -85,9 +84,8 @@ function* pingHandler() {
       createWorkerOnMessageHandler,
       pouchWorker,
     );
-    const res = yield call(sendMsgToWorker, { ...STORE_INIT }); // eslint-disable-line
+    const res = yield call(sendMsgToWorker, { ...STORE_INIT });
     while (true) {
-      // eslint-disable-line
       const { data: workerMsg, port } = yield take(workerOnMessageHandler);
       const d = { ...workerMsg, ...port };
       yield put({ type: 'GOT_WORKER_MSG', d });

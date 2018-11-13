@@ -192,4 +192,4 @@ const buildPlugins = ({ server = false, prod = false, api = false, worker = fals
     : buildClientPlugins({ prod });
 
 
-export { buildPlugins }; // eslint-disable-line
+export { buildPlugins };

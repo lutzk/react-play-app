@@ -20,7 +20,7 @@ const getAssetExtension = file => {
   return extension;
 };
 
-const defineUndefined = (def, what = {}) => (def = def || what); // eslint-disable-line
+const defineUndefined = (def, what = {}) => (def = def || what);
 
 const getAssetsFromStats = stats => {
   const assetsObj = {};
@@ -64,7 +64,6 @@ const formatAssets = assetsObj => {
   ) {
     const formatedAssetsObj = JSON.parse(JSON.stringify(assetsObj));
     formatedAssetsObj.js = {
-      // eslint-disable-line
       manifest: assetsObj.js.manifest,
       vendor: assetsObj.js.vendor,
       main: assetsObj.js.main,

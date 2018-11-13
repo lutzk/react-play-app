@@ -42,11 +42,7 @@ function ApiClient(incomingReq) {
     return result.body;
   };
 
-  verbs.map(
-    (
-      verb, // eslint-disable-line
-    ) => (ApiClient.prototype[verb] = client(verb)),
-  );
+  verbs.map(verb => (ApiClient.prototype[verb] = client(verb)));
 }
 
 export default ApiClient;

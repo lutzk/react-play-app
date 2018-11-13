@@ -7,7 +7,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { routesMap } from '../routing/routesMap';
 import { linkToLogin } from '../routing/navTypes';
 import { clientMiddleware } from '../middleware/clientMiddleware';
-import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user'; // eslint-disable-line
+import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';
 
 // import { getRootSaga } from '../sagas';
 // import createSagaMonitor from '../sagas/sagaMonitor';
@@ -21,14 +21,12 @@ import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user'; // es
 // createSagaMonitor(config);
 
 function createReduxStore({ client, preloadedState, reqPath = null }) {
-  // eslint-disable-line
   let composeFuncs;
   const createRootReducer = require('../modules/reducer').createRootReducer;
   const options = {
     initialEntries: reqPath,
     initialDispatch: false,
     onBeforeChange: (dispatch, getState, bag) => {
-      // eslint-disable-line
       const userRequiredRoutes = ['ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
@@ -36,7 +34,7 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
         // return checkAuth(dispatch, getState);
         const {
           user: { user },
-        } = getState(); // eslint-disable-line
+        } = getState();
         if (!user) {
           const action = redirect({
             ...linkToLogin,

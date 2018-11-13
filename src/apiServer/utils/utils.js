@@ -21,7 +21,7 @@ const parseJsonFile = path =>
 const getJsonData = (options = { path: false, empty: true }) => {
   const { path, empty } = options;
   if (!empty) {
-    return parseJsonFile(path).then(assets => (assets ? assets : false)); // eslint-disable-line
+    return parseJsonFile(path).then(assets => (assets ? assets : false));
   }
 
   return Promise.resolve(false);
@@ -37,7 +37,6 @@ const createErrorResponse = ({ status = 404, text = 'not found' } = {}) => ({
 const filterParams = params => {
   const filtered = {};
   Object.keys(params).map(key => {
-    // eslint-disable-line
     if (params[key] !== undefined && params[key] !== 'false') {
       filtered[key] = params[key];
     }

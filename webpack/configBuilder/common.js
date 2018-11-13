@@ -18,7 +18,7 @@ const baseConfig = {
   performance: false,
 };
 
-const getServerEntry = ({ kind, prod }) => ({ // eslint-disable-line
+const getServerEntry = ({ kind, prod }) => ({
   [`${kind}Server`]: [
     ...(!prod ? ['webpack/hot/poll?1000'] : []),
     `${kind}ServerEntry.ts`,

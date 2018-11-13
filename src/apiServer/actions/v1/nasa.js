@@ -14,7 +14,6 @@ const {
 } = nasaApiConfig;
 
 export default function nasa(req, params) {
-  // eslint-disable-line
   let path;
   const client = new ApiClient(req);
   const { sol, rover, offline } = params;

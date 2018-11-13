@@ -12,7 +12,6 @@ export default function mapUrlToActions(availableActions = {}, paths = []) {
     return notFound;
   }
 
-  /*eslint-disable */
   const reducer = (prev, current) => {
     if (prev.action && prev.action[current]) {
       return { action: prev.action[current], params: [] }; // go deeper
@@ -24,7 +23,6 @@ export default function mapUrlToActions(availableActions = {}, paths = []) {
       }
     }
   };
-  /*eslint-enable */
 
   const actionAndParams = paths.reduce(reducer, {
     action: availableActions,

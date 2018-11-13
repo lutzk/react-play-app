@@ -59,11 +59,7 @@ class ApiClient {
   public verbs: string[] = ['get', 'post'];
   constructor(incomingReq = false) {
     this.incomingReq = incomingReq;
-    this.verbs.map(
-      (
-        verb, // eslint-disable-line
-      ) => (this[verb] = this.client(verb)),
-    );
+    this.verbs.map(verb => (this[verb] = this.client(verb)));
   }
 
   private client(verb) {

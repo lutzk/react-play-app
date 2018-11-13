@@ -233,10 +233,9 @@ const signup = (
 };
 
 const checkAuth = () => (dispatch, getState) => {
-  // eslint-disable-line
   const {
     user: { user },
-  } = getState(); // eslint-disable-line
+  } = getState();
   if (!user) {
     const action = redirect({
       ...linkToLogin,

@@ -17,7 +17,6 @@ import {
 } from '../modules/user';
 
 function* authorize({ promise, client }) {
-  // eslint-disable-line
   try {
     yield put({ type: LOADING });
     const result = yield call(promise, client);
@@ -34,7 +33,6 @@ function* authorize({ promise, client }) {
 }
 
 function* logout({ promise, client }) {
-  // eslint-disable-line
   try {
     yield put({ type: LOADING });
     const result = yield call(promise, client);
@@ -52,7 +50,6 @@ function* logout({ promise, client }) {
 
 function* loginFlow(client) {
   while (true) {
-    // eslint-disable-line
     const { promise } = yield take(LOGIN);
     let logoutTask;
     const loginTask = yield fork(authorize, { promise, client });

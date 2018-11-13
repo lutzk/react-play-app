@@ -20,11 +20,7 @@ export const getCouchDocs = () =>
       throw Error(couch.error);
     }
 
-    Object.keys(couch).map(
-      (
-        key, // eslint-disable-line
-      ) => (couch[key].prefetched = true),
-    );
+    Object.keys(couch).map(key => (couch[key].prefetched = true));
 
     res.preloadedState = couch;
     return next();

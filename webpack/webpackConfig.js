@@ -1,4 +1,4 @@
-require('@babel/register')({ // eslint-disable-line
+require('@babel/register')({
   // ignore: ['/node_modules/'],
   // babelrc: false,
   presets: ['@babel/preset-env'],

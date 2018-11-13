@@ -44,7 +44,7 @@ const getSolManifestOffline = () =>
     return res.end();
   });
 
-const roverRouter = express.Router(); // eslint-disable-line
+const roverRouter = express.Router();
 const { offlineSolRoute, offlineRoverRoute } = nasaApiConfig;
 
 roverRouter

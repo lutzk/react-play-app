@@ -136,7 +136,6 @@ class RoverView extends Component {
       manifestLoadError,
     } = this.props;
 
-    /* eslint-disable */
     const getListStats = () => {
       const {
         solsToRender,
@@ -168,7 +167,6 @@ class RoverView extends Component {
         return stats;
       }
     };
-    /* eslint-enable */
 
     const missionStatsProps = {
       roverName: this.props.roverName,
@@ -274,7 +272,6 @@ class RoverView extends Component {
     };
 
     const renderSortPane = () => {
-      // eslint-disable-line
       const sortOrder = this.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
       const sortField = this.props.sorts.fields[0];

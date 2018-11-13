@@ -14,8 +14,6 @@ const app = express();
 const staticDir = path.join(process.cwd(), './static');
 
 const startServer = ({ serverAssets } = {}) => {
-  // eslint-disable-line
-
   if (!port) {
     throw Error('ERROR: No PORT environment variable has been specified');
   }

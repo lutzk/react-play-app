@@ -15,4 +15,4 @@ const configBuilder = ({ entry, output, resolve, rules, plugins, target, devtool
   ...rest,
 });
 
-export { configBuilder };// eslint-disable-line
+export { configBuilder };
