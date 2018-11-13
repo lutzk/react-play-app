@@ -1,15 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from 'redux-first-router-link';
 
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, login, signup } from '../../redux/modules/user';
-import {
-  linkToHome,
-  linkToHomer,
-  linkToSpirit,
-} from '../../redux/routing/navTypes';
+import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
 // import { PATHS } from '../../redux/routing/nav';
 
 import '../Login/Login.sass';
@@ -23,7 +18,7 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-const mapState = ({ location }) => ({ path: location.pathname });
+// const mapState = ({ location }) => ({ path: location.pathname });
 
 declare interface Props {
   path: string;
@@ -38,7 +33,7 @@ class LoginComp extends React.Component<Props> {
 
     this.hanldeSubmit = this.hanldeSubmit.bind(this);
     this.hanldeSignup = this.hanldeSignup.bind(this);
-    this.hanldeLink = this.hanldeLink.bind(this);
+    this.handleLink = this.handleLink.bind(this);
   }
 
   public hanldeSubmit(e) {
@@ -59,9 +54,14 @@ class LoginComp extends React.Component<Props> {
     return this.props.signup(name, username, email, password, confirmPassword);
   }
 
-  public hanldeLink(e) {
+  public handleLink(e) {
     e.preventDefault();
     this.props.onClick(linkToSpirit);
+  }
+
+  public handleHomeLink(e) {
+    e.preventDefault();
+    this.props.onClick(linkToHome);
   }
 
   // will execute on server render
@@ -74,14 +74,9 @@ class LoginComp extends React.Component<Props> {
       <div className="page login">
         <div className="login_content">
           <h1 className="login_headline">
-            <Link to="/bla">aaa</Link>
+            <span onClick={this.handleHomeLink}>home</span>
             &nbsp;
-            <Link to={linkToHome}>home</Link>
-            &nbsp;
-            <Link to={linkToSpirit}>Rover - Spirit</Link>
-            <Link to={linkToHomer}>homer</Link>
-            &nbsp;
-            <span onClick={this.hanldeLink}>Rover View</span>
+            <span onClick={this.handleLink}>Rover View</span>
           </h1>
           <form onSubmit={this.hanldeSubmit}>
             <div className="has-float-label">
@@ -123,6 +118,6 @@ class LoginComp extends React.Component<Props> {
 
 // const Login = connect(mapState, mapDispatchToProps)(LoginComp);
 export default connect(
-  mapState,
+  null,
   mapDispatchToProps,
 )(LoginComp);

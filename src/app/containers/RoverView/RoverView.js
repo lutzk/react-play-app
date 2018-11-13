@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -8,6 +7,7 @@ import {
   updateList,
 } from '../../redux/modules/roverView';
 import { linkToHome } from '../../redux/routing/navTypes';
+import { goToPage } from '../../redux/modules/page';
 import RoverMissionStats from '../RoverView/RoverMissionStats';
 import RoverMissionSols from '../RoverView/RoverMissionSols';
 import './RoverView.sass';
@@ -32,7 +32,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    Object.assign({}, { refreshManifest, updateList }),
+    Object.assign({}, { refreshManifest, updateList, goToPage }),
     dispatch,
   );
 
@@ -52,6 +52,7 @@ class RoverView extends Component {
     missionStats: PropTypes.object,
     solsToRender: PropTypes.array,
     loaded: PropTypes.bool,
+    goToPage: PropTypes.func,
     refreshManifest: PropTypes.func,
     loading: PropTypes.bool,
     initialSolCount: PropTypes.number,
@@ -64,6 +65,7 @@ class RoverView extends Component {
     // this.handleSort = ::this.handleSort;
     // this.handleRangeUpdate = ::this.handleRangeUpdate;
     this.handleRangeUpdate = this.handleRangeUpdate.bind(this);
+    this.handleHomeLink = this.handleHomeLink.bind(this);
     // this.handleUpdateFilter = ::this.handleUpdateFilter;
     // this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
@@ -121,6 +123,10 @@ class RoverView extends Component {
     return this.props.updateList({ range });
   }
 
+  handleHomeLink() {
+    this.props.goToPage(linkToHome);
+  }
+
   render() {
     const {
       loaded,
@@ -172,6 +178,7 @@ class RoverView extends Component {
     const missionSolsProps = {
       sols: this.props.solsToRender,
       rover: this.props.roverName ? this.props.roverName.toLowerCase() : '',
+      dispatch: this.props.dispatch,
     };
 
     const loadPane = (
@@ -317,7 +324,7 @@ class RoverView extends Component {
           {syncing && <div>...SAVING DATA ...</div>}
           {savedData && !syncing && <div>...SAVED!</div>}
           <p>
-            <Link to={linkToHome}>go home</Link>
+            <span onClick={this.handleHomeLink}>go home</span>
           </p>
 
           {loadPane}

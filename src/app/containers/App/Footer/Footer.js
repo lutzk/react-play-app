@@ -1,7 +1,6 @@
 import React from 'react';
-import Link from 'redux-first-router-link';
 
-import { linkToHome } from '../../../redux/routing/navTypes.js';
+// import { linkToHome } from '../../../redux/routing/navTypes.js';
 import './Footer.sass';
 
 const Footer = ({ logout }) => {
@@ -11,8 +10,6 @@ const Footer = ({ logout }) => {
     <div className="footer">
       <p>
         Footer &nbsp;
-        <Link to={linkToHome}>home</Link>
-        &nbsp;
         <span onClick={handleLogout}>logout</span>
       </p>
     </div>

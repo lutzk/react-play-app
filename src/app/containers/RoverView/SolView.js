@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Link from 'redux-first-router-link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -288,16 +287,13 @@ class SolView extends Component {
     return (
       <div className="page roverView">
         <div className="pageHeader">
-          <h1>
-            <Link to={createRoverLink({ rover })}>{rover}</Link>
-          </h1>
+          {/* <h1>
+            <span to={createRoverLink({ rover })}>{rover}</span>
+          </h1> */}
           <h3>sol: {sol}</h3>
-          <p>
-            <Link to={createRoverLink({ rover })}>back to rover</Link>
-          </p>
-          <p>
-            <Link to={linkToHome}>go home</Link>
-          </p>
+          {/* <p>
+            <span to={linkToHome}>go home</span>
+          </p> */}
           <p>
             {this.props.listLength && (
               <span>total pics: {this.props.listLength}</span>
