@@ -3283,7 +3283,7 @@ fastparse@^1.1.1:
   resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.2.tgz#91728c5a5942eced8531283c79441ee4122c35a9"
   integrity sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==
 
-fbjs@^0.8.4, fbjs@^0.8.9:
+fbjs@^0.8.4:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
@@ -3984,7 +3984,7 @@ hoist-non-react-statics@^2.2.1, hoist-non-react-statics@^2.5.0:
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
 
-hoist-non-react-statics@^3.1.0:
+hoist-non-react-statics@^3.0.1:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.1.0.tgz#42414ccdfff019cd2168168be998c7b3bd5245c0"
   integrity sha512-MYcYuROh7SBM69xHGqXEwQqDux34s9tz+sCnxJmN18kgWh6JFdTw/5YdZtqsOdZJXddE/wUpCzfEdDrJj8p0Iw==
@@ -6710,14 +6710,6 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@15.5.10:
-  version "15.5.10"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
-  integrity sha1-J5ffwxJhguOpXj37suiT3ddFYVQ=
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.3.1"
-
 prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
@@ -6983,7 +6975,7 @@ react-json-tree@^0.11.0:
     prop-types "^15.5.8"
     react-base16-styling "^0.5.1"
 
-react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.4:
+react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
@@ -6993,18 +6985,17 @@ react-pure-render@^1.0.2:
   resolved "https://registry.yarnpkg.com/react-pure-render/-/react-pure-render-1.0.2.tgz#9d8a928c7f2c37513c2d064e57b3e3c356e9fabb"
   integrity sha1-nYqSjH8sN1E8LQZOV7Pjw1bp+rs=
 
-react-redux@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.1.tgz#88e368682c7fa80e34e055cd7ac56f5936b0f52f"
-  integrity sha512-LE7Ned+cv5qe7tMV5BPYkGQ5Lpg8gzgItK07c67yHvJ8t0iaD9kPFPAli/mYkiyJYrs2pJgExR2ZgsGqlrOApg==
+react-redux@^6.0.0-beta.2:
+  version "6.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-6.0.0-beta.2.tgz#90b8d50ae71d9dc5d413200836d279de64f7c3e2"
+  integrity sha512-B4CADCEReHgnJzRLGp4sadIhOpRZymxEW9LZ0vcoK02DeyRnQwYY3MI1IvZ6nNhphYMfDD311dpy571lI5HbHQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    hoist-non-react-statics "^3.1.0"
+    hoist-non-react-statics "^3.0.1"
     invariant "^2.2.4"
     loose-envify "^1.1.0"
-    prop-types "^15.6.1"
+    prop-types "^15.6.2"
     react-is "^16.6.0"
-    react-lifecycles-compat "^3.0.0"
 
 react-transform-catch-errors@^1.0.2:
   version "1.0.2"
@@ -7234,16 +7225,6 @@ redux-devtools@^3.4.0:
     lodash "^4.2.0"
     prop-types "^15.5.7"
     redux-devtools-instrument "^1.0.1"
-
-redux-first-router-link@rudy:
-  version "0.0.3-rudy"
-  resolved "https://registry.yarnpkg.com/redux-first-router-link/-/redux-first-router-link-0.0.3-rudy.tgz#bd739c6daed4eb71352e6c9defb4d945a58bcb18"
-  integrity sha512-uvkp+01u+wXW+PO4kRbNeOL8KVokKiDzEqFqxYukdu7WXgZH0p9JKthHGaTw3E15YZMeAuXRai2ZPU3FrAwXkA==
-  dependencies:
-    path-to-regexp "^1.7.0"
-    prop-types "15.5.10"
-    rudy-history "^1.0.0"
-    rudy-match-path "^0.3.0"
 
 redux-first-router@^2.0.1:
   version "2.1.1"
