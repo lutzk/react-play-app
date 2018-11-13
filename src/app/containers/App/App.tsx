@@ -22,6 +22,11 @@ declare interface Props {
 }
 
 class AppComponent extends Component<Props> {
+  public static getDerivedStateFromError(error) {
+    console.log('___ERROR DERIVED CATCHED__', error);
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
   public componentDidMount() {
     this.props.loadAuth();
   }
@@ -34,11 +39,11 @@ class AppComponent extends Component<Props> {
     console.log('___RENDER__');
     return (
       <StrictMode>
-        <div className="app">
+        <>
           <Loader />
           <UniversalComponent />
           <Footer logout={this.props.logout} />
-        </div>
+        </>
       </StrictMode>
     );
   }
@@ -48,8 +53,8 @@ const connectedApp = connect(
   null,
   mapDispatchToProps,
   null,
-  { withRef: true },
-  // { forwardRef: true },
+  // { withRef: true },
+  { forwardRef: true },
 )(AppComponent);
 
 const App = __DEVELOPMENT__ ? hot(module)(connectedApp) : connectedApp;
