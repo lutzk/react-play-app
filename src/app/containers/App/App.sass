@@ -3,6 +3,9 @@
 .root
   height: 100%
   min-height: 100%
+  display: flex
+  flex-direction: column
+  overflow: auto
   background:
     image: url('../../theme/bg.jpg')
     repeat: no-repeat
@@ -11,32 +14,23 @@
     size: 100% 100%
     color: #1e1e1e
     // blend-mode: lighten
-  overflow: auto
 
-  .app
-    height: 100%
-    min-height: 100%
-    display: flex
-    // ???
-    // flex-direction: row
-    flex-direction: column
+  .page
+    position: relative
+    flex: 1 1 100%
+    padding-top: getRythm(2)
+    margin-bottom: getRythm(1.5)
+    margin-left: getRythm(2)
+    margin-right: getRythm(2)
 
-    .page
-      position: relative
-      flex: 1 1 100%
-      padding-top: getRythm(2)
-      margin-bottom: getRythm(1.5)
-      margin-left: getRythm(2)
-      margin-right: getRythm(2)
-
-      // &:before
-      //   content: ""
-      //   position: absolute
-      //   top: 0
-      //   bottom: 0
-      //   left: 0
-      //   right: 0
-      //   display: block
-      //   z-index: 999999
-      //   +debug_rythm
-      
+    // &:before
+    //   content: ""
+    //   position: absolute
+    //   top: 0
+    //   bottom: 0
+    //   left: 0
+    //   right: 0
+    //   display: block
+    //   z-index: 999999
+    //   +debug_rythm
+    
