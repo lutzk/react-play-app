@@ -5,20 +5,14 @@ import { bindActionCreators } from 'redux';
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, login, signup } from '../../redux/modules/user';
 import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
-// import { PATHS } from '../../redux/routing/nav';
 
 import '../Login/Login.sass';
-
-// const active = (currentPath, path) =>
-//   currentPath === path ? 'Activo' : '';
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     Object.assign({}, { loadAuth, login, signup, onClick: goToPage }),
     dispatch,
   );
-
-// const mapState = ({ location }) => ({ path: location.pathname });
 
 declare interface Props {
   path: string;
@@ -34,6 +28,7 @@ class LoginComp extends React.Component<Props> {
     this.hanldeSubmit = this.hanldeSubmit.bind(this);
     this.hanldeSignup = this.hanldeSignup.bind(this);
     this.handleLink = this.handleLink.bind(this);
+    this.handleHomeLink = this.handleHomeLink.bind(this);
   }
 
   public hanldeSubmit(e) {
@@ -66,7 +61,7 @@ class LoginComp extends React.Component<Props> {
 
   // will execute on server render
   // fetchData() {
-  //   return Promise.resolve([loadAuth, signup]); // eslint-disable-line
+  //   return Promise.resolve([loadAuth, signup]);
   // }
 
   public render() {
@@ -116,7 +111,6 @@ class LoginComp extends React.Component<Props> {
   }
 }
 
-// const Login = connect(mapState, mapDispatchToProps)(LoginComp);
 export default connect(
   null,
   mapDispatchToProps,
