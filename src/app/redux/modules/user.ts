@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
 import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
 import { linkToLogin } from '../routing/navTypes';
@@ -32,7 +33,7 @@ interface User {
 }
 
 interface UserState {
-  user: User;
+  user: User | null;
   savedPath?: any;
   loading: boolean;
   loaded: boolean;
@@ -41,6 +42,7 @@ interface UserState {
   loggingIn: boolean;
   signedUp: boolean;
   signingUp: boolean;
+  lastLoaded: number;
 }
 
 interface UserAction extends AnyAction {
@@ -57,105 +59,91 @@ const initialState: UserState = {
   loggingIn: false,
   signedUp: false,
   signingUp: false,
+  lastLoaded: null,
 };
 
-const user: Reducer<UserState> = (state = initialState, action: AnyAction) => {
-  switch (action.type) {
-    case KILL_USER:
-      return {
-        ...state,
-        user: null,
-        savedPath: action.result.savedPath,
-      };
-    case LOAD_AUTH:
-      return {
-        ...state,
-        loading: true,
-        lastLoaded: action.lastLoaded,
-      };
-    case LOAD_AUTH_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        loaded: true,
-        error: null,
-        user:
+const user: Reducer<UserState> = (state = initialState, action: AnyAction) =>
+  produce(state, draft => {
+    switch (action.type) {
+      case KILL_USER:
+        draft.user = null;
+        draft.savedPath = action.result.savedPath;
+        return;
+
+      case LOAD_AUTH:
+        draft.loading = true;
+        draft.lastLoaded = action.lastLoaded;
+        return;
+
+      case LOAD_AUTH_SUCCESS:
+        draft.loading = false;
+        draft.loaded = true;
+        draft.error = null;
+        draft.user =
           typeof action.result === 'object' && Object.keys(action.result).length
             ? action.result
-            : null,
-      };
-    case LOAD_AUTH_FAIL:
-      return {
-        ...state,
-        loading: false,
-        loaded: false,
-        user: null,
-        error: action.error,
-      };
-    case LOGOUT:
-      return {
-        ...state,
-        loggingOut: true,
-      };
-    case LOGOUT_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        loaded: false,
-        user: null,
-      };
-    case LOGOUT_FAIL:
-      return {
-        ...state,
-        loggingOut: false,
-        error: action.error,
-      };
-    case LOGIN:
-      return {
-        ...state,
-        loggingIn: true,
-      };
-    case LOGIN_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        loaded: true,
-        user: action.result,
-        error: false,
-      };
-    case LOGIN_FAIL:
-      return {
-        ...state,
-        loading: false,
-        loaded: false,
-        error: action.error,
-      };
-    case SIGNUP:
-      return {
-        ...state,
-        signingUp: true,
-      };
-    case SIGNUP_SUCCESS:
-      return {
-        ...state,
-        signedUp: true,
-        signingUp: false,
-        error: false,
-        loading: false,
-        loaded: true,
-        user: action.result,
-      };
-    case SIGNUP_FAIL:
-      return {
-        ...state,
-        signedUp: false,
-        signingUp: false,
-        error: action.error,
-      };
-    default:
-      return state;
-  }
-};
+            : null;
+        return;
+
+      case LOAD_AUTH_FAIL:
+        draft.loading = false;
+        draft.loaded = false;
+        draft.user = null;
+        draft.error = action.error;
+        return;
+
+      case LOGOUT:
+        draft.loggingOut = true;
+        return;
+
+      case LOGOUT_SUCCESS:
+        draft.loading = false;
+        draft.loaded = false;
+        draft.user = null;
+        return;
+
+      case LOGOUT_FAIL:
+        draft.loggingOut = false;
+        draft.error = action.error;
+        return;
+
+      case LOGIN:
+        draft.loggingIn = true;
+        return;
+
+      case LOGIN_SUCCESS:
+        draft.loading = false;
+        draft.loaded = true;
+        draft.user = action.result;
+        draft.error = false;
+        return;
+
+      case LOGIN_FAIL:
+        draft.loading = false;
+        draft.loaded = false;
+        draft.error = action.error;
+        return;
+
+      case SIGNUP:
+        draft.signingUp = true;
+        return;
+
+      case SIGNUP_SUCCESS:
+        draft.signedUp = true;
+        draft.signingUp = false;
+        draft.error = false;
+        draft.loading = false;
+        draft.loaded = true;
+        draft.user = action.result;
+        return;
+
+      case SIGNUP_FAIL:
+        draft.signedUp = false;
+        draft.signingUp = false;
+        draft.error = action.error;
+        return;
+    }
+  });
 
 const login = (username, password) => dispatch => {
   const types = [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL];

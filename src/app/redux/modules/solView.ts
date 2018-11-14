@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
 import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
 import { _updateList, getManifestFor, sortList } from './shared/shared';
@@ -26,6 +27,7 @@ interface SolViewState {
   reducerName?: string;
   initialCount: number;
   availableSorts: any;
+  prefetched: boolean;
 }
 
 interface SolResult {
@@ -96,6 +98,7 @@ const initialState: SolViewState = {
   filter: defaultFilter,
   defaultSorts,
   range: defaultRange,
+  prefetched: false,
 };
 
 const cleanUpData = data =>
@@ -114,81 +117,62 @@ const cleanUpData = data =>
 const solView: Reducer<SolViewState> = (
   state = initialState,
   action: SolViewAction,
-) => {
-  switch (action.type) {
-    case '@@redux-pouchdb-plus/RESET':
-      return {
-        ...initialState,
-      };
+) =>
+  produce(state, draft => {
+    switch (action.type) {
+      case '@@redux-pouchdb-plus/RESET':
+        draft = initialState;
+        return;
 
-    case '@@redux-pouchdb-plus/SET_REDUCER':
-      if (action.reducer === reducerName) {
-        if (action.state.prefetched) {
-          return {
-            ...state,
-            prefetched: false,
-          };
+      case '@@redux-pouchdb-plus/SET_REDUCER':
+        if (action.reducer === reducerName) {
+          if (action.state.prefetched) {
+            draft.prefetched = false;
+            return;
+          }
         }
-      }
-      return {
-        ...state,
-      };
+        return;
 
-    case '@@redux-pouchdb-plus/INIT':
-      if (action.state.solView.prefetched) {
-        return {
-          ...state,
-          prefetched: false,
-        };
-      }
-      return {
-        ...state,
-      };
+      case '@@redux-pouchdb-plus/INIT':
+        if (action.state.solView.prefetched) {
+          draft.prefetched = false;
+          return;
+        }
+        return;
 
-    case SORT_SOL_PHOTOS:
-      return {
-        ...state,
-        listToRender: action.list,
-        sorts: action.sorts,
-        filter: action.filter,
-        range: action.range,
-      };
+      case SORT_SOL_PHOTOS:
+        draft.listToRender = action.list;
+        draft.sorts = action.sorts;
+        draft.filter = action.filter;
+        draft.range = action.range;
+        return;
 
-    case GET_SOL_MANIFEST:
-      return {
-        ...state,
-        loading: true,
-        loaded: false,
-      };
+      case GET_SOL_MANIFEST:
+        draft.loading = true;
+        draft.loaded = false;
+        return;
 
-    case GET_SOL_MANIFEST_SUCCESS:
-      return {
-        ...state,
-        error: null,
-        loaded: true,
-        loading: false,
-        list: cleanUpData(action.result.photos),
-        listLength: action.result.photos.length,
-        listToRender: sortList({
+      case GET_SOL_MANIFEST_SUCCESS:
+        draft.error = null;
+        draft.loaded = true;
+        draft.loading = false;
+        draft.list = cleanUpData(action.result.photos);
+        draft.listLength = action.result.photos.length;
+        draft.listToRender = sortList({
           list: cleanUpData(action.result.photos),
           sorts: state.sorts,
           filter: state.filter,
           range: state.range,
-        }),
-      };
+        });
+        return;
 
-    case GET_SOL_MANIFEST_FAIL:
-      return {
-        ...state,
-        error: action.error,
-        loaded: false,
-        loading: false,
-      };
-
-    default:
-      return state;
-  }
-};
+      case GET_SOL_MANIFEST_FAIL:
+        draft.error = action.error;
+        draft.loaded = false;
+        draft.loading = false;
+        return;
+    }
+  });
 
 const getSolManifest = (rover, sol, offline) => {
   const types = [

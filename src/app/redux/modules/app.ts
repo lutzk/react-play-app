@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
 import {
   SYNC,
@@ -6,6 +7,7 @@ import {
 
 interface AppState {
   data?: any;
+  savedData?: any;
   pouchWorker?: any;
   reducerName?: string;
   sendMsgToWorker?: any;
@@ -14,6 +16,7 @@ interface AppState {
 
 interface AppAction extends AnyAction {
   data?: any;
+  savedData?: any;
   pouchWorker?: any;
   reducerName?: any;
   sendMsgToWorker?: any;
@@ -23,31 +26,27 @@ const initialState: AppState = {
   syncing: false,
 };
 
-const app: Reducer<AppState> = (state = initialState, action: AppAction) => {
-  switch (action.type) {
-    case '@@redux-pouchdb-plus/INIT':
-      return {
-        pouchWorker: action.pouchWorker,
-        sendMsgToWorker: action.sendMsgToWorker,
-        ...state,
-      };
-    case SYNC:
-      return {
-        ...state,
-        syncing: true,
-        reducerName: action.reducerName,
-      };
+const app: Reducer<AppState> = (state = initialState, action: AppAction) =>
+  produce(state, draft => {
+    switch (action.type) {
+      case '@@redux-pouchdb-plus/INIT':
+        draft.pouchWorker = action.pouchWorker;
+        draft.sendMsgToWorker = action.sendMsgToWorker;
+        return;
 
-    case SYNC_SUCCESS:
-      return {
-        ...state,
-        syncing: false,
-        savedData: action.data,
-        reducerName: action.reducerName,
-      };
-    default:
-      return state;
-  }
-};
+      case SYNC:
+        draft.syncing = true;
+        draft.reducerName = action.reducerName;
+        return;
+
+      case SYNC_SUCCESS:
+        draft.syncing = false;
+        // ?
+        draft.data = action.data;
+        draft.savedData = action.data;
+        draft.reducerName = action.reducerName;
+        return;
+    }
+  });
 
 export { app, AppState, AppAction };
