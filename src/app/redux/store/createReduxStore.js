@@ -77,16 +77,21 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
       persistentStore(),
       applyMiddleware(...[...middlewares]),
       enhancer,
-      ...(addDevTools ? [DevTools.instrument()] : []),
     ];
   } else {
     composeFuncs = [applyMiddleware(...middlewares), enhancer];
   }
 
+  const composeEnhancers =
+    (__CLIENT__ &&
+      addDevTools &&
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
+    compose;
+
   const store = createStore(
     rootReducer,
     preloadedState,
-    compose(...composeFuncs),
+    composeEnhancers(...composeFuncs),
   );
 
   // sagaMiddleware.run().done
