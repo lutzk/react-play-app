@@ -167,9 +167,7 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
     }
   };
 
-  const debouncedSignalChangeToWorker = debounce(sendChangeToWorker, 250, {
-    leading: true,
-  });
+  const debouncedSignalChangeToWorker = debounce(sendChangeToWorker, 5000);
   const reducerName = name;
   setReducerUninitialized(reducerName);
 
