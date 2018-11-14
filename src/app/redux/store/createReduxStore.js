@@ -85,7 +85,9 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
   const composeEnhancers =
     (__CLIENT__ &&
       addDevTools &&
-      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        name: 'ROVER',
+      })) ||
     compose;
 
   const store = createStore(
