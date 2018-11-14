@@ -112,7 +112,7 @@
     "pouchdb-replication": "^6.2.0",
     "react": "16.6.0",
     "react-dom": "16.6.0",
-    "react-hot-loader": "^4.3.11",
+    "react-hot-loader": "^4.4.0",
     "react-redux": "^6.0.0-beta.2",
     "react-universal-component": "../react-universal-component",
     "redis": "^2.7.1",
