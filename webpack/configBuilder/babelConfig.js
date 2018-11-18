@@ -26,6 +26,15 @@ const babelConfigBase = {
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-function-bind',
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "corejs": false,
+        "helpers": true,
+        "regenerator": false,
+        "useESModules": true,
+      }
+    ]
   ],
 };
 
