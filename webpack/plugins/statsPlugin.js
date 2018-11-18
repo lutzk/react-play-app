@@ -1,14 +1,14 @@
-const fs = require('fs');
+import { writeFileSync } from 'fs';
 
-// to compile getAssetsFromStats on the fly
-require('@babel/register')({
-  // ignore: ['/node_modules/'],
-  // babelrc: false,
-  presets: ['@babel/preset-env'],
-});
+// // to compile getAssetsFromStats on the fly
+// require('@babel/register')({
+//   // ignore: ['/node_modules/'],
+//   // babelrc: false,
+//   presets: ['@babel/preset-env'],
+// });
 
-const formatAssets = require('../../src/appServer/serverAssets.js').formatAssets;
-const getAssetsFromStats = require('../../src/appServer/serverAssets.js').getAssetsFromStats;
+import { formatAssets } from '../../src/appServer/serverAssets.js';
+import { getAssetsFromStats } from '../../src/appServer/serverAssets.js';
 
 function StatsPlugin() {}
 
@@ -17,9 +17,9 @@ StatsPlugin.prototype.apply = function apply(compiler) {
   compiler.plugin('done', (stats) => {
     const assets = getAssetsFromStats(stats.toJson());
     const json = JSON.stringify(formatAssets(assets));
-    fs.writeFileSync(outFile, json);
-    fs.writeFileSync('./static/' + outFile, json);
+    writeFileSync(outFile, json);
+    writeFileSync('./static/' + outFile, json);
   });
 };
 
-module.exports = StatsPlugin;
+export default StatsPlugin;

@@ -1,11 +1,10 @@
-require('../setEnv');
-const Express = require('express');
-const webpack = require('webpack');
-const webpackHotMiddleware = require('webpack-hot-middleware');
-const webpackDevMiddleware = require('webpack-dev-middleware');
+import Express from 'express';
+import webpack from 'webpack';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+import webpackDevMiddleware from 'webpack-dev-middleware';
 
-const appConfig = require('../src/config/config');
-const webpackConfig = require('./webpackConfig.js');
+import { config as appConfig } from '../src/config/config';
+import webpackConfig from './webpackConfig.js';
 
 const clientConfig = webpackConfig('dev.client');
 const compiler = webpack(clientConfig);

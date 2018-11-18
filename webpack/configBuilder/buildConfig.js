@@ -10,7 +10,7 @@ import {
 
 import { context } from '../settings';
 
-export function buildConfig(env) {
+export default function buildConfig(env) {
 
   const rawConfig = {};
   const servers = ['apiServer', 'appServer'];

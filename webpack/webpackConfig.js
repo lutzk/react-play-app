@@ -1,13 +1,5 @@
-require('@babel/register')({
-  // ignore: ['/node_modules/'],
-  // babelrc: false,
-  presets: ['@babel/preset-env'],
-});
+import buildConfig from './configBuilder/buildConfig';
 
-const buildConfig = require('./configBuilder/buildConfig').buildConfig;
-
-function config(env) {
+export default function config(env) {
   return buildConfig(env);
-}
-
-module.exports = config;
+};
