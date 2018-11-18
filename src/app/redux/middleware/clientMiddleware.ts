@@ -1,17 +1,17 @@
 import {
   reinit,
-  reset,
   requestReinit,
+  reset,
 } from '../../../redux-pouchdb-plus/src/index';
-import { startLoading, endLoading } from '../modules/pageLoadBar';
+import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
+import { endLoading, startLoading } from '../modules/pageLoadBar';
 import {
   KILL_USER,
-  SIGNUP_SUCCESS,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
+  SIGNUP_SUCCESS,
 } from '../modules/user';
-import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
-import { linkToSpirit } from '../routing/navTypes';
+import { linkToSpirit } from '../routing/navHelpers';
 
 const clientMiddleware = client => ({
   dispatch,

@@ -1,15 +1,16 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Location } from 'redux-first-router';
+import { goToPage } from '../../redux/modules/page';
 import {
   /* initPage, */ getManifest as refreshManifest,
   updateList,
 } from '../../redux/modules/roverView';
-import { linkToHome } from '../../redux/routing/navTypes';
-import { goToPage } from '../../redux/modules/page';
-import RoverMissionStats from '../RoverView/RoverMissionStats';
-import RoverMissionSols from '../RoverView/RoverMissionSols';
+import { createSolLink, linkToHome } from '../../redux/routing/navHelpers';
+import RoverMissionSols from './RoverMissionSols';
+import RoverMissionStats from './RoverMissionStats';
 import './RoverView.sass';
 
 const mapStateToProps = state => ({
@@ -32,46 +33,40 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    Object.assign({}, { refreshManifest, updateList, goToPage }),
+    Object.assign({}, { refreshManifest, updateList, goToPage, createSolLink }),
     dispatch,
   );
 
-class RoverView extends Component {
-  static propTypes = {
-    location: PropTypes.object,
-    syncing: PropTypes.bool,
-    savedData: PropTypes.object,
-    range: PropTypes.object,
-    sorts: PropTypes.object,
-    filter: PropTypes.object,
-    params: PropTypes.object,
-    maxSol: PropTypes.number,
-    roverName: PropTypes.string,
-    updateList: PropTypes.func,
-    listLength: PropTypes.number,
-    missionStats: PropTypes.object,
-    solsToRender: PropTypes.array,
-    loaded: PropTypes.bool,
-    goToPage: PropTypes.func,
-    refreshManifest: PropTypes.func,
-    loading: PropTypes.bool,
-    initialSolCount: PropTypes.number,
-    manifestLoadError: PropTypes.any,
-  };
+interface Props {
+  location: Location;
+  syncing: boolean;
+  savedData: any;
+  range: any;
+  sorts: any;
+  filter: any;
+  params: any;
+  maxSol: number;
+  roverName: string;
+  updateList: any;
+  listLength: number;
+  missionStats: any;
+  solsToRender: any[];
+  loaded: boolean;
+  goToPage: any;
+  refreshManifest: any;
+  loading: boolean;
+  initialSolCount: number;
+  manifestLoadError: any;
+  createSolLink: any;
+}
 
+class RoverView extends Component<Props> {
   constructor(props) {
     super(props);
-
-    // this.handleSort = ::this.handleSort;
-    // this.handleRangeUpdate = ::this.handleRangeUpdate;
-    this.handleRangeUpdate = this.handleRangeUpdate.bind(this);
-    this.handleHomeLink = this.handleHomeLink.bind(this);
-    // this.handleUpdateFilter = ::this.handleUpdateFilter;
-    // this.handleRefreshManifestRequest = ::this.handleRefreshManifestRequest;
   }
 
-  componentDidMount() {
-    if (!this.props.location.payload.rover && this.props.roverName) {
+  public componentDidMount() {
+    if (!(this.props.location.payload as any).rover && this.props.roverName) {
       window.history.pushState(
         null,
         '',
@@ -80,12 +75,12 @@ class RoverView extends Component {
     }
   }
 
-  handleRefreshManifestRequest(e) {
-    const offline = !!e.target.dataset.offline;
+  public handleRefreshManifestRequest(e) {
+    const offline = !!e.currentTarget.dataset.offline;
     return this.props.refreshManifest(this.props.roverName, offline);
   }
 
-  handleSort(e) {
+  public handleSort(e) {
     const fields = e.currentTarget.dataset.sortfield
       ? [e.currentTarget.dataset.sortfield]
       : this.props.sorts.fields;
@@ -98,75 +93,76 @@ class RoverView extends Component {
     return this.props.updateList({ sorts });
   }
 
-  handleUpdateFilter(e) {
-    const { field, toggle } = e.target.dataset;
+  public handleUpdateFilter(e) {
+    const { field, toggle } = e.currentTarget.dataset;
     const filter = {};
 
     if (toggle) {
-      filter.on = !this.props.filter.on;
+      (filter as any).on = !this.props.filter.on;
     } else if (field && !toggle) {
-      if (e.target.type === 'checkbox') {
-        filter[field] = { on: e.target.checked };
-      } else if (e.target.type === 'number') {
-        filter[field] = { value: parseInt(e.target.value, 10) };
+      if (e.currentTarget.type === 'checkbox') {
+        filter[field] = { on: e.currentTarget.checked };
+      } else if (e.currentTarget.type === 'number') {
+        filter[field] = { value: parseInt(e.currentTarget.value, 10) };
       } else {
-        filter[field] = { value: e.target.value };
+        filter[field] = { value: e.currentTarget.value };
       }
     }
 
     return this.props.updateList({ filter });
   }
 
-  handleRangeUpdate(e) {
-    const action = e.target.dataset.range;
+  public handleRangeUpdate = e => {
+    const action = e.currentTarget.dataset.range;
     const range = { action };
     return this.props.updateList({ range });
-  }
+  };
 
-  handleHomeLink() {
+  public handleHomeLink = () => {
     this.props.goToPage(linkToHome);
-  }
+  };
 
-  render() {
+  public render() {
     const {
       loaded,
       loading,
       syncing,
       savedData,
+      createSolLink,
       manifestLoadError,
     } = this.props;
 
-    const getListStats = () => {
-      const {
-        solsToRender,
-        listLength,
-        range: { start, end },
-      } = this.props;
-      let sols = null;
-      let maxSol = null;
-      let minSol = null;
-      let stats = null;
-      const currentRange = end - start;
-      // solsToRender && solsToRender.length && solsToRender.map(sol => sol.sol);
+    // const getListStats = () => {
+    //   const {
+    //     solsToRender,
+    //     listLength,
+    //     range: { start, end },
+    //   } = this.props;
+    //   let sols = null;
+    //   let maxSol = null;
+    //   let minSol = null;
+    //   let stats = null;
+    //   const currentRange = end - start;
+    //   // solsToRender && solsToRender.length && solsToRender.map(sol => sol.sol);
 
-      if (solsToRender && solsToRender.length) {
-        sols = solsToRender.map(sol => sol.sol);
-        maxSol = Math.max(...sols);
-        minSol = Math.min(...sols);
+    //   if (solsToRender && solsToRender.length) {
+    //     sols = solsToRender.map(sol => sol.sol);
+    //     maxSol = Math.max(...sols);
+    //     minSol = Math.min(...sols);
 
-        stats = (
-          <div className="statsPane">
-            total count: {listLength},<br />
-            current count: {solsToRender.length + 1}
-            <br />
-            min shown sol: {minSol},<br />
-            max shown sol: {maxSol}
-          </div>
-        );
+    //     stats = (
+    //       <div className="statsPane">
+    //         total count: {listLength},<br />
+    //         current count: {solsToRender.length + 1}
+    //         <br />
+    //         min shown sol: {minSol},<br />
+    //         max shown sol: {maxSol}
+    //       </div>
+    //     );
 
-        return stats;
-      }
-    };
+    //     return stats;
+    //   }
+    // };
 
     const missionStatsProps = {
       roverName: this.props.roverName,
@@ -176,18 +172,13 @@ class RoverView extends Component {
     const missionSolsProps = {
       sols: this.props.solsToRender,
       rover: this.props.roverName ? this.props.roverName.toLowerCase() : '',
-      dispatch: this.props.dispatch,
+      createSolLink,
     };
 
     const loadPane = (
       <div className="loadPane">
-        <button onClick={e => this.handleRefreshManifestRequest(e)}>
-          refresh
-        </button>
-        <button
-          onClick={e => this.handleRefreshManifestRequest(e)}
-          data-offline
-        >
+        <button onClick={this.handleRefreshManifestRequest}>refresh</button>
+        <button onClick={this.handleRefreshManifestRequest} data-offline={true}>
           refresh (offline)
         </button>
       </div>
@@ -204,7 +195,7 @@ class RoverView extends Component {
                 type="checkbox"
                 id={`${field}`}
                 checked={this.props.filter.fields[field].on}
-                onChange={e => this.handleUpdateFilter(e)}
+                onChange={this.handleUpdateFilter}
                 data-field={`${field}`}
               />
             </label>
@@ -217,7 +208,7 @@ class RoverView extends Component {
                     : 'text'
                 }
                 value={this.props.filter.fields[field].value}
-                onChange={e => this.handleUpdateFilter(e)}
+                onChange={this.handleUpdateFilter}
                 data-field={`${field}`}
               />
             )}
@@ -227,7 +218,7 @@ class RoverView extends Component {
 
       return (
         <div className="filterPane">
-          <a data-toggle onClick={e => this.handleUpdateFilter(e)}>
+          <a data-toggle={true} onClick={this.handleUpdateFilter}>
             toggle filter
           </a>
           {this.props.filter.on && <div>{filterPane}</div>}
@@ -286,15 +277,12 @@ class RoverView extends Component {
                 className={sortField === key ? 'enabled' : ''}
                 disabled={sortField === key}
                 data-sortfield={key}
-                onClick={e => this.handleSort(e)}
+                onClick={this.handleSort}
               >
                 sort by {key}
               </button>
             ))}
-            <button
-              data-sortorder={newSortOrder}
-              onClick={e => this.handleSort(e)}
-            >
+            <button data-sortorder={newSortOrder} onClick={this.handleSort}>
               sort {newSortOrder}
             </button>
             {/* <div>

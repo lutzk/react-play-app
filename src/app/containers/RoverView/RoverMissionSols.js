@@ -1,10 +1,10 @@
 import React from 'react';
-import { createSolLink } from '../../redux/routing/navTypes';
 
-const RoverMissionSols = ({ dispatch, sols, rover }) => {
+const RoverMissionSols = ({ createSolLink, sols, rover }) => {
   const handleLink = e => {
+    console.log('createSolLink', createSolLink);
     e.preventDefault();
-    dispatch(createSolLink({ rover, sol: e.target.dataset.sol }));
+    createSolLink({ rover, sol: e.currentTarget.dataset.sol });
   };
   if (!sols) {
     return null;

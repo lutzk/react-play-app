@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Location } from 'redux-first-router';
+import { ApplicationState } from '../../redux/modules/reducer';
 import {
   getSolManifest,
   getSolManifest as refreshManifest,
   updateList,
 } from '../../redux/modules/solView';
-import { createRoverLink, linkToHome } from '../../redux/routing/navTypes';
+import { createRoverLink, linkToHome } from '../../redux/routing/navHelpers';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: ApplicationState) => ({
   sorts: state.solView.sorts,
   range: state.solView.range,
   filter: state.solView.filter,
@@ -33,25 +34,25 @@ const mapDispatchToProps = dispatch =>
     dispatch,
   );
 
-class SolView extends Component {
-  static propTypes = {
-    location: PropTypes.object,
-    range: PropTypes.object,
-    sorts: PropTypes.object,
-    filter: PropTypes.object,
-    list: PropTypes.array,
-    minShown: PropTypes.bool,
-    maxShown: PropTypes.bool,
-    moreShown: PropTypes.bool,
-    manifestLoaded: PropTypes.bool,
-    manifestLoading: PropTypes.bool,
-    initialCount: PropTypes.number,
-    manifestLoadError: PropTypes.any,
-    updateList: PropTypes.func,
-    refreshManifest: PropTypes.func,
-    listLength: PropTypes.number,
-  };
+interface Props {
+  location: Location;
+  range: any;
+  sorts: any;
+  filter: any;
+  list: any[];
+  minShown: boolean;
+  maxShown: boolean;
+  moreShown: boolean;
+  manifestLoaded: boolean;
+  manifestLoading: boolean;
+  initialCount: number;
+  manifestLoadError: any;
+  updateList: any;
+  refreshManifest: any;
+  listLength: number;
+}
 
+class SolView extends Component<Props> {
   constructor(props) {
     super(props);
 
@@ -63,16 +64,16 @@ class SolView extends Component {
     );
   }
 
-  handleRefreshManifestRequest(e) {
-    const offline = !!e.target.dataset.offline;
+  public handleRefreshManifestRequest(e) {
+    const offline = !!e.currentTarget.dataset.offline;
     return this.props.refreshManifest(
-      this.props.location.payload.rover,
-      this.props.location.payload.sol,
+      (this.props.location.payload as any).rover,
+      (this.props.location.payload as any).sol,
       offline,
     );
   }
 
-  handleSort(e) {
+  public handleSort(e) {
     const fields = e.currentTarget.dataset.sortfield
       ? [e.currentTarget.dataset.sortfield]
       : this.props.sorts.fields;
@@ -85,32 +86,32 @@ class SolView extends Component {
     return this.props.updateList({ sorts });
   }
 
-  handleUpdateFilter(e) {
-    const { field, toggle } = e.target.dataset;
+  public handleUpdateFilter(e) {
+    const { field, toggle } = e.currentTarget.dataset;
     const filter = { on: this.props.filter.on };
 
     if (toggle) {
       filter.on = !this.props.filter.on;
     } else if (field && !toggle) {
-      if (e.target.type === 'checkbox') {
-        filter[field] = { on: e.target.checked };
-      } else if (e.target.type === 'number') {
-        filter[field] = { value: parseInt(e.target.value, 10) };
+      if (e.currentTarget.type === 'checkbox') {
+        filter[field] = { on: e.currentTarget.checked };
+      } else if (e.currentTarget.type === 'number') {
+        filter[field] = { value: parseInt(e.currentTarget.value, 10) };
       } else {
-        filter[field] = { value: e.target.value };
+        filter[field] = { value: e.currentTarget.value };
       }
     }
 
     return this.props.updateList({ filter });
   }
 
-  handleRangeUpdate(e) {
-    const action = e.target.dataset.range;
+  public handleRangeUpdate(e) {
+    const action = e.currentTarget.dataset.range;
     const range = { action };
     return this.props.updateList({ range });
   }
 
-  render() {
+  public render() {
     const {
       // minShown,
       // maxShown,
@@ -120,12 +121,12 @@ class SolView extends Component {
       manifestLoadError,
     } = this.props;
 
-    const { sol, rover } = this.props.location.payload;
+    const { sol, rover } = (this.props.location as any).payload;
 
     const loadPane = (
       <div className="loadPane">
         <button onClick={this.handleRefreshManifestRequest}>refresh</button>
-        <button onClick={this.handleRefreshManifestRequest} data-offline>
+        <button onClick={this.handleRefreshManifestRequest} data-offline="true">
           refresh (offline)
         </button>
       </div>
@@ -164,7 +165,7 @@ class SolView extends Component {
 
       return (
         <div className="filterPane">
-          <a data-toggle onClick={this.handleUpdateFilter}>
+          <a data-toggle="true" onClick={this.handleUpdateFilter}>
             toggle filter
           </a>
           {this.props.filter.on && <div>{filterPane}</div>}
@@ -209,7 +210,7 @@ class SolView extends Component {
     };
 
     const renderSortPane = () => {
-      const sortOrder = this.props.sorts.orders[0];
+      const sortOrder = 'asc'; // his.props.sorts.orders[0];
       const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
       const sortField = this.props.sorts.fields[0];
       // const newSortField = sortField === 'total_photos' ? 'cameras' : 'total_photos';
