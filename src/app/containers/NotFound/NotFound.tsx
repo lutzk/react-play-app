@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { linkToHome } from '../../redux/routing/navTypes';
+import { linkToHome } from '../../redux/routing/navHelpers';
 
 const NotFoundComp = ({ dispatch }) => {
   const handleHomeLink = () => {

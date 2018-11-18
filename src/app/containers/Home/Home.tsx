@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { createRoverLink, linkToSpirit } from '../../redux/routing/navTypes';
+import { createRoverLink, linkToSpirit } from '../../redux/routing/navHelpers';
 import '../Home/Home.sass';
 
 const HomeComp = ({ dispatch }) => {
