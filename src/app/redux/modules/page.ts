@@ -1,20 +1,19 @@
-import { AnyAction, Reducer } from 'redux';
-import { NOT_FOUND } from 'redux-first-router';
-import { HOME, LOGIN, ROVER_VIEW, SOL_VIEW } from '../routing/nav';
+import { Reducer } from 'redux';
+import { PATHS_TYPES } from '../routing/nav';
 
 const components = {
-  [HOME]: 'Home',
-  [LOGIN]: 'Login',
-  [SOL_VIEW]: 'SolView',
-  [NOT_FOUND]: 'NotFound',
-  [ROVER_VIEW]: 'RoverView',
+  [PATHS_TYPES.HOME]: 'Home',
+  [PATHS_TYPES.LOGIN]: 'Login',
+  [PATHS_TYPES.SOL_VIEW]: 'SolView',
+  [PATHS_TYPES.NOT_FOUND]: 'NotFound',
+  [PATHS_TYPES.ROVER_VIEW]: 'RoverView',
 };
 
 interface PageAction {
   type?: string;
 }
 
-const initialPageState: string = LOGIN;
+const initialPageState: string = PATHS_TYPES.LOGIN;
 
 // the primary reducer demonstrating Redux-First Router:
 const page: Reducer<string> = (
@@ -22,10 +21,12 @@ const page: Reducer<string> = (
   action: PageAction = {},
 ) => components[action.type] || state;
 
-const goToPage = ({ type, payload }) => dispatch =>
-  dispatch({
+const goToPage = ({ type, payload }) => dispatch => {
+  console.log('GO', type, payload);
+  return dispatch({
     type,
     payload,
   });
+};
 
 export { page, goToPage, PageAction };

@@ -1,7 +1,8 @@
 import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
 import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
-import { linkToLogin } from '../routing/navTypes';
+import { RedirectAction } from '../routing/nav';
+import { linkToLogin } from '../routing/navHelpers';
 
 const LOGIN = 'user/LOGIN';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
@@ -228,7 +229,7 @@ const checkAuth = () => (dispatch, getState) => {
     const action = redirect({
       ...linkToLogin,
       nextPathname: getState().location.pathname,
-    });
+    } as RedirectAction);
     return dispatch(redirect(action));
   }
   return Promise.resolve(true);

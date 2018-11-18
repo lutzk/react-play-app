@@ -1,13 +1,17 @@
-import thunkMiddleware from 'redux-thunk';
+import { AnyAction, applyMiddleware, compose, createStore } from 'redux';
 // import createSagaMiddleware from 'redux-saga';
-import { connectRoutes, redirect /* , NOT_FOUND */ } from 'redux-first-router';
-import { createStore, applyMiddleware, compose } from 'redux';
+import {
+  connectRoutes,
+  Options /* , NOT_FOUND */,
+  redirect,
+} from 'redux-first-router';
+import thunkMiddleware from 'redux-thunk';
 
-// import { LOGIN } from './nav';
-import { routesMap } from '../routing/routesMap';
-import { linkToLogin } from '../routing/navTypes';
 import { clientMiddleware } from '../middleware/clientMiddleware';
-import { loadAuth, checkAuth, isLoaded, killUser } from '../modules/user';
+import { checkAuth, isLoaded, killUser, loadAuth } from '../modules/user';
+import { RedirectAction } from '../routing/nav';
+import { linkToLogin } from '../routing/navHelpers';
+import { routesMap } from '../routing/routesMap';
 
 // import { getRootSaga } from '../sagas';
 // import createSagaMonitor from '../sagas/sagaMonitor';
@@ -39,12 +43,12 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
           const action = redirect({
             ...linkToLogin,
             nextPathname: getState().location.pathname,
-          });
+          } as RedirectAction);
           dispatch(redirect(action));
         }
       }
     },
-  };
+  } as Options;
 
   // const sagaMiddleware = createSagaMiddleware({
   //   sagaMonitor: createSagaMonitor({
@@ -65,9 +69,6 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
 
   const moduleHot = __DEVELOPMENT__ && module.hot;
   const addDevTools = __DEVELOPMENT__ && __DEVTOOLS__;
-  const DevTools = addDevTools
-    ? require('../../containers/DevTools/DevTools').default
-    : false;
 
   if (__CLIENT__) {
     const persistentStore = require('../../../redux-pouchdb-plus/src/index')
