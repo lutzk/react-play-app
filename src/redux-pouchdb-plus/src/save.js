@@ -1,5 +1,3 @@
-import { debounce } from 'lodash';
-
 const unpersistedQueue = {};
 const isSaving = {};
 
@@ -54,8 +52,7 @@ const save = (db, localId) => {
       .catch(err => console.error(err));
   };
 
-  const debouncedSaveReducer = debounce(saveReducer, 250, { leading: true });
-  return debouncedSaveReducer;
+  return saveReducer;
 };
 
 export { save };
