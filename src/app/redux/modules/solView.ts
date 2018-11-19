@@ -18,20 +18,20 @@ interface SolViewState {
   listLength: number;
   list: any;
   listToRender: any;
+  minShown: boolean;
   maxShown: boolean;
   moreShown: boolean;
-  sorts?: any;
+  sorts: any;
   filter: any;
   defaultSorts: any;
   range: any; // defaultRange,
   reducerName?: string;
   initialCount: number;
-  availableSorts: any;
   prefetched: boolean;
 }
 
 interface SolResult {
-  photos: any;
+  photos: any[];
 }
 
 interface SolViewAction extends AnyAction {
@@ -92,11 +92,12 @@ const initialState: SolViewState = {
   listLength: 0,
   list: null,
   listToRender: null,
+  minShown: false,
   maxShown: false,
   moreShown: false,
-  availableSorts,
-  filter: defaultFilter,
+  sorts: availableSorts,
   defaultSorts,
+  filter: defaultFilter,
   range: defaultRange,
   prefetched: false,
 };
@@ -160,9 +161,9 @@ const solView: Reducer<SolViewState> = (
         draft.listLength = action.result.photos.length;
         draft.listToRender = sortList({
           list: cleanUpData(action.result.photos),
-          sorts: state.sorts,
-          filter: state.filter,
-          range: state.range,
+          sorts: draft.sorts,
+          filter: draft.filter,
+          range: draft.range,
         });
         return;
 
