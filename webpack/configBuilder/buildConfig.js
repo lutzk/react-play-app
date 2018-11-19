@@ -57,7 +57,7 @@ export default function buildConfig(env) {
     rawConfig.target = targetNode;
     rawConfig.name = 'server';
     rawConfig.mode = 'development';
-    // rawConfig.recordsPath = `${context}server-records.json;
+    // rawConfig.recordsPath = `${context}/server-records.json;
   } else {
     rawConfig.name = 'client';
     // setting all explictly false is ok
@@ -67,7 +67,7 @@ export default function buildConfig(env) {
     rawConfig.node = nodeFalse;
     rawConfig.output.crossOriginLoading = 'anonymous';
     rawConfig.target = { target: 'web' };
-    rawConfig.recordsPath = `${context}records.json`;
+    // rawConfig.recordsPath = `${context}/records.json`;
     rawConfig.optimization = {
       // FOR PRODUCTION
       // minimizer: [
