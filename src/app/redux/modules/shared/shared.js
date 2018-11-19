@@ -16,6 +16,7 @@ const filterByFieldValue = (list, filter) => {
     const combinedFilterMatrix = [];
     filter.map(filterItem => {
       if (filterItem !== undefined) {
+        // cameras fail here
         if (
           get(listItem, filterItem.field) === parseInt(filterItem.value, 10)
         ) {
