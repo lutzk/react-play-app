@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, login, signup } from '../../redux/modules/user';
-import { linkToHome, linkToSpirit } from '../../redux/routing/navTypes';
+import { linkToHome, linkToSpirit } from '../../redux/routing/navHelpers';
 
 import '../Login/Login.sass';
 
