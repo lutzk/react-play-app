@@ -75,12 +75,12 @@ class RoverView extends Component<Props> {
     }
   }
 
-  public handleRefreshManifestRequest(e) {
+  public handleRefreshManifestRequest = e => {
     const offline = !!e.currentTarget.dataset.offline;
     return this.props.refreshManifest(this.props.roverName, offline);
-  }
+  };
 
-  public handleSort(e) {
+  public handleSort = e => {
     const fields = e.currentTarget.dataset.sortfield
       ? [e.currentTarget.dataset.sortfield]
       : this.props.sorts.fields;
@@ -91,9 +91,9 @@ class RoverView extends Component<Props> {
 
     const sorts = { fields, orders };
     return this.props.updateList({ sorts });
-  }
+  };
 
-  public handleUpdateFilter(e) {
+  public handleUpdateFilter = e => {
     const { field, toggle } = e.currentTarget.dataset;
     const filter = {};
 
@@ -110,7 +110,7 @@ class RoverView extends Component<Props> {
     }
 
     return this.props.updateList({ filter });
-  }
+  };
 
   public handleRangeUpdate = e => {
     const action = e.currentTarget.dataset.range;
