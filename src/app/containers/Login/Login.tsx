@@ -32,19 +32,27 @@ class LoginComp extends React.Component<Props> {
   }
 
   public hanldeSubmit(e) {
-    const username = e.target[0].name === 'username' ? e.target[0].value : '';
-    const password = e.target[1].name === 'password' ? e.target[1].value : '';
+    const username =
+      e.currentTarget[0].name === 'username' ? e.currentTarget[0].value : '';
+    const password =
+      e.currentTarget[1].name === 'password' ? e.currentTarget[1].value : '';
     e.preventDefault();
     return this.props.login(username, password);
   }
 
   public hanldeSignup(e) {
-    const name = e.target[0].name === 'name' ? e.target[0].value : '';
-    const username = e.target[1].name === 'username' ? e.target[1].value : '';
-    const email = e.target[2].name === 'email' ? e.target[2].value : '';
-    const password = e.target[3].name === 'password' ? e.target[3].value : '';
+    const name =
+      e.currentTarget[0].name === 'name' ? e.currentTarget[0].value : '';
+    const username =
+      e.currentTarget[1].name === 'username' ? e.currentTarget[1].value : '';
+    const email =
+      e.currentTarget[2].name === 'email' ? e.currentTarget[2].value : '';
+    const password =
+      e.currentTarget[3].name === 'password' ? e.currentTarget[3].value : '';
     const confirmPassword =
-      e.target[4].name === 'confirmPassword' ? e.target[4].value : '';
+      e.currentTarget[4].name === 'confirmPassword'
+        ? e.currentTarget[4].value
+        : '';
     e.preventDefault();
     return this.props.signup(name, username, email, password, confirmPassword);
   }
