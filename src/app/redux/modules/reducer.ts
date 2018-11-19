@@ -119,4 +119,4 @@ const _combineReducers = reducers => {
 //   };
 // };
 
-export { createRootReducer };
+export { createRootReducer, ApplicationState };
