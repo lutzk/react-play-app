@@ -21,12 +21,22 @@ declare interface Props {
   goToPage: any; // PropTypes.func,
 }
 
-class AppComponent extends Component<Props> {
+declare interface State {
+  hasError: boolean;
+}
+
+class AppComponent extends Component<Props, State> {
   public static getDerivedStateFromError(error) {
     console.log('___ERROR DERIVED CATCHED__', error);
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
+
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
   public componentDidMount() {
     this.props.loadAuth();
   }
@@ -37,6 +47,9 @@ class AppComponent extends Component<Props> {
 
   public render() {
     console.log('___RENDER__');
+    if (this.state.hasError) {
+      return <div>ERROR</div>;
+    }
     return (
       <StrictMode>
         <>
