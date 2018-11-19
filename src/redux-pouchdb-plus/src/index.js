@@ -11,7 +11,7 @@
 */
 
 import { debounce } from 'lodash';
-import { cloneDeep, isEqual } from 'lodash';
+import deepEqual from 'deep-equal';
 import { initWorkerSync, currySendMsg } from '../../app/workers/utils';
 import {
   STORE_INIT,
@@ -118,7 +118,6 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
 
         case REDUCERS_READY.type:
           setReady();
-          // store.dispatch({ type: REINIT_SUCCESS });
           break;
 
         case 'CLOSE':
@@ -133,8 +132,7 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
 
   const setReducer = doc => {
     const { _rev, _id: reducer, state: dbState } = doc;
-    const state = cloneDeep(dbState);
-    // const state = dbState;
+    const state = dbState;
 
     store.dispatch({
       _rev,
@@ -218,9 +216,8 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
         }
 
         isInitialized = initializedReducers[reducerName];
-        if (isInitialized && !isEqual(nextState, currentState)) {
+        if (isInitialized && !deepEqual(nextState, currentState)) {
           currentState = nextState;
-
           debouncedSignalChangeToWorker(reducerName, nextState);
         } else {
           currentState = nextState;

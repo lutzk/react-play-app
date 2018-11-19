@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import { cloneDeep, isEqual, debounce } from 'lodash';
+import deepEqual from 'deep-equal';
 
 import { save } from '../../redux-pouchdb-plus/src/save';
 import { currySendMsg } from '../../app/workers/utils';
@@ -156,7 +156,7 @@ const initChanges = (db, docId, save, currentState) =>
       if (change.doc.localId !== CLIENT_HASH) {
         if (!change.doc.state) {
           save(change.doc._id, currentState);
-        } else if (!isEqual(cloneDeep(change.doc.state), currentState)) {
+        } else if (!deepEqual(change.doc.state, currentState)) {
           setReducer(change.doc);
           // .then((re) => {
           //   // console.log('__RE__', re);
@@ -202,15 +202,12 @@ const setReducerReady = reducerName =>
   sendMsgToClient({ ...REDUCER_READY, reducerName });
 
 async function reinitReducer(reducerName, state, currentState, user) {
-  // console.log('___REINIT__', reducerName);
-  // setReducerUninitialized(reducerName);
   if (changes) {
     changes.cancel();
   }
 
   if (!DBS) {
     await setDBS(user);
-    // DBS = await getDBS(user);
   }
 
   const dbs = DBS;
@@ -221,7 +218,7 @@ async function reinitReducer(reducerName, state, currentState, user) {
   saveReducer = save(localDB, CLIENT_HASH);
 
   if (prefetched) {
-    await saveReducer(reducerName, cloneDeep(state));
+    await saveReducer(reducerName, state);
   } else {
     await initDBState(state, localDB, remoteDB, reducerName, saveReducer);
   }
@@ -238,6 +235,8 @@ async function reinitReducer(reducerName, state, currentState, user) {
   changes = initChanges(localDB, reducerName, saveReducer, currentState);
   setReducerReady(reducerName);
 }
+
+const stateCache = new Map();
 
 const handleMsg = async e => {
   const {
@@ -261,7 +260,11 @@ const handleMsg = async e => {
         break;
 
       case REDUCER_CHANGE.type:
-        saveReducer(reducerName, nextState);
+        let _prevState = stateCache.get(reducerName);
+        if (!_prevState || !deepEqual(_prevState, nextState)) {
+          saveReducer(reducerName, nextState);
+        }
+        stateCache.set(reducerName, nextState);
         // reply('ack');
         break;
 
@@ -275,7 +278,6 @@ const handleMsg = async e => {
         break;
 
       case REDUCER_REGISTER.type:
-        // console.log('__REGISTER__', reducerName);
         setReducerUninitialized(reducerName);
         break;
 
