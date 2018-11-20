@@ -25,26 +25,7 @@ const render = (App: any, store: any, hydrate = true) => {
   return renderFn(app, rootDomNode);
 };
 
-const renderDevStuff = () => {
-  if (__DEVELOPMENT__) {
-    window.React = React;
-
-    if (__DEVTOOLS__) {
-      const DevTools = require('./containers/DevTools/DevTools').default;
-      const devToolsDest = document.createElement('div');
-      window.document.body.insertBefore(devToolsDest, null);
-      ReactDOM.render(
-        <Provider store={store} key="devToolsProvider">
-          <DevTools />
-        </Provider>,
-        devToolsDest,
-      );
-    }
-  }
-};
-
 render(App, store);
-// renderDevStuff();
 
 if (module.hot && process.env.NODE_ENV === 'development') {
   module.hot.accept('./containers/App/App', () => {
