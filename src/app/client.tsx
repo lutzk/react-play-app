@@ -28,8 +28,11 @@ const render = (App: any, store: any, hydrate = true) => {
 render(App, store);
 
 if (module.hot && process.env.NODE_ENV === 'development') {
-  module.hot.accept('./containers/App/App', () => {
-    render(App, store, false);
-  });
+  module.hot.accept(
+    ['./containers/App/App', './redux/store/createReduxStore'],
+    () => {
+      render(App, store, false);
+    },
+  );
 }
 // initCacheWorker(t).then((a) => {

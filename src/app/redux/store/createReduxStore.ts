@@ -8,6 +8,7 @@ import {
 import thunkMiddleware from 'redux-thunk';
 
 import { clientMiddleware } from '../middleware/clientMiddleware';
+import { createRootReducer } from '../modules/reducer';
 import { checkAuth, isLoaded, killUser, loadAuth } from '../modules/user';
 import { RedirectAction } from '../routing/nav';
 import { linkToLogin } from '../routing/navHelpers';
@@ -25,8 +26,6 @@ import { routesMap } from '../routing/routesMap';
 // createSagaMonitor(config);
 
 function createReduxStore({ client, preloadedState, reqPath = null }) {
-  let composeFuncs;
-  const createRootReducer = require('../modules/reducer').createRootReducer;
   const options = {
     initialEntries: reqPath,
     initialDispatch: false,
@@ -64,11 +63,11 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
     thunk,
     initialDispatch,
   } = connectRoutes(routesMap, options);
+
+  let composeFuncs;
   const rootReducer = createRootReducer(reducer);
   const middlewares = [middleware, thunkMiddleware, clientMiddleware(client)];
-
-  const moduleHot = __DEVELOPMENT__ && module.hot;
-  const addDevTools = __DEVELOPMENT__ && __DEVTOOLS__;
+  const addDevTools = __CLIENT__ && __DEVELOPMENT__ && __DEVTOOLS__;
 
   if (__CLIENT__) {
     const persistentStore = require('../../../redux-pouchdb-plus/src/index')
@@ -84,8 +83,7 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
   }
 
   const composeEnhancers =
-    (__CLIENT__ &&
-      addDevTools &&
+    (addDevTools &&
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
         name: 'ROVER',
       })) ||
@@ -102,15 +100,6 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
   // const rootTask = sagaMiddleware.run(getRootSaga(client));
   // store.runSaga = sagaMiddleware.run;
   initialDispatch();
-
-  if (moduleHot) {
-    module.hot.accept('../modules/reducer', () => {
-      const newRootReducer = require('../modules/reducer').createRootReducer(
-        reducer,
-      );
-      store.replaceReducer(newRootReducer);
-    });
-  }
 
   return { store, thunk /* , rootTask */ };
 }
