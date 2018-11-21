@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { get, orderBy } from 'lodash';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
@@ -34,7 +35,7 @@ const filterByFieldValue = (list, filter) => {
   return newList;
 };
 
-const filterList = ({ list, range } = {}) => {
+const filterList = ({ list, range } = {} as any) => {
   const maxListLength = list.length;
   let start = null;
   let end = null;
@@ -117,43 +118,52 @@ const updateRange = (range, stateRange, listLength) => {
   return newRange;
 };
 
-const updateFilter = (filter, currentFilter) => {
-  const newFilter = { ...currentFilter };
-  const filterKeys = Object.keys(filter);
+const updateFilter = (filter, currentFilter) =>
+  produce(currentFilter, draft => {
+    //   draft.on = filter.on;
+    // const item = draft.fields[key];
+    // item.value = filterKey.value;
+    // })
+    const filterKeys = Object.keys(filter);
+    console.log('F2', filter, draft);
+    if (filter.on !== undefined && filter.on !== draft.on) {
+      console.log('F2.2', filter, draft);
+      // newFilter.on = filter.on;
+      // haha lola a
+      draft.on = filter.on;
+    } else {
+      Object.keys(currentFilter.fields).map(key => {
+        const item = draft.fields[key];
+        const filterKey = filterKeys[filterKeys.indexOf(key)];
 
-  if (filter.on !== undefined && filter.on !== newFilter.on) {
-    newFilter.on = filter.on;
-  } else {
-    Object.keys(currentFilter.fields).map(key => {
-      const item = newFilter.fields[key];
-      const filterKey = filterKeys[filterKeys.indexOf(key)];
+        if (key === filterKey) {
+          const filterKey = filter[key];
 
-      if (key === filterKey) {
-        const filterKey = filter[key];
-
-        if (filterKey.value || filterKey.value === 0) {
-          if (
-            typeof filterKey.value === 'number' &&
-            !isNaN(filterKey.value) &&
-            filterKey.value > -1
-          ) {
-            item.value = filterKey.value;
-          } else if (typeof filterKey.value === 'string') {
-            item.value = filterKey.value;
+          if (filterKey.value || filterKey.value === 0) {
+            if (
+              (typeof filterKey.value === 'number' &&
+                !isNaN(filterKey.value) &&
+                filterKey.value > -1) ||
+              typeof filterKey.value === 'string'
+            ) {
+              item.value = filterKey.value;
+            }
+            // else if (typeof filterKey.value === 'string') {
+            //   item.value = filterKey.value;
+            // }
+          } else if (filterKey.on !== undefined && filterKey.on !== item.on) {
+            item.on = filterKey.on;
           }
-        } else if (filterKey.on !== undefined && filterKey.on !== item.on) {
-          item.on = filterKey.on;
         }
-      }
 
-      return 0;
-    });
-  }
+        return 0;
+      });
+    }
 
-  return newFilter;
-};
+    return draft;
+  });
 
-const sortList = ({ list, sorts, filter, range } = {}) => {
+const sortList = ({ list, sorts, filter, range } = {} as any) => {
   let sortedList = list;
   const { fields, orders } = sorts;
 
@@ -170,13 +180,9 @@ const sortList = ({ list, sorts, filter, range } = {}) => {
   return sortedList;
 };
 
-const sortListAction = ({
-  list,
-  sorts,
-  type,
-  filter,
-  range,
-} = {}) => dispatch =>
+const sortListAction = (
+  { list, sorts, type, filter, range } = {} as any,
+) => dispatch =>
   dispatch({
     type,
     sorts,
@@ -190,7 +196,7 @@ const sortListAction = ({
     }),
   });
 
-const getManifestFor = ({ rover, sol = null, types, offline } = {}) => (
+const getManifestFor = ({ rover, sol = null, types, offline } = {} as any) => (
   dispatch,
   getState,
 ) => {
@@ -205,10 +211,9 @@ const getManifestFor = ({ rover, sol = null, types, offline } = {}) => (
   });
 };
 
-const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) => (
-  dispatch,
-  getState,
-) => {
+const _updateList = (
+  { type: _type, stateKey, sorts, filter, range } = {} as any,
+) => (dispatch, getState) => {
   const {
     list: stateList,
     filter: stateFilter,
@@ -222,7 +227,7 @@ const _updateList = ({ type: _type, stateKey, sorts, filter, range } = {}) => (
   const newSorts = sorts || stateSorts;
   let newFilter = null;
   let newRange = null;
-
+  console.log('F', filter);
   if (filter) {
     newFilter = updateFilter(filter, stateFilter);
   } else {
