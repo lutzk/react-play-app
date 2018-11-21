@@ -14,9 +14,9 @@ const RoverMissionSols = ({ createSolLink, sols, rover }) => {
     return <div className="listEmpty">no sols match</div>;
   }
 
-  const solsCards = sols.map((sol, index) => (
+  const solsCards = sols.map(sol => (
     <span
-      key={index}
+      key={sol.sol}
       data-sol={sol.sol}
       className="solCard"
       onClick={handleLink}
@@ -31,8 +31,8 @@ const RoverMissionSols = ({ createSolLink, sols, rover }) => {
       </span>
       <span className={'sol_card_cameras'}>
         cams:&nbsp;
-        {sol.cameras.map((cam, j) => (
-          <span key={j}>
+        {sol.cameras.map(cam => (
+          <span key={cam}>
             {cam}
             &nbsp;
           </span>
