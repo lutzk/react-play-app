@@ -147,6 +147,7 @@ const buildClientPlugins = ({ prod = false }) => {
     caseSensitivePathsPlugin,
     buildForkTsCheckerWebpackPlugin(),
     // analyzerPlugin,
+    new webpack.ProgressPlugin(),
   ];
 
   const prodPlugins = [
