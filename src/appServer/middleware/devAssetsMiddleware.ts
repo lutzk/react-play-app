@@ -1,7 +1,7 @@
 import superagent from 'superagent';
-import { formatAssets, getAssetsFromStats } from '../serverAssets';
 import { devAssetServerPath } from '../../config/appConfig';
 import { asyncWrap as aw } from '../../helpers/utils';
+import { formatAssets, getAssetsFromStats } from '../serverAssets';
 
 const devAssetsMiddleware = () =>
   aw(async (req, res, next) => {

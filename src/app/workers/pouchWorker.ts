@@ -1,23 +1,27 @@
-import uuid from 'uuid';
 import deepEqual from 'deep-equal';
+import uuid from 'uuid';
 
-import { save } from '../../redux-pouchdb-plus/src/save';
-import { currySendMsg } from '../../app/workers/utils';
 import { getDBS } from '../../helpers/getUserDBS';
+import { save } from '../../redux-pouchdb-plus/src/save';
+import { currySendMsg } from './utils';
 
 import {
-  STORE_INIT,
-  SYNC_INITIAL,
-  SYNC_INITIAL_SUCCESS,
-  SYNC_INITIAL_FAIL,
-  REDUCER_SET,
-  REDUCER_RESET,
-  REDUCER_REINIT,
   REDUCER_CHANGE,
   REDUCER_READY,
-  REDUCERS_READY,
   REDUCER_REGISTER,
+  REDUCER_REINIT,
+  REDUCER_RESET,
+  REDUCER_SET,
+  REDUCERS_READY,
+  STORE_INIT,
+  SYNC_INITIAL,
+  SYNC_INITIAL_FAIL,
+  SYNC_INITIAL_SUCCESS,
 } from './pouchWorkerMsgTypes';
+
+interface InitializedReducers {
+  [reducer: string]: boolean;
+}
 
 let DBS;
 let changes;
@@ -26,18 +30,18 @@ let syncHandler;
 let saveReducer;
 
 const CLIENT_HASH = uuid.v1();
-const initializedReducers = {};
-const reducers = {};
+const initializedReducers: InitializedReducers = {};
+// const reducers = {};
 const sendMsgToClient = currySendMsg(self);
 
-let settingDBS = false;
-const setDBS = async user => {
-  if (!settingDBS) {
-    settingDBS = true;
-    DBS = await getDBS(user);
-    settingDBS = false;
-  }
-};
+// let settingDBS = false;
+// const setDBS = async user => {
+//   if (!settingDBS) {
+//     settingDBS = true;
+//     DBS = await getDBS(user);
+//     settingDBS = false;
+//   }
+// };
 
 const setReducerInitialized = reducerName =>
   (initializedReducers[reducerName] = true);
@@ -67,11 +71,12 @@ const destroyDBS = reply =>
     .destroy()
     .then(result => {
       DBS = false;
-      reply('destroyd');
+      reply(result);
       return result;
     })
     .catch(e => {
       console.log('DB DESTROY ERROR', e);
+      reply(e);
       return e;
     });
 
@@ -86,16 +91,24 @@ const initialSync = reply =>
   DBS.remote.replicate
     .to(DBS.local, { live: false })
     .then(r => {
+      console.log('NANANA');
       // DBS.local.get('RoverView').then((rr) => console.log('initialSyncResult', rr));
       reply({ ...SYNC_INITIAL_SUCCESS });
     })
     .catch(error => reply({ ...SYNC_INITIAL_FAIL, error }));
 
 const syncInitial = async (user, reply) => {
+  console.log('INI SYNC 1');
   if (!DBS) {
+    console.log('INI SYNC 2');
     DBS = await getDBS(user);
-    await initialSync(reply);
+    // await initialSync(reply);
   }
+  // else {
+  //   reply('INI SYNC');
+  // }
+  await initialSync(reply);
+  // reply('INI SYNC');
 };
 
 const initSync = (localDb, remoteDb, docIds) =>
@@ -191,7 +204,7 @@ const initDBState = async (state, localDb, remoteDb, docName, save) => {
   }
 };
 
-const checkReady = reducers =>
+const checkReady = (reducers: InitializedReducers) =>
   Object.values(reducers).every(reducer => reducer);
 
 const setReady = () => {
@@ -201,14 +214,23 @@ const setReady = () => {
 const setReducerReady = reducerName =>
   sendMsgToClient({ ...REDUCER_READY, reducerName });
 
-async function reinitReducer(reducerName, state, currentState, user) {
+async function reinitReducer(
+  reducerName,
+  state,
+  currentState,
+  user,
+  { reply, syncInitialReply },
+) {
+  setReducerUninitialized(reducerName);
   if (changes) {
     changes.cancel();
   }
 
-  if (!DBS) {
-    await setDBS(user);
-  }
+  await syncInitial(user, reply);
+
+  // if (!DBS) {
+  //   await setDBS(user);
+  // }
 
   const dbs = DBS;
   const localDB = dbs.local;
@@ -230,14 +252,16 @@ async function reinitReducer(reducerName, state, currentState, user) {
     syncInit = true;
     syncHandler = initSync(localDB, remoteDB, initializedReducerKeys);
     setReady();
-    notify('dbs are set up and synced');
+    // notify('dbs are set up and synced');
+    _syncInitialReply('dbs are set up and synced');
   }
   changes = initChanges(localDB, reducerName, saveReducer, currentState);
+  reply(reducerName);
   setReducerReady(reducerName);
 }
 
 const stateCache = new Map();
-
+let _syncInitialReply;
 const handleMsg = async e => {
   const {
     ports: [replyPort],
@@ -256,11 +280,15 @@ const handleMsg = async e => {
         break;
 
       case REDUCER_REINIT.type:
-        reinitReducer(reducerName, state, currentState, user);
+        console.log('REDUCER_REINIT.type');
+        reinitReducer(reducerName, state, currentState, user, {
+          reply,
+          syncInitialReply: _syncInitialReply,
+        });
         break;
 
       case REDUCER_CHANGE.type:
-        let _prevState = stateCache.get(reducerName);
+        const _prevState = stateCache.get(reducerName);
         if (!_prevState || !deepEqual(_prevState, nextState)) {
           saveReducer(reducerName, nextState);
         }
@@ -274,12 +302,14 @@ const handleMsg = async e => {
         break;
 
       case SYNC_INITIAL.type:
-        syncInitial(user, reply);
+        console.log('SYNC_INITIAL');
+        _syncInitialReply = reply;
+        // syncInitial(user, reply);
         break;
 
-      case REDUCER_REGISTER.type:
-        setReducerUninitialized(reducerName);
-        break;
+      // case REDUCER_REGISTER.type:
+      //   setReducerUninitialized(reducerName);
+      //   break;
 
       default:
         reply('no matching action found');

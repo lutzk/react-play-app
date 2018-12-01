@@ -10,22 +10,22 @@
       lutzk
 */
 
-import { debounce } from 'lodash';
 import deepEqual from 'deep-equal';
-import { initWorkerSync, currySendMsg } from '../../app/workers/utils';
+import { debounce } from 'lodash';
 import {
-  STORE_INIT,
+  REDUCER_CHANGE,
   // SYNC_INITIAL,
   // SYNC_INITIAL_SUCCESS,
   // SYNC_INITIAL_FAIL,
-  REDUCER_SET,
-  REDUCER_RESET,
-  REDUCER_REINIT,
-  REDUCER_CHANGE,
-  REDUCER_REGISTER,
   REDUCER_READY as PW_REDUCER_READY,
+  REDUCER_REGISTER,
+  REDUCER_REINIT,
+  REDUCER_RESET,
+  REDUCER_SET,
   REDUCERS_READY,
+  STORE_INIT,
 } from '../../app/workers/pouchWorkerMsgTypes';
+import { currySendMsg, initWorkerSync } from '../../app/workers/utils';
 
 // A client hash to filter out local database changes (as those
 // may lead to several race conditions).
@@ -82,7 +82,7 @@ const persistentStore = () => createStore => (reducer, initialState) => {
       console.log('reply from pouch worker: ', reply),
     );
   }
-
+  console.log('INI S', state);
   store.dispatch({
     store,
     state,
@@ -143,7 +143,7 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
   };
 
   const setReady = () => store.dispatch({ type: REINIT_SUCCESS });
-  const setReducerReady = (reducerName, initFrom) =>
+  const setReducerReady = reducerName =>
     store.dispatch({
       reducerName,
       type: REDUCER_READY,
@@ -183,8 +183,8 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
         sendMsgToWorker = action.sendMsgToWorker;
       case REINIT:
         if (isUserPresent(user)) {
-          sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           nextState = reducer(state, action);
+          // sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           reinitReducerInWorker(reducerName, nextState, currentState, user);
           return (currentState = nextState);
         }
@@ -231,6 +231,8 @@ const persistentReducer = (reducer, name /* , reducerOptions = {} */) => {
 export {
   REQUEST_REINIT,
   REINIT,
+  REINIT_SUCCESS,
+  REINIT_FAIL,
   reset,
   reinit,
   requestReinit,

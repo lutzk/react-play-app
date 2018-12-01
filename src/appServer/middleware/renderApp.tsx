@@ -1,16 +1,17 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Provider } from 'react-redux';
-import flushChunks from 'webpack-flush-chunks';
-import { NOT_FOUND } from 'redux-first-router';
 import { flushChunkNames } from 'react-universal-component/server';
+import { NOT_FOUND } from 'redux-first-router';
+import flushChunks from 'webpack-flush-chunks';
 // import { END } from 'redux-saga';
 
-import ApiClient from '../../helpers/ApiClient';
-import { Html /* , logJSON */ } from '../../helpers';
-import { asyncWrap as aw } from '../../helpers/utils';
 import { App } from '../../app/containers/App/App';
+import { loadAuth } from '../../app/redux/modules/user';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
+import { ApiClient } from '../../helpers/ApiClient';
+import Html from '../../helpers/Html';
+import { asyncWrap as aw } from '../../helpers/utils';
 
 const doctype = '<!doctype html>\n';
 
@@ -55,6 +56,7 @@ const renderApp = () =>
       return false;
     }
 
+    await store.dispatch(loadAuth());
     await thunk(store);
 
     location = store.getState().location;
