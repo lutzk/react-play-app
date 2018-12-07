@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 // import { linkToHome } from '../../../redux/routing/navTypes.js';
 import './Footer.sass';
 
-const Footer = ({ logout }) => {
+interface Props {
+  logout: any;
+}
+
+const Footer: React.SFC<Props> = memo(({ logout }) => {
   const handleLogout = () => logout();
 
   const footer = (
@@ -16,6 +20,6 @@ const Footer = ({ logout }) => {
   );
 
   return footer;
-};
+});
 
 export { Footer };
