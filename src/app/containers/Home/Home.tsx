@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { createRoverLink, linkToSpirit } from '../../redux/routing/navHelpers';
 import '../Home/Home.sass';
 
-const HomeComp = ({ dispatch }) => {
+interface Props {
+  dispatch: Dispatch;
+}
+
+const HomeComp: React.SFC<Props> = memo(({ dispatch }) => {
   const handleSpiritLink = () => {
     dispatch(linkToSpirit);
   };
@@ -32,6 +37,6 @@ const HomeComp = ({ dispatch }) => {
       </p>
     </div>
   );
-};
+});
 
 export default connect()(HomeComp);

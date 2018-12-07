@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { linkToHome } from '../../redux/routing/navHelpers';
 
-const NotFoundComp = ({ dispatch }) => {
+interface Props {
+  dispatch: Dispatch;
+}
+
+const NotFoundComp: React.SFC<Props> = memo(({ dispatch }) => {
   const handleHomeLink = () => {
     dispatch(linkToHome);
   };
@@ -14,6 +19,6 @@ const NotFoundComp = ({ dispatch }) => {
       </h1>
     </div>
   );
-};
+});
 
 export default connect()(NotFoundComp);
