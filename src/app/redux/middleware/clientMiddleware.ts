@@ -1,40 +1,79 @@
+import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
+import { ApiClient } from '../../../helpers/ApiClient';
 import {
-  reinit,
-  requestReinit,
+  POUCH_ACTION_TYPES,
   reset,
 } from '../../../redux-pouchdb-plus/src/index';
-import { SYNC_INITIAL } from '../../workers/pouchWorkerMsgTypes';
+import { syncInitial, reinitReducers } from '../modules/app';
 import { endLoading, startLoading } from '../modules/pageLoadBar';
+import { ApplicationState } from '../modules/reducer';
 import {
-  KILL_USER,
-  LOGIN_SUCCESS,
-  LOGOUT_SUCCESS,
-  SIGNUP_SUCCESS,
-} from '../modules/user';
+  APP_ACTIONS,
+  isAsyncAction,
+  isPouchPromiseAction,
+  MyThunkDispatch,
+} from '../modules/types';
+import { USER_TYPES } from '../modules/user';
 import { linkToSpirit } from '../routing/navHelpers';
 
-const clientMiddleware = client => ({
+const clientMiddleware = (client: ApiClient): Middleware => ({
   dispatch,
   getState,
-}) => next => action => {
-  //
-  if (__CLIENT__ && action.type === '@@redux-pouchdb-plus/REINIT_SUCCESS') {
+}: MiddlewareAPI<MyThunkDispatch, ApplicationState>) => (
+  next: Dispatch<APP_ACTIONS>,
+) => (action: APP_ACTIONS): Promise<any> | APP_ACTIONS => {
+  if (__CLIENT__ && action.type === POUCH_ACTION_TYPES.REINIT_SUCCESS) {
     dispatch(linkToSpirit);
     return next(action);
   }
 
-  const { promise, types, ...rest } = action;
-
-  if (!promise) {
+  if (!isAsyncAction(action)) {
     return next(action);
   }
 
-  const [REQUEST, SUCCESS, FAILURE] = types;
-  const reinitReducerTypes = [SIGNUP_SUCCESS, LOGIN_SUCCESS];
+  const { type, asyncTypes, apiPromise, pouchPromise, ...rest } = action;
 
-  next({ ...rest, type: REQUEST });
+  if (!(apiPromise || pouchPromise)) {
+    return next(action);
+  }
+
+  const [REQUEST, SUCCESS, FAILURE] = [type, ...asyncTypes];
+  const reinitReducerTypes = [
+    USER_TYPES.SIGNUP_SUCCESS,
+    USER_TYPES.LOGIN_SUCCESS,
+  ];
+
+  next({ ...rest, type: REQUEST } as APP_ACTIONS);
   dispatch(startLoading());
-  return promise(client).then(result => {
+
+  // move to extra mw
+  if (isPouchPromiseAction(action)) {
+    if (action.type === POUCH_ACTION_TYPES.REINIT_REDUCERS) {
+      const pp = pouchPromise();
+      next({ type: POUCH_ACTION_TYPES.REINIT });
+      return pp
+        .then()
+        .then(r => {
+          dispatch(endLoading());
+          return dispatch({ type: SUCCESS });
+        })
+        .catch(e => {
+          dispatch(endLoading(true));
+          return dispatch({ type: FAILURE });
+        });
+    }
+    return pouchPromise()
+      .then(r => {
+        dispatch(endLoading());
+        return dispatch({ type: SUCCESS });
+      })
+      .catch(e => {
+        dispatch(endLoading(true));
+        return dispatch({ type: FAILURE });
+      });
+  }
+
+  return apiPromise(client).then(result => {
     const { error } = result;
 
     if (error) {
@@ -45,38 +84,31 @@ const clientMiddleware = client => ({
         return next({
           ...rest,
           result: { savedPath: getState().location.pathname },
-          type: KILL_USER,
-        });
+          type: USER_TYPES.KILL_USER,
+        } as any);
       }
 
       if (status === 500) {
         dispatch(endLoading(true));
-        return next({ ...rest, error, type: FAILURE });
+        return dispatch({ ...rest, error, type: FAILURE });
       }
       dispatch(endLoading(true));
-      return next({ ...rest, error, type: FAILURE });
+      return dispatch({ ...rest, error, type: FAILURE });
     }
 
-    if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS) > -1) {
-      dispatch(requestReinit());
+    if (__CLIENT__ && reinitReducerTypes.indexOf(SUCCESS as USER_TYPES) > -1) {
       dispatch({ ...rest, result, type: SUCCESS });
-      const state = getState();
-      const msg = { user: state.user, ...SYNC_INITIAL };
-      const sendMsg = state.app.sendMsgToWorker;
-      return (async () => {
-        await sendMsg(msg);
-        return dispatch(reinit());
-      })();
+      return dispatch(syncInitial()).then(r => dispatch(reinitReducers()));
     }
 
-    if (__CLIENT__ && SUCCESS === LOGOUT_SUCCESS) {
+    if (__CLIENT__ && SUCCESS === USER_TYPES.LOGOUT_SUCCESS) {
       dispatch(reset());
       dispatch({ ...rest, result, type: SUCCESS });
-      dispatch(endLoading());
+      return dispatch(endLoading());
     }
 
     dispatch(endLoading());
-    return next({ ...rest, result, type: SUCCESS });
+    return dispatch({ ...rest, result, type: SUCCESS });
   });
 };
 

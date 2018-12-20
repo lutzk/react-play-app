@@ -10,15 +10,15 @@ const components = {
 };
 
 interface PageAction {
-  type?: string;
+  type: PATHS_TYPES;
 }
 
-const initialPageState: string = PATHS_TYPES.LOGIN;
+const initialPageState = PATHS_TYPES.LOGIN;
 
 // the primary reducer demonstrating Redux-First Router:
 const page: Reducer<string> = (
   state = initialPageState,
-  action: PageAction = {},
+  action: PageAction = { type: initialPageState },
 ) => components[action.type] || state;
 
 const goToPage = ({ type, payload }) => dispatch => {

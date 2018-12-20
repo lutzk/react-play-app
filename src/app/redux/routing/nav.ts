@@ -1,4 +1,4 @@
-import { AnyAction } from 'redux';
+import { NavAction } from './navHelpers';
 
 enum PATHS_TYPES {
   HOME = 'HOME',
@@ -16,8 +16,8 @@ const PATHS = {
   [PATHS_TYPES.ROVER_VIEW]: '/rover-view',
 };
 
-interface RedirectAction extends AnyAction {
-  nextPathname: string;
+interface RedirectAction extends NavAction {
+  nextPathname?: string;
 }
 
 export { PATHS, PATHS_TYPES, RedirectAction };

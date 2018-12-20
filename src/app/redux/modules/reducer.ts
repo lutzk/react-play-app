@@ -1,10 +1,11 @@
-import { combineReducers } from 'redux';
-
+import { combineReducers, ReducersMapObject } from 'redux';
+import { Reducer } from 'redux';
 import { app, AppState } from './app';
 import { page } from './page';
 import { pageLoadBar, PageLoadBarState } from './pageLoadBar';
 import { roverViewReducer as roverView, RoverViewState } from './roverView';
 import { solViewReducer as solView, SolViewState } from './solView';
+import { APP_ACTIONS } from './types';
 import { user, UserState } from './user';
 
 interface ApplicationState {
@@ -28,7 +29,9 @@ const createRootReducer = location =>
     pageLoadBar,
   });
 
-const _combineReducers = reducers => {
+const _combineReducers = (
+  reducers: ReducersMapObject<ApplicationState, APP_ACTIONS>,
+): Reducer<ApplicationState, APP_ACTIONS> => {
   const reducerKeys = Object.keys(reducers);
   const finalReducers = {};
   // tslint:disable-next-line:prefer-for-of
@@ -59,7 +62,10 @@ const _combineReducers = reducers => {
   //   shapeAssertionError = e;
   // }
 
-  return function combination(state: any = {}, action) {
+  return function combination(
+    state: ApplicationState,
+    action: APP_ACTIONS,
+  ): ApplicationState {
     // if (shapeAssertionError) {
     //   throw shapeAssertionError;
     // }
@@ -77,7 +83,7 @@ const _combineReducers = reducers => {
     // }
 
     let hasChanged = false;
-    const nextState = {};
+    const nextState = {} as ApplicationState;
     // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < finalReducerKeys.length; i++) {
       const key = finalReducerKeys[i];
@@ -87,7 +93,7 @@ const _combineReducers = reducers => {
       if (key === 'roverView' || key === 'solView') {
         nextStateForKey = reducer(previousStateForKey, {
           ...action,
-          user: state.user,
+          user: (state as ApplicationState).user,
         });
       } else {
         nextStateForKey = reducer(previousStateForKey, action);
@@ -102,21 +108,5 @@ const _combineReducers = reducers => {
     return hasChanged ? nextState : state;
   };
 };
-
-// const createRootReducer = location => (state: any = {}, action: any) => {
-//   const userState = state.user;
-//   return {
-//     app,
-//     user,
-//     page,
-//     solView: solView(state.solView, { ...userState }),
-//     location,
-//     roverView: roverView(state.roverView, { ...userState }),
-//     pageLoadBar,
-//     // languages: languages(state.languages, action),
-//     // // merge languageCodes with original action object, now you have access in translations reducer
-//     // translations: translations(state.translations, {...action, languageCodes})
-//   };
-// };
 
 export { createRootReducer, ApplicationState };

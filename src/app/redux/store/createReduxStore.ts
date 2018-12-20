@@ -1,18 +1,33 @@
-import { AnyAction, applyMiddleware, compose, createStore } from 'redux';
+import {
+  applyMiddleware,
+  compose,
+  createStore,
+  DeepPartial,
+  Dispatch,
+  Store,
+} from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 // import createSagaMiddleware from 'redux-saga';
 import {
   connectRoutes,
   Options /* , NOT_FOUND */,
   redirect,
 } from 'redux-first-router';
-import thunkMiddleware from 'redux-thunk';
-
+// import thunkMiddleware, { ThunkMiddleware } from 'redux-thunk';
+import { ApiClient } from '../../../helpers/ApiClient';
+import { persistentStore } from '../../../redux-pouchdb-plus/src/index';
 import { clientMiddleware } from '../middleware/clientMiddleware';
-import { createRootReducer } from '../modules/reducer';
+import { ApplicationState, createRootReducer } from '../modules/reducer';
+import {
+  APP_ACTIONS,
+  MyThunkDispatch,
+  PromiseDispatch,
+} from '../modules/types';
 import { checkAuth, isLoaded, killUser, loadAuth } from '../modules/user';
 import { RedirectAction } from '../routing/nav';
 import { linkToLogin } from '../routing/navHelpers';
 import { routesMap } from '../routing/routesMap';
+import { promise, thunk as rthunk } from './storeTypes';
 
 // import { getRootSaga } from '../sagas';
 // import createSagaMonitor from '../sagas/sagaMonitor';
@@ -24,12 +39,22 @@ import { routesMap } from '../routing/routesMap';
 //   actionDispatch: true,
 // };
 // createSagaMonitor(config);
-
-function createReduxStore({ client, preloadedState, reqPath = null }) {
-  const options = {
+interface Params {
+  client: ApiClient;
+  preloadedState?: DeepPartial<ApplicationState>;
+  persistentStore?: ReturnType<typeof persistentStore>;
+  reqPath?: any;
+}
+function createReduxStore({
+  client,
+  preloadedState,
+  persistentStore,
+  reqPath,
+}: Params) {
+  const options: Options<{}, ApplicationState> = {
     initialEntries: reqPath,
     initialDispatch: false,
-    onBeforeChange: (dispatch, getState, bag) => {
+    onBeforeChange: (dispatch: Dispatch, getState, bag) => {
       const userRequiredRoutes = ['ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
@@ -47,7 +72,7 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
         }
       }
     },
-  } as Options;
+  };
 
   // const sagaMiddleware = createSagaMiddleware({
   //   sagaMonitor: createSagaMonitor({
@@ -62,38 +87,30 @@ function createReduxStore({ client, preloadedState, reqPath = null }) {
     enhancer,
     thunk,
     initialDispatch,
-  } = connectRoutes(routesMap, options);
+  } = connectRoutes<{}, ApplicationState>(routesMap, options);
 
-  let composeFuncs;
   const rootReducer = createRootReducer(reducer);
-  const middlewares = [middleware, thunkMiddleware, clientMiddleware(client)];
+  const middlewares = applyMiddleware(
+    middleware,
+    rthunk<ApplicationState, MyThunkDispatch>(),
+    clientMiddleware(client),
+  );
+
   const addDevTools = __CLIENT__ && __DEVELOPMENT__ && __DEVTOOLS__;
-
-  if (__CLIENT__) {
-    const persistentStore = require('../../../redux-pouchdb-plus/src/index')
-      .persistentStore;
-
-    composeFuncs = [
-      persistentStore(),
-      applyMiddleware(...[...middlewares]),
-      enhancer,
-    ];
+  let enhancers;
+  let composeEnhancers: typeof compose;
+  if (addDevTools) {
+    composeEnhancers = composeWithDevTools({
+      name: 'ROVER',
+    });
+    enhancers = composeEnhancers(persistentStore, middlewares, enhancer);
   } else {
-    composeFuncs = [applyMiddleware(...middlewares), enhancer];
+    composeEnhancers = compose;
+    enhancers = composeEnhancers(middlewares, enhancer);
   }
 
-  const composeEnhancers =
-    (addDevTools &&
-      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        name: 'ROVER',
-      })) ||
-    compose;
-
-  const store = createStore(
-    rootReducer,
-    preloadedState,
-    composeEnhancers(...composeFuncs),
-  );
+  let store: Store<ApplicationState, APP_ACTIONS>;
+  store = createStore(rootReducer, preloadedState, enhancers);
 
   // sagaMiddleware.run().done
   // let rootTask;

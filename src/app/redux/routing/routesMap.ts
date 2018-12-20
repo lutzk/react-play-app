@@ -1,14 +1,21 @@
-// import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
+import {
+  RoutesMap /*redirect  , NOT_FOUND */,
+  RouteThunk,
+} from 'redux-first-router';
+import { ApplicationState } from '../modules/reducer';
 import { initPage } from '../modules/roverView';
+import { MyThunkDispatch } from '../modules/types';
 import {
   /* loadAuth, isLoaded, killUser, */ requireLogin,
 } from '../modules/user';
 import { PATHS, PATHS_TYPES } from './nav';
 
-const thunk = dispatch => dispatch(requireLogin());
-const rthunk = dispatch => dispatch(initPage());
+const rthunk: RouteThunk<ApplicationState> = dispatch => dispatch(initPage());
 
-const routesMap = {
+const thunk: RouteThunk<ApplicationState> = dispatch =>
+  dispatch(requireLogin());
+
+const routesMap: RoutesMap<{}, ApplicationState> = {
   // [LOGIN]: '/',
   [PATHS_TYPES.LOGIN]: {
     path: PATHS[PATHS_TYPES.LOGIN],

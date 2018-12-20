@@ -1,26 +1,26 @@
 import produce from 'immer';
-import { AnyAction, Reducer } from 'redux';
-import { redirect /* , NOT_FOUND */ } from 'redux-first-router';
+import { Action, Reducer } from 'redux';
+import { ApiClient } from '../../../helpers/ApiClient';
 import { RedirectAction } from '../routing/nav';
 import { linkToLogin } from '../routing/navHelpers';
+import { ApplicationState } from './reducer';
+import { myRedirect, PromiseAction, Thunk } from './types';
 
-const LOGIN = 'user/LOGIN';
-const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
-const LOGIN_FAIL = 'user/LOGIN_FAIL';
-
-const SIGNUP = 'user/SIGNUP';
-const SIGNUP_SUCCESS = 'user/SIGNUP_SUCCESS';
-const SIGNUP_FAIL = 'user/SIGNUP_FAIL';
-
-const LOAD_AUTH = 'user/LOAD_AUTH';
-const LOAD_AUTH_SUCCESS = 'user/LOAD_AUTH_SUCCESS';
-const LOAD_AUTH_FAIL = 'user/LOAD_AUTH_FAIL';
-
-const LOGOUT = 'user/LOGOUT';
-const LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS';
-const LOGOUT_FAIL = 'user/LOGOUT_FAIL';
-
-const KILL_USER = 'user/KILL_USER';
+enum USER_TYPES {
+  LOGIN = 'user/LOGIN',
+  LOGIN_SUCCESS = 'user/LOGIN_SUCCESS',
+  LOGIN_FAIL = 'user/LOGIN_FAIL',
+  SIGNUP = 'user/SIGNUP',
+  SIGNUP_SUCCESS = 'user/SIGNUP_SUCCESS',
+  SIGNUP_FAIL = 'user/SIGNUP_FAIL',
+  LOAD_AUTH = 'user/LOAD_AUTH',
+  LOAD_AUTH_SUCCESS = 'user/LOAD_AUTH_SUCCESS',
+  LOAD_AUTH_FAIL = 'user/LOAD_AUTH_FAIL',
+  LOGOUT = 'user/LOGOUT',
+  LOGOUT_SUCCESS = 'user/LOGOUT_SUCCESS',
+  LOGOUT_FAIL = 'user/LOGOUT_FAIL',
+  KILL_USER = 'user/KILL_USER',
+}
 
 interface User {
   issued: number;
@@ -46,11 +46,15 @@ interface UserState {
   lastLoaded: number;
 }
 
-interface UserAction extends AnyAction {
-  result?: User;
+interface UserAction extends PromiseAction {
+  type: USER_TYPES;
+  result?: any;
   lastLoaded?: any;
   error?: any;
+  asyncTypes?: USER_TYPES[];
 }
+
+type UserRedirectAction = UserAction | RedirectAction;
 
 const initialState: UserState = {
   user: null,
@@ -61,22 +65,23 @@ const initialState: UserState = {
   signedUp: false,
   signingUp: false,
   lastLoaded: null,
+  savedPath: null,
 };
 
-const user: Reducer<UserState> = (state = initialState, action: AnyAction) =>
+const user: Reducer<UserState> = (state = initialState, action: UserAction) =>
   produce(state, draft => {
     switch (action.type) {
-      case KILL_USER:
+      case USER_TYPES.KILL_USER:
         draft.user = null;
         draft.savedPath = action.result.savedPath;
         return;
 
-      case LOAD_AUTH:
+      case USER_TYPES.LOAD_AUTH:
         draft.loading = true;
         draft.lastLoaded = action.lastLoaded;
         return;
 
-      case LOAD_AUTH_SUCCESS:
+      case USER_TYPES.LOAD_AUTH_SUCCESS:
         draft.loading = false;
         draft.loaded = true;
         draft.error = null;
@@ -86,50 +91,50 @@ const user: Reducer<UserState> = (state = initialState, action: AnyAction) =>
             : null;
         return;
 
-      case LOAD_AUTH_FAIL:
+      case USER_TYPES.LOAD_AUTH_FAIL:
         draft.loading = false;
         draft.loaded = false;
         draft.user = null;
         draft.error = action.error;
         return;
 
-      case LOGOUT:
+      case USER_TYPES.LOGOUT:
         draft.loggingOut = true;
         return;
 
-      case LOGOUT_SUCCESS:
+      case USER_TYPES.LOGOUT_SUCCESS:
         draft.loading = false;
         draft.loaded = false;
         draft.user = null;
         return;
 
-      case LOGOUT_FAIL:
+      case USER_TYPES.LOGOUT_FAIL:
         draft.loggingOut = false;
         draft.error = action.error;
         return;
 
-      case LOGIN:
+      case USER_TYPES.LOGIN:
         draft.loggingIn = true;
         return;
 
-      case LOGIN_SUCCESS:
+      case USER_TYPES.LOGIN_SUCCESS:
         draft.loading = false;
         draft.loaded = true;
         draft.user = action.result;
         draft.error = false;
         return;
 
-      case LOGIN_FAIL:
+      case USER_TYPES.LOGIN_FAIL:
         draft.loading = false;
         draft.loaded = false;
         draft.error = action.error;
         return;
 
-      case SIGNUP:
+      case USER_TYPES.SIGNUP:
         draft.signingUp = true;
         return;
 
-      case SIGNUP_SUCCESS:
+      case USER_TYPES.SIGNUP_SUCCESS:
         draft.signedUp = true;
         draft.signingUp = false;
         draft.error = false;
@@ -138,7 +143,7 @@ const user: Reducer<UserState> = (state = initialState, action: AnyAction) =>
         draft.user = action.result;
         return;
 
-      case SIGNUP_FAIL:
+      case USER_TYPES.SIGNUP_FAIL:
         draft.signedUp = false;
         draft.signingUp = false;
         draft.error = action.error;
@@ -146,96 +151,103 @@ const user: Reducer<UserState> = (state = initialState, action: AnyAction) =>
     }
   });
 
-const login = (username, password) => dispatch => {
-  const types = [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL];
-  const promise = client =>
-    client.post('/login', { data: { username, password } });
-  return dispatch({
-    types,
-    promise,
-  });
-};
+const loginAction = (username, password): UserAction => ({
+  type: USER_TYPES.LOGIN,
+  asyncTypes: [USER_TYPES.LOGIN_SUCCESS, USER_TYPES.LOGIN_FAIL],
+  apiPromise: client => client.post('/login', { data: { username, password } }),
+});
 
-const logout = () => dispatch => {
-  const types = [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL];
-  const promise = client => client.get('/logout');
-  return dispatch({ types, promise });
-};
+const login: Thunk<UserAction> = (username, password) => dispatch =>
+  dispatch(loginAction(username, password));
 
-const shouldRefreshOrLogout = (state, timeNow) => {
-  const lastLoaded = state.user.lastLoaded;
-  let justLoaded = false;
-  let expires: number;
-  const _timeNow = Number(timeNow);
-  // let issued = false;
-  if (state.user.user) {
-    // issued = state.user.user.issued;
-    expires = Number(state.user.user.expires);
-    if ((_timeNow - expires) / 1000 > 0) {
-      return logout();
-    }
-  }
+const logoutAction = (): UserAction => ({
+  type: USER_TYPES.LOGOUT,
+  asyncTypes: [USER_TYPES.LOGOUT_SUCCESS, USER_TYPES.LOGOUT_FAIL],
+  apiPromise: client => client.get('/logout'),
+});
 
-  if (lastLoaded) {
-    if ((_timeNow - lastLoaded) / 1000 < 10) {
-      justLoaded = true;
-    }
-  }
-  return !justLoaded;
-};
+const logout: Thunk<Promise<UserAction>> = () => async dispatch =>
+  dispatch(logoutAction());
 
-const loadAuth = () => (dispatch, getState) => {
+const shouldRefresh = (lastLoaded: number, timeNow: number): boolean =>
+  lastLoaded && (timeNow - lastLoaded) / 1000 < 10 ? false : true;
+
+const shouldLogout = (expires: number, timeNow: number): boolean =>
+  (timeNow - expires) / 1000 > 0 ? true : false;
+
+const loadUser = (timeNow: number): UserAction => ({
+  type: USER_TYPES.LOAD_AUTH,
+  asyncTypes: [USER_TYPES.LOAD_AUTH_SUCCESS, USER_TYPES.LOAD_AUTH_FAIL],
+  lastLoaded: timeNow,
+  apiPromise: client => client.get('/loadAuth'),
+});
+
+const loadAuth: Thunk<Promise<UserAction | void>> = () => async (
+  dispatch,
+  getState,
+) => {
   const timeNow = new Date().getTime();
-  if (!shouldRefreshOrLogout(getState(), timeNow)) {
-    return Promise.resolve(false);
+  const user = getState().user;
+  if (user.user) {
+    if (shouldLogout(user.user.expires, timeNow)) {
+      return dispatch(logout());
+    }
   }
-  return dispatch({
-    types: [LOAD_AUTH, LOAD_AUTH_SUCCESS, LOAD_AUTH_FAIL],
-    lastLoaded: timeNow,
-    promise: client => client.get('/loadAuth'),
-  });
+  if (shouldRefresh(user.lastLoaded, timeNow)) {
+    return dispatch(loadUser(timeNow));
+  }
 };
 
-const killUser = () => (getState, dispatch) =>
+const killUser: Thunk<UserAction> = () => dispatch =>
   dispatch({
-    type: [KILL_USER],
+    type: USER_TYPES.KILL_USER,
   });
 
-function isLoaded(state) {
-  return state.user && state.user.loaded;
-}
+const isLoaded = (state: UserState) => state.loaded;
 
-const signup = (
+const signupAction = (
   name,
   username,
   email,
   password,
   confirmPassword,
-) => dispatch => {
-  const types = [SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAIL];
-  const promise = client =>
+): UserAction => ({
+  type: USER_TYPES.SIGNUP,
+  asyncTypes: [USER_TYPES.SIGNUP_SUCCESS, USER_TYPES.SIGNUP_FAIL],
+  apiPromise: client =>
     client.post('/signup', {
       data: { name, username, email, password, confirmPassword },
-    });
+    }),
+});
 
-  return dispatch({ types, promise });
-};
+const signup: Thunk<Promise<UserAction>> = (
+  name,
+  username,
+  email,
+  password,
+  confirmPassword,
+) => async dispatch =>
+  dispatch(signupAction(name, username, email, password, confirmPassword));
 
-const checkAuth = () => (dispatch, getState) => {
+const redirectAction = (nextPathname): UserRedirectAction =>
+  myRedirect({
+    nextPathname,
+    ...linkToLogin,
+  });
+
+const checkAuth: Thunk<Promise<UserRedirectAction>> = () => async (
+  dispatch,
+  getState,
+) => {
   const {
     user: { user },
   } = getState();
   if (!user) {
-    const action = redirect({
-      ...linkToLogin,
-      nextPathname: getState().location.pathname,
-    } as RedirectAction);
-    return dispatch(redirect(action));
+    return dispatch(redirectAction(getState().location.pathname));
   }
-  return Promise.resolve(true);
 };
 
-const requireLogin = () => (dispatch, getState) =>
+const requireLogin: Thunk<Promise<UserRedirectAction>> = () => async dispatch =>
   dispatch(loadAuth()).then(r => dispatch(checkAuth()));
 
 export {
@@ -245,21 +257,11 @@ export {
   user,
   login,
   logout,
-  LOGOUT,
   signup,
   loadAuth,
   killUser,
   isLoaded,
-  KILL_USER,
   checkAuth,
-  LOGIN_SUCCESS,
-  SIGNUP_SUCCESS,
-  LOGOUT_SUCCESS,
-  LOGIN,
-  LOGIN_FAIL,
-  LOGOUT_FAIL,
-  LOAD_AUTH,
-  LOAD_AUTH_SUCCESS,
-  LOAD_AUTH_FAIL,
   requireLogin,
+  USER_TYPES,
 };

@@ -1,3 +1,4 @@
+import { Action, AnyAction } from 'redux';
 import { spirit } from '../modules/shared/shared';
 import { PATHS_TYPES } from './nav';
 
@@ -9,7 +10,7 @@ interface SolPayload {
   sol: number;
 }
 
-interface NavAction {
+interface NavAction extends AnyAction {
   type: PATHS_TYPES;
   payload?: RoverPayload | SolPayload;
 }
@@ -35,6 +36,7 @@ const createRoverLink = (payload: RoverPayload) =>
   createLinkType(PATHS_TYPES.ROVER_VIEW, payload);
 
 export {
+  NavAction,
   linkToHome,
   linkToSpirit,
   createSolLink,
