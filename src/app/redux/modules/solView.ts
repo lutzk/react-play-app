@@ -1,14 +1,23 @@
 import produce from 'immer';
-import { AnyAction, Reducer } from 'redux';
-import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
-import { _updateList, getManifestFor, sortList } from './shared/shared';
+import { Reducer } from 'redux';
+import {
+  persistentReducer,
+  POUCH_ACTION_TYPES,
+} from '../../../redux-pouchdb-plus/src/index';
+import {
+  _updateList,
+  getManifestFor,
+  MarsRovers,
+  sortList,
+} from './shared/shared';
+import { PromiseAction } from './types';
 
-const GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST';
-const GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS';
-const GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL';
-
-const SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS';
-// const UPDATE_SOL_PHOTOS_SHOW_COUNT = 'sol/UPDATE_SOL_PHOTOS_SHOW_COUNT';
+enum SOLVIEW_ACTION_TYPES {
+  GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST',
+  GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS',
+  GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL',
+  SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS',
+}
 
 interface SolViewState {
   sol: any;
@@ -34,14 +43,22 @@ interface SolResult {
   photos: any[];
 }
 
-interface SolViewAction extends AnyAction {
-  reducerName: string;
-  range: any;
-  sorts: any;
-  filter: any;
-  list: any;
-  result: SolResult;
-  error: any;
+interface SolViewAction extends PromiseAction {
+  reducerName?: string;
+  range?: any;
+  sorts?: any;
+  filter?: any;
+  list?: any;
+  result?: SolResult;
+  error?: any;
+  reducer?: string;
+  state?: any;
+  asyncTypes?: SOLVIEW_ACTION_TYPES[];
+  type:
+    | SOLVIEW_ACTION_TYPES
+    | POUCH_ACTION_TYPES.RESET
+    | POUCH_ACTION_TYPES.SET_REDUCER
+    | POUCH_ACTION_TYPES.INIT;
 }
 
 const availableSorts = {
@@ -121,11 +138,11 @@ const solView: Reducer<SolViewState> = (
 ) =>
   produce(state, draft => {
     switch (action.type) {
-      case '@@redux-pouchdb-plus/RESET':
+      case POUCH_ACTION_TYPES.RESET:
         draft = initialState;
         return;
 
-      case '@@redux-pouchdb-plus/SET_REDUCER':
+      case POUCH_ACTION_TYPES.SET_REDUCER:
         if (action.reducer === reducerName) {
           if (action.state.prefetched) {
             draft.prefetched = false;
@@ -134,26 +151,26 @@ const solView: Reducer<SolViewState> = (
         }
         return;
 
-      case '@@redux-pouchdb-plus/INIT':
+      case POUCH_ACTION_TYPES.INIT:
         if (action.state.solView.prefetched) {
           draft.prefetched = false;
           return;
         }
         return;
 
-      case SORT_SOL_PHOTOS:
+      case SOLVIEW_ACTION_TYPES.SORT_SOL_PHOTOS:
         draft.listToRender = action.list;
         draft.sorts = action.sorts;
         draft.filter = action.filter;
         draft.range = action.range;
         return;
 
-      case GET_SOL_MANIFEST:
+      case SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST:
         draft.loading = true;
         draft.loaded = false;
         return;
 
-      case GET_SOL_MANIFEST_SUCCESS:
+      case SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST_SUCCESS:
         draft.error = null;
         draft.loaded = true;
         draft.loading = false;
@@ -167,7 +184,7 @@ const solView: Reducer<SolViewState> = (
         });
         return;
 
-      case GET_SOL_MANIFEST_FAIL:
+      case SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST_FAIL:
         draft.error = action.error;
         draft.loaded = false;
         draft.loading = false;
@@ -175,18 +192,18 @@ const solView: Reducer<SolViewState> = (
     }
   });
 
-const getSolManifest = (rover, sol, offline) => {
-  const types = [
-    GET_SOL_MANIFEST,
-    GET_SOL_MANIFEST_SUCCESS,
-    GET_SOL_MANIFEST_FAIL,
+const getSolManifest = (rover: MarsRovers, sol: number, offline: boolean) => {
+  const type = SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST;
+  const asyncTypes = [
+    SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST_SUCCESS,
+    SOLVIEW_ACTION_TYPES.GET_SOL_MANIFEST_FAIL,
   ];
 
-  return getManifestFor({ sol, rover, types, offline });
+  return getManifestFor({ sol, rover, type, asyncTypes, offline });
 };
 
 const updateList = ({ sorts, filter, range }: any = {}) => {
-  const type = SORT_SOL_PHOTOS;
+  const type = SOLVIEW_ACTION_TYPES.SORT_SOL_PHOTOS;
   const stateKey = 'solView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
@@ -194,6 +211,7 @@ const updateList = ({ sorts, filter, range }: any = {}) => {
 const solViewReducer = persistentReducer(solView, reducerName);
 
 export {
+  SOLVIEW_ACTION_TYPES,
   SolViewState,
   SolResult,
   SolViewAction,

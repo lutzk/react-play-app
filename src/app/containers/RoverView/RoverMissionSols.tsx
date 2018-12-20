@@ -9,7 +9,6 @@ interface Props {
 const RoverMissionSols: React.SFC<Props> = memo(
   ({ createSolLink, sols, rover }) => {
     const handleLink = e => {
-      console.log('createSolLink::', createSolLink);
       e.preventDefault();
       createSolLink({ rover, sol: e.currentTarget.dataset.sol });
     };
