@@ -1,3 +1,5 @@
+import { POUCH_WORKER_TYPES } from './pouchWorkerTypes';
+
 const getWorker = () => navigator.serviceWorker.ready.then(w => w.active);
 
 const getSWorkerRegistration = () => navigator.serviceWorker.ready.then(r => r);
@@ -6,8 +8,17 @@ const getSWorkerRegistration = () => navigator.serviceWorker.ready.then(r => r);
 //   navigator.serviceWorker.onmessage = event => event.data;
 // event.ports[0].postMessage(['msg ack from window', event.data.data]);
 // console.log('___GOT MSG FROM WORKER__', event);
+interface PouchWorkerAction {
+  type: POUCH_WORKER_TYPES;
+  [key: string]: any;
+}
+type Reciever = Worker;
+interface SendMsgData {
+  msg: PouchWorkerAction;
+  reciever: Reciever;
+}
 
-const sendMsg = ({ msg, reciever }) =>
+const sendMsg = ({ msg, reciever }: SendMsgData): Promise<any> =>
   new Promise((resolve, reject) => {
     const msgChannel = new MessageChannel();
     msgChannel.port1.onmessage = e => {
@@ -22,12 +33,12 @@ const sendMsg = ({ msg, reciever }) =>
         '`sendMsg` called without reciever, dont know where to send msg',
       );
     } else {
-      // console.log('POST TO WORKERA__', msg);
       reciever.postMessage(msg, [msgChannel.port2]);
     }
   }).catch(e => console.error(e));
 
-const currySendMsg = reciever => msg => sendMsg({ msg, reciever });
+const currySendMsg = (reciever: Reciever) => (msg: PouchWorkerAction) =>
+  sendMsg({ msg, reciever });
 
 // const sendMsgToWorker = ({ msg, worker }) =>
 //   new Promise((resolve, reject) => {
@@ -83,7 +94,7 @@ const cachePageOnEnter = (nextState, replace, cb) => {
   if (typeof window !== 'undefined') {
     const msg = { data: pathname };
     return getWorker()
-      .then(worker => sendMsg({ msg, worker }))
+      .then(worker => sendMsg({ msg, worker } as any))
       .then(() => cb())
       .catch(e => {
         console.log('SMTOWE:', e);
@@ -129,13 +140,8 @@ const getInlineWorker = worker => {
   return url;
 };
 
-const initWorkerSync = (worker, name) => {
-  if (hasWindow() && workersEnabled()) {
-    const w = new Worker(worker, { name });
-    return w;
-  }
-  return false;
-};
+const initWorkerSync = (path: string, name: string) =>
+  new Worker(path, { name });
 
 const notify = msg => {
   Notification.requestPermission(result => {
@@ -161,4 +167,7 @@ export {
   getInlineWorker,
   initCacheWorker,
   cachePageOnEnter,
+  workersEnabled,
+  SendMsgData,
+  PouchWorkerAction,
 };
