@@ -128,6 +128,9 @@ const extensions = [
 const assetsExtensions = ['.css', '.scss', '.sass'];
 
 const resolve = {
+  alias: {
+    'react-dom': '@hot-loader/react-dom'
+  },
   modules: [
     'src',
     'node_modules',
