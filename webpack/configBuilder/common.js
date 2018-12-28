@@ -38,7 +38,7 @@ const clientDevHMR = [
 ];
 
 const getWorkerEntry = ({ prod, worker }) => ({
-  worker: `app/workers/${worker}Worker`,
+  worker: `workers/${worker}Worker`,
   ...(!prod ? [hmrSource] : []),
 });
 
