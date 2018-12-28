@@ -4,6 +4,7 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SWPrecache from 'sw-precache-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import  os from 'os';
 // import NameAllModulesPlugin from 'name-all-modules-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 
@@ -21,9 +22,9 @@ const analyzerPlugin = new BundleAnalyzerPlugin({
   analyzerMode: 'static',
   defaultSizes: 'parsed',
   openAnalyzer: false,
-  generateStatsFile: true,
-  statsFilename: 'stats.json',
-  statsOptions: null,
+  generateStatsFile: false,
+  // statsFilename: 'stats.json',
+  // statsOptions: null,
   logLevel: 'info',
 });
 
@@ -104,17 +105,22 @@ const createCleanPlugin = path => new CleanPlugin([path], {
   root: rootPath,
 });
 
-const buildForkTsCheckerWebpackPlugin = (wathDir = './src') => new ForkTsCheckerWebpackPlugin({
-  async: false,
-  watch: wathDir,
-  tsconfig: './tsconfig.json',
+const cpus = os.cpus().length - 1;
+const buildForkTsCheckerWebpackPlugin = (
+  tsconfig = './tsconfig.json',
+  watch = './src'
+) => new ForkTsCheckerWebpackPlugin({
+  async: true,
+  watch,
+  workers: cpus,
+  tsconfig,
   tslint: './tslint.json',
 });
 
 const buildServerPlugins = ({ prod = false, api = false }) => {
   let serverPlugins;
   const base = [
-    buildForkTsCheckerWebpackPlugin(),
+    // buildForkTsCheckerWebpackPlugin(),
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
     limitChunkCountPlugin,
@@ -173,6 +179,8 @@ const buildWorkerPlugins = ({ prod = false, worker = false }) => {
     limitChunkCountPlugin,
     buildEnvPlugin({ prod }),
     caseSensitivePathsPlugin,
+    // buildForkTsCheckerWebpackPlugin(),
+    new webpack.ProgressPlugin(),
   ];
 
   const prodPlugins = [
