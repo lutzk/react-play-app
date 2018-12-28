@@ -8,7 +8,7 @@ const babelConfigBase = {
       targets: {
         node: 'current',
       },
-      debug: true,
+      // debug: true,
       // modules: false,
       // useBuiltIns: 'usage',
     }]
