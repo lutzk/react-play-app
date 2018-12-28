@@ -6,7 +6,9 @@ import { NOT_FOUND } from 'redux-first-router';
 import flushChunks from 'webpack-flush-chunks';
 // import { END } from 'redux-saga';
 
-import { App } from '../../app/containers/App/App';
+import { Handler } from 'express';
+import App from '../../app/containers/App/App';
+import { MyThunkDispatch } from '../../app/redux/modules/types';
 import { loadAuth } from '../../app/redux/modules/user';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
 import { ApiClient } from '../../helpers/ApiClient';
@@ -16,7 +18,7 @@ import { asyncWrap as aw } from '../../helpers/utils';
 const doctype = '<!doctype html>\n';
 
 // serverAssets => stats
-const renderApp = () =>
+const renderApp = (): Handler =>
   /* { serverAssets } = {} */ aw(async (req, res, next) => {
     // let assets = serverAssets;
     const client = new ApiClient(req);
@@ -56,7 +58,7 @@ const renderApp = () =>
       return false;
     }
 
-    await store.dispatch(loadAuth());
+    await (store.dispatch as MyThunkDispatch)(loadAuth());
     await thunk(store);
 
     location = store.getState().location;
