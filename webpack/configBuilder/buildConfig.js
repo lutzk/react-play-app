@@ -125,6 +125,6 @@ export default function buildConfig(env) {
   if (!envConfig.prod) {
     rawConfig.devtool = 'inline-source-map';
   }
-  console.log(JSON.stringify(rawConfig, 0, 2));
+  // console.log(JSON.stringify(rawConfig, 0, 2));
   return configBuilder(rawConfig);
 }
