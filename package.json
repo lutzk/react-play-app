@@ -118,7 +118,7 @@
     "react-dom": "16.6.3",
     "react-hot-loader": "^4.6.0",
     "react-redux": "^6.0.0",
-    "react-universal-component": "../react-universal-component",
+    "react-universal-component": "4.0.0",
     "redis": "^2.7.1",
     "redux": "^4.0.1",
     "redux-first-router": "^2.0.1",
