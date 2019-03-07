@@ -5,13 +5,13 @@ import {
   initWorkerSync,
   currySendMsg,
   hasWindow,
-} from '../../../app/workers/utils';
+} from '../../../workers/utils';
 import { REQUEST_REINIT, REINIT } from '../../../redux-pouchdb-plus/src/index';
 import {
   SYNC_INITIAL,
   SYNC_INITIAL_SUCCESS,
   /* SYNC_INITIAL_FAIL, */ STORE_INIT,
-} from '../../workers/pouchWorkerMsgTypes';
+} from '../../../workers/pouchWorkerTypes';
 
 import { LOGIN_SUCCESS, SIGNUP_SUCCESS } from '../modules/user';
 
