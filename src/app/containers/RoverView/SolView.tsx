@@ -12,20 +12,20 @@ import { createRoverLink, linkToHome } from '../../redux/routing/navHelpers';
 import imageSrc from '../../theme/IMG_1672.jpg';
 import './RoverView.sass';
 
-const mapStateToProps = (state: ApplicationState) => ({
-  sorts: state.solView.sorts,
-  range: state.solView.range,
-  filter: state.solView.filter,
-  listLength: state.solView.listLength,
-  list: state.solView.listToRender,
-  minShown: state.solView.minShown,
-  maxShown: state.solView.maxShown,
-  moreShown: state.solView.moreShown,
-  manifestLoaded: state.solView.loaded,
-  manifestLoading: state.solView.loading,
-  initialCount: state.solView.initialCount,
-  manifestLoadError: state.solView.error,
-  location: state.location,
+const mapStateToProps = ({ solView, location }: ApplicationState) => ({
+  sorts: solView.sorts,
+  range: solView.range,
+  filter: solView.filter,
+  listLength: solView.listLength,
+  list: solView.listToRender,
+  minShown: solView.minShown,
+  maxShown: solView.maxShown,
+  moreShown: solView.moreShown,
+  manifestLoaded: solView.loaded,
+  manifestLoading: solView.loading,
+  initialCount: solView.initialCount,
+  manifestLoadError: solView.error,
+  location,
 });
 
 const mapDispatchToProps = dispatch =>
