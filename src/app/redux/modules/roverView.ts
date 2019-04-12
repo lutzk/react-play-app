@@ -1,27 +1,30 @@
 import produce from 'immer';
 import { AnyAction, Reducer } from 'redux';
-import { persistentReducer } from '../../../redux-pouchdb-plus/src/index';
+import {
+  persistentReducer,
+  POUCH_ACTION_TYPES,
+} from '../../../redux-pouchdb-plus/src/index';
 import { endLoading, startLoading } from './pageLoadBar';
 
 import {
   _updateList,
-  getManifestFor,
+  aaa,
   rovers,
+  GenericIdentityFnA,
+  getManifestFor,
+  MarsRovers,
   sortList,
   spirit,
 } from './shared/shared';
+import { PromiseAction, Thunk } from './types';
 
 const reducerName = 'RoverView';
 
-const SORT_SOLS = 'roverView/SORT_SOLS';
-const GET_MANIFEST = 'roverView/GET_MANIFEST';
-const GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS';
-const GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL';
-
-enum Rovers {
-  spirit = 'spirit',
-  curiosity = 'curiosity',
-  opportunity = 'opportunity',
+enum ROVERVIEW_ACTION_TYPES {
+  SORT_SOLS = 'roverView/SORT_SOLS',
+  GET_MANIFEST = 'roverView/GET_MANIFEST',
+  GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS',
+  GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL',
 }
 
 interface RoverViewState {
@@ -54,18 +57,23 @@ interface RoverResult {
   photoManifest: any;
 }
 
-interface RoverViewAction extends AnyAction {
-  reducerName: string;
-  range: any;
-  sorts: any;
-  filter: any;
-  list: any;
-  result: RoverResult;
-  error: any;
+interface RoverViewAction extends PromiseAction {
+  reducerName?: string;
+  range?: any;
+  sorts?: any;
+  filter?: any;
+  list?: any;
+  result?: RoverResult;
+  error?: any;
+  type:
+    | ROVERVIEW_ACTION_TYPES
+    | POUCH_ACTION_TYPES.RESET
+    | POUCH_ACTION_TYPES.REINIT
+    | POUCH_ACTION_TYPES.REDUCER_READY;
 }
 
-const roverMatcher = (roverToMatch: Rovers) =>
-  Object.values(Rovers).indexOf(roverToMatch) > -1;
+const roverMatcher = (roverToMatch: MarsRovers) =>
+  Object.values(MarsRovers).indexOf(roverToMatch) > -1;
 
 const availableSorts = {
   fields: ['sol', 'totalPhotos', 'cameras'],
@@ -112,7 +120,7 @@ const initialState: RoverViewState = {
   missionStats: null,
   maxShown: false,
   maxSol: null,
-  defaultRover: Rovers.spirit,
+  defaultRover: MarsRovers.spirit,
   moreShown: false,
   sorts: availableSorts,
   filter: defaultFilter,
@@ -140,10 +148,10 @@ const roverView: Reducer<RoverViewState> = (
 ) =>
   produce(state, draft => {
     switch (action.type) {
-      case '@@redux-pouchdb-plus/RESET':
+      case POUCH_ACTION_TYPES.RESET:
         return initialState;
 
-      case '@@redux-pouchdb-plus/REDUCER_READY':
+      case POUCH_ACTION_TYPES.REDUCER_READY:
         if (action.reducerName === reducerName) {
           draft.ready = true;
           draft.prefetched = false;
@@ -152,30 +160,25 @@ const roverView: Reducer<RoverViewState> = (
         }
         return;
 
-      case '@@redux-pouchdb-plus/REINIT':
+      case POUCH_ACTION_TYPES.REINIT:
         draft.ready = false;
         draft.reinitializing = true;
         draft.reinitRequested = false;
         return;
 
-      case '@@redux-pouchdb-plus/REQUEST_REINIT':
-        draft.ready = false;
-        draft.reinitRequested = true;
-        return;
-
-      case SORT_SOLS:
+      case ROVERVIEW_ACTION_TYPES.SORT_SOLS:
         draft.range = spread(draft.range, action.range);
         draft.sorts = spread(draft.sorts, action.sorts);
         draft.filter = spread(draft.filter, action.filter);
         draft.listToRender = action.list.map(l => l);
         return;
 
-      case GET_MANIFEST:
+      case ROVERVIEW_ACTION_TYPES.GET_MANIFEST:
         draft.loading = true;
         draft.loaded = false;
         return;
 
-      case GET_MANIFEST_SUCCESS:
+      case ROVERVIEW_ACTION_TYPES.GET_MANIFEST_SUCCESS:
         draft.rover = action.result.photoManifest.name.toLowerCase();
         draft.error = null;
         draft.loaded = true;
@@ -196,7 +199,7 @@ const roverView: Reducer<RoverViewState> = (
         });
         return;
 
-      case GET_MANIFEST_FAIL:
+      case ROVERVIEW_ACTION_TYPES.GET_MANIFEST_FAIL:
         draft.error = action.error;
         draft.loaded = false;
         draft.loading = false;
@@ -204,24 +207,31 @@ const roverView: Reducer<RoverViewState> = (
     }
   });
 
-const getManifest = (roverName, offline) => {
+const getManifest = (roverName: MarsRovers, offline: boolean) => {
   const rover = roverName || initialState.defaultRover;
-  const types = [GET_MANIFEST, GET_MANIFEST_SUCCESS, GET_MANIFEST_FAIL];
-
-  return getManifestFor({
+  const type = ROVERVIEW_ACTION_TYPES.GET_MANIFEST;
+  const asyncTypes = [
+    ROVERVIEW_ACTION_TYPES.GET_MANIFEST_SUCCESS,
+    ROVERVIEW_ACTION_TYPES.GET_MANIFEST_FAIL,
+  ];
+  const getManifestForRoverView: GenericIdentityFnA<
+    RoverViewAction
+  > = getManifestFor;
+  return getManifestForRoverView({
     rover,
-    types,
+    type,
+    asyncTypes,
     offline,
   });
 };
 
 const updateList = ({ sorts, filter, range }: any = {}) => {
-  const type = SORT_SOLS;
+  const type = ROVERVIEW_ACTION_TYPES.SORT_SOLS;
   const stateKey = 'roverView';
   return _updateList({ type, stateKey, sorts, filter, range });
 };
 
-const initPage = () => (dispatch, getState) => {
+const initPage: Thunk<Promise<any>> = () => async (dispatch, getState) => {
   const {
     location: {
       payload: { rover },
@@ -233,9 +243,10 @@ const initPage = () => (dispatch, getState) => {
     roverMatcher(rover.toLowerCase()) ? rover : roverViewState.defaultRover;
   if (roverViewState.loaded) {
     if (roverViewState.roverName !== getRover()) {
-      return dispatch(getManifest(getRover(), false))
-        .then(dispatch(endLoading()))
-        .then(NAME);
+      return dispatch(getManifest(getRover(), false)).then(() => {
+        dispatch(endLoading());
+        return NAME;
+      });
     }
     dispatch(endLoading());
     return NAME;
@@ -243,21 +254,27 @@ const initPage = () => (dispatch, getState) => {
   if (roverViewState.reinitializing || roverViewState.reinitRequested) {
     dispatch(startLoading());
     if (/* !getState().roverView.loaded || */ !getState().roverView.loading) {
-      return dispatch(getManifest(getRover(), false))
-        .then(dispatch(endLoading()))
-        .then(NAME);
+      return dispatch(getManifest(getRover(), false)).then(() => {
+        dispatch(endLoading());
+        return NAME;
+      });
     }
-    return Promise.resolve(dispatch(endLoading())).then(() => NAME);
+    dispatch(endLoading());
+    return NAME;
   }
-  return dispatch(getManifest(getRover(), false))
-    .then(() => dispatch(endLoading()))
-    .then(NAME);
+  return dispatch(getManifest(getRover(), false)).then(() => {
+    dispatch(endLoading());
+    return NAME;
+  });
 };
 
-const roverViewReducer = persistentReducer(roverView, reducerName);
+const roverViewReducer = persistentReducer<RoverViewState>(
+  roverView,
+  reducerName,
+);
 
 export {
-  Rovers,
+  MarsRovers,
   RoverViewState,
   RoverViewAction,
   initPage,
@@ -265,7 +282,5 @@ export {
   getManifest,
   roverMatcher,
   roverViewReducer,
-  GET_MANIFEST,
-  GET_MANIFEST_SUCCESS,
-  GET_MANIFEST_FAIL,
+  ROVERVIEW_ACTION_TYPES,
 };

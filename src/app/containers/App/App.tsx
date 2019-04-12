@@ -1,5 +1,7 @@
+import '../../../config/rhlc';
+// tslint:disable-next-line:ordered-imports
 import React, { Component, StrictMode } from 'react';
-import { hot } from 'react-hot-loader';
+import { hot } from 'react-hot-loader/root';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -17,8 +19,8 @@ const mapDispatchToProps = dispatch =>
 
 declare interface Props {
   logout: any;
-  loadAuth: any; // PropTypes.func,
-  goToPage: any; // PropTypes.func,
+  loadAuth: any;
+  goToPage: any;
 }
 
 declare interface State {
@@ -38,7 +40,8 @@ class AppComponent extends Component<Props, State> {
   }
 
   public componentDidMount() {
-    this.props.loadAuth();
+    console.log('___MOUNT__JO__');
+    // this.props.loadAuth();
   }
 
   public componentDidCatch(err, info) {
@@ -46,7 +49,7 @@ class AppComponent extends Component<Props, State> {
   }
 
   public render() {
-    console.log('___RENDER__');
+    console.log('___RENDER___', JSON.stringify(this.props, null, 2));
     if (this.state.hasError) {
       return <div>ERROR</div>;
     }
@@ -66,9 +69,9 @@ const connectedApp = connect(
   null,
   mapDispatchToProps,
   null,
-  // { withRef: true },
   { forwardRef: true },
 )(AppComponent);
 
-const App = __DEVELOPMENT__ ? hot(module)(connectedApp) : connectedApp;
-export { App };
+const App = __DEVELOPMENT__ ? hot(connectedApp) : connectedApp;
+
+export default App;

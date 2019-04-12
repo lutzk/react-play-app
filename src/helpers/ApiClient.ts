@@ -1,6 +1,14 @@
 import { camelizeKeys } from 'humps';
-import superagent from 'superagent';
+import superagent, { SuperAgentRequest } from 'superagent';
 import formatUrl from './formatUrl';
+
+interface ApiError {
+  error: {
+    code?: number;
+    status?: number | string;
+    response?: superagent.Response;
+  };
+}
 
 type ApiMethod = (path: any, reqData?: any) => Promise<any>;
 interface IApiClient {
@@ -20,8 +28,9 @@ class ApiClient {
 
   private client(verb) {
     return async (path: any, { params, data, headers }: any = {}) => {
-      let request = null;
-      let result = null;
+      let request: SuperAgentRequest;
+      let requestResult: superagent.Response;
+      let errorResult: ApiError;
       const incomingReq = this.incomingReq || false;
 
       try {
@@ -33,25 +42,24 @@ class ApiClient {
           params,
           data,
         });
-        result = await request;
+        requestResult = await request;
       } catch (error) {
+        errorResult = { error: {} };
         if (error && error.code && !error.status) {
-          result = { error: error.code };
+          errorResult.error.code = error.code;
         } else if (error && error.response) {
-          result = {
-            error: {
-              status: error.status,
-              error: error.response.body || error.response.text,
-            },
+          errorResult.error = {
+            status: error.status,
+            response: error.response.body || error.response.text,
           };
         } else {
-          result = 'SOLAR FLARE';
+          errorResult.error.status = 'SOLAR_FLARE';
         }
 
-        return result;
+        return errorResult;
       }
 
-      const camelizedBody = camelizeKeys(result.body || result);
+      const camelizedBody = camelizeKeys(requestResult.body || requestResult);
       return camelizedBody;
     };
   }

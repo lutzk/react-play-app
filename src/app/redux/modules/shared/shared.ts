@@ -1,14 +1,23 @@
 import produce from 'immer';
 import { get, orderBy } from 'lodash';
+import { ROVERVIEW_ACTION_TYPES, RoverViewAction } from '../roverView';
+import { SOLVIEW_ACTION_TYPES, SolViewAction } from '../solView';
+import { Thunk, ThunkResult } from '../types';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
 const opportunity = { name: 'Opportunity', label: 'opportunity' };
 
+enum MarsRovers {
+  spirit = 'spirit',
+  curiosity = 'curiosity',
+  opportunity = 'opportunity',
+}
+
 const rovers = {
-  [spirit.label]: spirit.name,
-  [curiosity.label]: curiosity.name,
-  [opportunity.label]: opportunity.name,
+  [MarsRovers.spirit]: spirit.name,
+  [MarsRovers.curiosity]: curiosity.name,
+  [MarsRovers.opportunity]: opportunity.name,
 };
 
 const filterByFieldValue = (list, filter) => {
@@ -17,7 +26,7 @@ const filterByFieldValue = (list, filter) => {
     const combinedFilterMatrix = [];
     filter.map(filterItem => {
       if (filterItem !== undefined) {
-        // cameras fail here
+        // cams fail here
         if (
           get(listItem, filterItem.field) === parseInt(filterItem.value, 10)
         ) {
@@ -91,7 +100,6 @@ const updateRange = (range, stateRange, listLength) => {
   if (range.action && range.action === 'next') {
     newRange.start += rangeLength;
     newRange.end += rangeLength;
-    // newRange.start = newRange.start > listLength ? listLength : newRange.start;
     newRange.end = newRange.end > listLength ? listLength : newRange.end;
     newRange.start =
       newRange.end === listLength
@@ -102,7 +110,6 @@ const updateRange = (range, stateRange, listLength) => {
   if (range.action && range.action === 'prev') {
     newRange.start -= rangeLength;
     newRange.end -= rangeLength;
-    // newRange.end = newRange.end < 0 ? 0 : newRange.end;
   }
 
   if (range.action && range.action === 'more') {
@@ -120,16 +127,8 @@ const updateRange = (range, stateRange, listLength) => {
 
 const updateFilter = (filter, currentFilter) =>
   produce(currentFilter, draft => {
-    //   draft.on = filter.on;
-    // const item = draft.fields[key];
-    // item.value = filterKey.value;
-    // })
     const filterKeys = Object.keys(filter);
-    console.log('F2', filter, draft);
     if (filter.on !== undefined && filter.on !== draft.on) {
-      console.log('F2.2', filter, draft);
-      // newFilter.on = filter.on;
-      // haha lola a
       draft.on = filter.on;
     } else {
       Object.keys(currentFilter.fields).map(key => {
@@ -148,9 +147,6 @@ const updateFilter = (filter, currentFilter) =>
             ) {
               item.value = filterKey.value;
             }
-            // else if (typeof filterKey.value === 'string') {
-            //   item.value = filterKey.value;
-            // }
           } else if (filterKey.on !== undefined && filterKey.on !== item.on) {
             item.on = filterKey.on;
           }
@@ -196,20 +192,44 @@ const sortListAction = (
     }),
   });
 
-const getManifestFor = ({ rover, sol = null, types, offline } = {} as any) => (
-  dispatch,
-  getState,
-) => {
+type ay<T> = Thunk<Promise<T>>;
+type GenericIdentityFnA<T> = Thunk<Promise<T>>;
+interface GGenericIdentityFnA<T> {
+  // tslint:disable-next-line:callable-types
+  // (): T;
+  // tslint:disable-next-line:callable-types
+  (): Thunk<Promise<T>>;
+  // tslint:disable-next-line:callable-types
+  // <T>(arg: T): T;
+}
+type GenericIdentityFnB<A> = <T, A>() => GenericIdentityFnA<A>;
+interface NasaRequestData {
+  rover: MarsRovers;
+  sol?: number;
+  type: ROVERVIEW_ACTION_TYPES | SOLVIEW_ACTION_TYPES;
+  asyncTypes: ROVERVIEW_ACTION_TYPES[] | SOLVIEW_ACTION_TYPES[];
+  offline: boolean;
+}
+
+const getManifestFor: Thunk<Promise<any>> = ({
+  rover,
+  sol,
+  type,
+  asyncTypes,
+  offline,
+}: NasaRequestData) => async (dispatch, getState) => {
   // const manifestFor = { rover: (rover && !sol), sol: (rover && sol) };
   const params = { rover, sol, offline };
   const requestPath = '/nasa';
-  const request = client => client.get(requestPath, { params });
+  const apiPromise = client => client.get(requestPath, { params });
 
   return dispatch({
-    types,
-    promise: request,
+    type,
+    asyncTypes,
+    apiPromise,
   });
 };
+const aaa: GenericIdentityFnA<RoverViewAction> = getManifestFor;
 
 const _updateList = (
   { type: _type, stateKey, sorts, filter, range } = {} as any,
@@ -227,7 +247,7 @@ const _updateList = (
   const newSorts = sorts || stateSorts;
   let newFilter = null;
   let newRange = null;
-  console.log('F', filter);
+
   if (filter) {
     newFilter = updateFilter(filter, stateFilter);
   } else {
@@ -264,4 +284,8 @@ export {
   sortListAction,
   getManifestFor,
   filterByFieldValue,
+  GenericIdentityFnA,
+  aaa,
+  ay,
+  MarsRovers,
 };
