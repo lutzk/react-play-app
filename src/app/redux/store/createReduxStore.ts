@@ -55,7 +55,7 @@ function createReduxStore({
     initialEntries: reqPath,
     initialDispatch: false,
     onBeforeChange: (dispatch: Dispatch, getState, bag) => {
-      const userRequiredRoutes = ['ROVER_VIEW'];
+      const userRequiredRoutes = ['ROVER_VIEW', 'HOME'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
         // not async https://github.com/faceyspacey/redux-first-router/issues/90

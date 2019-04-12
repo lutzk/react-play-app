@@ -23,7 +23,7 @@ const routesMap: RoutesMap<{}, ApplicationState> = {
   },
   [PATHS_TYPES.HOME]: {
     path: PATHS[PATHS_TYPES.HOME],
-    // thunk,
+    thunk,
   },
   [PATHS_TYPES.ROVER_VIEW]: {
     path: `${PATHS[PATHS_TYPES.ROVER_VIEW]}/:rover?`,
