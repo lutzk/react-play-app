@@ -4,12 +4,7 @@
   "rules": {
     "variable-name": false,
     "interface-name": false,
-    "prettier": [true, {
-      "singleQuote": true,
-      "semi": true,
-      "printWidth": 80,
-      "trailingComma": "all"
-    }],
+    "prettier": true,
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-console": false,
