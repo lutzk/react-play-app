@@ -8,7 +8,7 @@ import flushChunks from 'webpack-flush-chunks';
 
 import { Handler } from 'express';
 import App from '../../app/containers/App/App';
-import { MyThunkDispatch } from '../../app/redux/modules/types';
+import { MyThunkDispatch } from '../../app/redux/store/types';
 import { loadAuth } from '../../app/redux/modules/user';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
 import { ApiClient } from '../../helpers/ApiClient';

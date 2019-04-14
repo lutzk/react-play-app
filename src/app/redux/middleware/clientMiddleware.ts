@@ -12,7 +12,7 @@ import {
   isAsyncAction,
   isPouchPromiseAction,
   MyThunkDispatch,
-} from '../modules/types';
+} from '../store/types';
 import { USER_TYPES } from '../modules/user';
 import { linkToSpirit } from '../routing/navHelpers';
 

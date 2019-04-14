@@ -5,26 +5,65 @@ import {
   Dispatch,
   Middleware,
   Store,
+  MiddlewareAPI,
 } from 'redux';
 import { redirect, RouteThunk } from 'redux-first-router';
-// import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { ApiClient } from '../../../helpers/ApiClient';
 import { PouchAction } from '../../../redux-pouchdb-plus/src';
 import { RedirectAction } from '../routing/nav';
-import { AppAction } from './app';
-import { PageAction } from './page';
-import { PageLoadBarAction } from './pageLoadBar';
-import { ApplicationState } from './reducer';
-import { RoverViewAction } from './roverView';
-import { SolViewAction } from './solView';
-import { UserAction } from './user';
+import { AppAction } from '../modules/app';
+import { PageAction } from '../modules/page';
+import { PageLoadBarAction } from '../modules/pageLoadBar';
+import { ApplicationState } from '../modules/reducer';
+import { RoverViewAction } from '../modules/roverView';
+import { SolViewAction } from '../modules/solView';
+import { UserAction } from '../modules/user';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type Omit1<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type actionPromise = () => Promise<any>;
-// type api response
-type apiActionPromise = (client: ApiClient) => Promise<any>;
 type PromiseDispatch = <T extends Action>(promise: Promise<T>) => Promise<T>;
+
+function promise() {
+  const promiseMiddleware: Middleware<
+    MyThunkDispatch & PromiseDispatch,
+    ApplicationState
+  > = ({ dispatch }: MiddlewareAPI) => next => <T extends Action>(
+    action: AnyAction | Promise<T>,
+  ) => {
+    if (action instanceof Promise) {
+      action.then(dispatch);
+      return action;
+    }
+
+    return next(action);
+  };
+
+  return promiseMiddleware;
+}
+
+type ThunkD<R, S, DispatchExt = {}> = (
+  dispatch: Dispatch & ThunkDispatch<S> & DispatchExt,
+  getState: () => S,
+) => R;
+
+type ThunkDispatch<S, DispatchExt = {}> = <R>(
+  thunk: ThunkD<R, S, DispatchExt>,
+) => R;
+
+function thunkMiddleware<S, DispatchExt>() {
+  const thunkMiddleware: Middleware<
+    ThunkDispatch<S, DispatchExt>,
+    S,
+    Dispatch & ThunkDispatch<S>
+  > = api => (next: Dispatch) => <R>(action: AnyAction | ThunkD<R, any>) =>
+    typeof action === 'function'
+      ? action(api.dispatch, api.getState)
+      : next(action);
+
+  return thunkMiddleware;
+}
+
+type actionPromise = () => Promise<any>;
+type apiActionPromise = (client: ApiClient) => Promise<any>;
+
 interface PromiseAction {
   type: ACTIONS['type'];
   // use just async types
@@ -45,9 +84,6 @@ type ACTIONS =
 
 type APP_ACTIONS = ACTIONS | PromiseAction;
 
-// type abc = Extract<>;
-type abcd = Exclude<PageLoadBarAction, PromiseAction>;
-// type abcde = Omit<ACTIONS, APP_ACTIONS>;
 type _MyPromiseDispatch = <T extends APP_ACTIONS>() => Promise<T>;
 
 interface APPThunkDispatch<S, E, A> {
@@ -73,7 +109,7 @@ type ThunkResult<R> = APPThunkAction<R, ApplicationState, void, APP_ACTIONS> &
 type APP_STORE = Store<ApplicationState, APP_ACTIONS>;
 type myRedirect = (action: RedirectAction) => RedirectAction;
 const myRedirect = redirect as myRedirect;
-// RouteThunk <ApplicationState> = (dispatch: MyThunkDispatch)
+
 const isAsyncAction = (action: APP_ACTIONS): action is PromiseAction =>
   'apiPromise' in action || 'pouchPromise' in action;
 
@@ -115,10 +151,10 @@ export {
   PromiseAction,
   isAsyncAction,
   apiActionPromise,
-  // ApiPromiseAction,
-  // PouchPromiseAction,
   isApiPromiseAction,
   isPouchPromiseAction,
-  PromiseDispatch,
   myRedirect,
+  thunkMiddleware,
+  promise,
+  PromiseDispatch,
 };

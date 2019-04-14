@@ -6,7 +6,7 @@ import {
   SendMsgToWorker,
 } from '../../../redux-pouchdb-plus/src/index';
 import { POUCH_WORKER_TYPES } from '../../../workers/pouchWorkerTypes';
-import { PromiseAction, Thunk } from './types';
+import { PromiseAction, Thunk } from '../store/types';
 
 interface AppState {
   data?: any;

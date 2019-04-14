@@ -16,7 +16,7 @@ import {
   sortList,
   spirit,
 } from './shared/shared';
-import { PromiseAction, Thunk } from './types';
+import { PromiseAction, Thunk } from '../store/types';
 
 const reducerName = 'RoverView';
 

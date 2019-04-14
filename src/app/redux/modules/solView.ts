@@ -10,7 +10,7 @@ import {
   MarsRovers,
   sortList,
 } from './shared/shared';
-import { PromiseAction } from './types';
+import { PromiseAction } from '../store/types';
 
 enum SOLVIEW_ACTION_TYPES {
   GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST',

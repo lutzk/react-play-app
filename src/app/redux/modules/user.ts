@@ -4,7 +4,7 @@ import { ApiClient } from '../../../helpers/ApiClient';
 import { RedirectAction } from '../routing/nav';
 import { linkToLogin } from '../routing/navHelpers';
 import { ApplicationState } from './reducer';
-import { myRedirect, PromiseAction, Thunk } from './types';
+import { myRedirect, PromiseAction, Thunk } from '../store/types';
 
 enum USER_TYPES {
   LOGIN = 'user/LOGIN',

@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { Reducer } from 'redux';
-import { Thunk, ThunkResult } from './types';
+import { Thunk, ThunkResult } from '../store/types';
 
 enum PAGE_ACTIONS {
   LOADING = 'pageLoadBar/LOADING',

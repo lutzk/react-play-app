@@ -12,22 +12,9 @@
 
 import deepEqual from 'deep-equal';
 import { debounce } from 'lodash';
-import {
-  Action,
-  AnyAction,
-  createStore,
-  DeepPartial,
-  Reducer,
-  Store,
-  StoreEnhancer,
-  StoreEnhancerStoreCreator,
-} from 'redux';
+import { DeepPartial, Reducer, Store, StoreEnhancer } from 'redux';
 import { ApplicationState } from '../../app/redux/modules/reducer';
-import {
-  APP_ACTIONS,
-  PromiseAction,
-  Thunk,
-} from '../../app/redux/modules/types';
+import { APP_ACTIONS, PromiseAction, Thunk } from '../../app/redux/store/types';
 import { UserState } from '../../app/redux/modules/user';
 import { POUCH_WORKER_TYPES } from '../../workers/pouchWorkerTypes';
 import {
@@ -103,51 +90,10 @@ const setReducersUninitialized = () =>
     name => (initializedReducers[name] = false),
   );
 
-// const reinit = () => dispatch => {
-//   setReducersUninitialized();
-//   return dispatch({
-//     type: POUCH_ACTION_TYPES.REINIT,
-//   });
-// };
-
 const reset: Thunk<PouchAction> = () => dispatch => {
   setReducersUninitialized();
   return dispatch({ type: POUCH_ACTION_TYPES.RESET });
 };
-
-// const requestReinit = () => dispatch =>
-//   dispatch({ type: POUCH_ACTION_TYPES.REQUEST_REINIT });
-
-// function stateExtension() {
-//   interface State {
-//     someField: 'string';
-//   }
-//   const reducer: Reducer<State> = null as any;
-//   interface ExtraState {
-//     extraField: 'extra';
-//   }
-
-//   const enhancer: StoreEnhancer<{}, ExtraState> = createStore => <
-//     S,
-//     A extends Action = AnyAction
-//   >(
-//     reducer: Reducer<S, A>,
-//     preloadedState?: DeepPartial<S>,
-//   ) => {
-//     const wrappedReducer: Reducer<S & ExtraState, A> = null as any;
-//     const wrappedPreloadedState: S & ExtraState = null as any;
-//     return createStore(wrappedReducer, wrappedPreloadedState);
-//   };
-
-//   const store = createStore(reducer, enhancer);
-
-//   // tslint:disable-next-line:no-unused-expression
-//   store.getState().someField;
-//   // tslint:disable-next-line:no-unused-expression
-//   store.getState().extraField;
-//   // typings:expect-error
-//   // store.getState().wrongField;
-// }
 
 const persistentStore = (): StoreEnhancer => createStore => (
   reducer,
@@ -303,7 +249,6 @@ const persistentReducer = <TReducerState>(
       case POUCH_ACTION_TYPES.REINIT:
         if (isUserPresent(user)) {
           nextState = reducer(state, action);
-          // sendMsgToWorker({ ...REDUCER_REGISTER, reducerName });
           reinitReducerInWorker(reducerName, nextState, currentState, user);
           return (currentState = nextState);
         }

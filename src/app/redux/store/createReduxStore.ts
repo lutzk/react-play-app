@@ -13,21 +13,15 @@ import {
   Options /* , NOT_FOUND */,
   redirect,
 } from 'redux-first-router';
-// import thunkMiddleware, { ThunkMiddleware } from 'redux-thunk';
 import { ApiClient } from '../../../helpers/ApiClient';
 import { persistentStore } from '../../../redux-pouchdb-plus/src/index';
 import { clientMiddleware } from '../middleware/clientMiddleware';
 import { ApplicationState, createRootReducer } from '../modules/reducer';
-import {
-  APP_ACTIONS,
-  MyThunkDispatch,
-  PromiseDispatch,
-} from '../modules/types';
-import { checkAuth, isLoaded, killUser, loadAuth } from '../modules/user';
+import { APP_ACTIONS, MyThunkDispatch } from './types';
 import { RedirectAction } from '../routing/nav';
 import { linkToLogin } from '../routing/navHelpers';
 import { routesMap } from '../routing/routesMap';
-import { promise, thunk as rthunk } from './storeTypes';
+import { thunkMiddleware } from './types';
 
 // import { getRootSaga } from '../sagas';
 // import createSagaMonitor from '../sagas/sagaMonitor';
@@ -55,7 +49,7 @@ function createReduxStore({
     initialEntries: reqPath,
     initialDispatch: false,
     onBeforeChange: (dispatch: Dispatch, getState, bag) => {
-      const userRequiredRoutes = ['ROVER_VIEW', 'HOME'];
+      const userRequiredRoutes = ['ROVER_VIEW'];
       const userRequired = userRequiredRoutes.indexOf(bag.action.type) > -1;
       if (userRequired) {
         // not async https://github.com/faceyspacey/redux-first-router/issues/90
@@ -82,17 +76,17 @@ function createReduxStore({
   // });
   // applyMiddleware(sagaMiddleware)
   const {
-    reducer,
-    middleware,
-    enhancer,
     thunk,
+    reducer,
+    enhancer,
+    middleware,
     initialDispatch,
   } = connectRoutes<{}, ApplicationState>(routesMap, options);
 
   const rootReducer = createRootReducer(reducer);
   const middlewares = applyMiddleware(
     middleware,
-    rthunk<ApplicationState, MyThunkDispatch>(),
+    thunkMiddleware<ApplicationState, MyThunkDispatch>(),
     clientMiddleware(client),
   );
 

@@ -2,7 +2,7 @@ import produce from 'immer';
 import { get, orderBy } from 'lodash';
 import { ROVERVIEW_ACTION_TYPES, RoverViewAction } from '../roverView';
 import { SOLVIEW_ACTION_TYPES, SolViewAction } from '../solView';
-import { Thunk, ThunkResult } from '../types';
+import { Thunk, ThunkResult } from '../../store/types';
 
 const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };

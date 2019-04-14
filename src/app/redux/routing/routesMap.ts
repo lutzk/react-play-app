@@ -4,10 +4,7 @@ import {
 } from 'redux-first-router';
 import { ApplicationState } from '../modules/reducer';
 import { initPage } from '../modules/roverView';
-import { MyThunkDispatch } from '../modules/types';
-import {
-  /* loadAuth, isLoaded, killUser, */ requireLogin,
-} from '../modules/user';
+import { requireLogin } from '../modules/user';
 import { PATHS, PATHS_TYPES } from './nav';
 
 const rthunk: RouteThunk<ApplicationState> = dispatch => dispatch(initPage());
@@ -23,7 +20,7 @@ const routesMap: RoutesMap<{}, ApplicationState> = {
   },
   [PATHS_TYPES.HOME]: {
     path: PATHS[PATHS_TYPES.HOME],
-    thunk,
+    // thunk,
   },
   [PATHS_TYPES.ROVER_VIEW]: {
     path: `${PATHS[PATHS_TYPES.ROVER_VIEW]}/:rover?`,

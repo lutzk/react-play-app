@@ -5,7 +5,7 @@ import { page } from './page';
 import { pageLoadBar, PageLoadBarState } from './pageLoadBar';
 import { roverViewReducer as roverView, RoverViewState } from './roverView';
 import { solViewReducer as solView, SolViewState } from './solView';
-import { APP_ACTIONS } from './types';
+import { APP_ACTIONS } from '../store/types';
 import { user, UserState } from './user';
 
 interface ApplicationState {
