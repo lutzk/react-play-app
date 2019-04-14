@@ -1711,7 +1711,7 @@ babel-plugin-transform-imports@^1.5.1:
     lodash.kebabcase "^4.1.1"
     lodash.snakecase "^4.1.1"
 
-babel-plugin-universal-import@^4.0.0:
+babel-plugin-universal-import@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-universal-import/-/babel-plugin-universal-import-4.0.0.tgz#e104049e8bd1ff3e028bbfb0a358554c3e28e347"
   integrity sha512-f+1cav9o7y7AiugeIETdbPwdcHYs78UcqBo2JXM5eYQLSDGjJpa03oB3o8sUyj+viSzVnMTGiPJEeJIXQRzcng==
@@ -3313,10 +3313,10 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-extract-css-chunks-webpack-plugin@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/extract-css-chunks-webpack-plugin/-/extract-css-chunks-webpack-plugin-4.3.0.tgz#01fb5ea225a78d5bd51e29b191dc1248ab320957"
-  integrity sha512-U2mCuqF9JKmyQydQQUy+tsCVCeuysgIZNZHd0eeTgIgq6gSqCnS9eaCpknyLVl3aRr8y2gkvRPzpuHS7AdvK0Q==
+extract-css-chunks-webpack-plugin@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/extract-css-chunks-webpack-plugin/-/extract-css-chunks-webpack-plugin-4.3.1.tgz#da947a26062f985aa47aafffce1d3f56f923f9f2"
+  integrity sha512-dSzNLh4UueMcJAA/L2CX+7l3ntpOnpvoDxD2gfHVsf8e1ZwOXI+r4QoFFNwCSblAR1MmK485VMqswpEtzW6wYQ==
   dependencies:
     loader-utils "^1.1.0"
     lodash "^4.17.11"
@@ -6693,7 +6693,7 @@ rc@^1.0.1, rc@^1.0.3, rc@^1.1.6, rc@^1.1.7, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-dom@^16.8.6:
+react-dom@16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
   integrity sha512-1nL7PIq9LTL3fthPqwkvr2zY7phIPjYrT0jp4HjyEQrEROnw4dG41VVwi/wfoCneoleqrNX7iAD+pXebJZwrwA==
@@ -6728,10 +6728,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-redux@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.1.tgz#321285e6c85c3586d11cc066ab33dc580da599fb"
-  integrity sha512-orSiI/QXtGiiJmf8lN/zVTx4hysFo/kGOsce28IUu/mu98AGemBwPTDzf64P4Vf/miRmevO8/w2RSw2awDd21w==
+react-redux@7.0.2:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.2.tgz#34b280a3482aaf60e7d4a504b1295165cbe6b86a"
+  integrity sha512-uKRuMgQt8dWbcz0U75oFK5tDo3boyAKrqvf/j94vpqRFFZfyDDy4kofUgloFIGyuKTq2Zz51zgK9RzOTFXk5ew==
   dependencies:
     "@babel/runtime" "^7.4.3"
     hoist-non-react-statics "^3.3.0"
@@ -6740,16 +6740,14 @@ react-redux@^7.0.1:
     prop-types "^15.7.2"
     react-is "^16.8.6"
 
-react-universal-component@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/react-universal-component/-/react-universal-component-4.0.0.tgz#51e74198b98092dff6faf25315091070547ed129"
-  integrity sha512-FOL+1ZDS7Fp6AvUbkTDjttTOGxSRJZaU5M9MX+mm/Uj4/Azq7r2TpFACaUvMxFUYHjDRg2NpKwZDsHvywXMvMg==
+react-universal-component@../react-universal-component:
+  version "4.0.0-alpha.4"
   dependencies:
     hoist-non-react-statics "^2.2.1"
     prop-types "^15.5.10"
     react-hot-loader "^4.3.6"
 
-react@^16.8.6:
+react@16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
   integrity sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==
