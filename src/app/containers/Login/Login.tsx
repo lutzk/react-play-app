@@ -4,7 +4,11 @@ import { bindActionCreators } from 'redux';
 
 import { goToPage } from '../../redux/modules/page';
 import { loadAuth, login, signup } from '../../redux/modules/user';
-import { linkToHome, linkToSpirit } from '../../redux/routing/navHelpers';
+import {
+  linkToHome,
+  linkToSpirit,
+  linkToLogin,
+} from '../../redux/routing/navHelpers';
 
 import '../Login/Login.sass';
 
@@ -63,6 +67,8 @@ const LoginComp: React.SFC<Props> = memo(({ login, signup, onClick }) => {
       <div className="login_content">
         <h1 className="login_headline">
           <span onClick={handleHomeLink}>home</span>
+          &nbsp;
+          <span onClick={() => onClick(linkToLogin)}>Login</span>
           &nbsp;
           <span onClick={handleLink}>Rover View</span>
         </h1>

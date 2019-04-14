@@ -1,8 +1,12 @@
 import React, { memo } from 'react';
-import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-
-import { createRoverLink, linkToSpirit } from '../../redux/routing/navHelpers';
+import { connect } from 'react-redux';
+import {
+  linkToHome,
+  linkToLogin,
+  linkToSpirit,
+  createRoverLink,
+} from '../../redux/routing/navHelpers';
 import '../Home/Home.sass';
 
 interface Props {
@@ -22,6 +26,12 @@ const HomeComp: React.SFC<Props> = memo(({ dispatch }) => {
   return (
     <div className="page home">
       <h1>home</h1>
+      <p>
+        <span onClick={() => dispatch(linkToLogin)}>Login</span>
+      </p>
+      <p>
+        <span onClick={() => dispatch(linkToHome)}>Home</span>
+      </p>
       <p>
         <span onClick={handleSpiritLink}>RoverView (rover = "Spirit")</span>
       </p>
