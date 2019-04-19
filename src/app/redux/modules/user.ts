@@ -6,7 +6,7 @@ import { linkToLogin } from '../routing/navHelpers';
 import { ApplicationState } from './reducer';
 import { myRedirect, PromiseAction, Thunk } from '../store/types';
 
-enum USER_TYPES {
+export enum USER_TYPES {
   LOGIN = 'user/LOGIN',
   LOGIN_SUCCESS = 'user/LOGIN_SUCCESS',
   LOGIN_FAIL = 'user/LOGIN_FAIL',
@@ -22,7 +22,7 @@ enum USER_TYPES {
   KILL_USER = 'user/KILL_USER',
 }
 
-interface User {
+export interface User {
   issued: number;
   expires: number;
   token: string;
@@ -33,7 +33,7 @@ interface User {
   roles: string[];
 }
 
-interface UserState {
+export interface UserState {
   user: User | null;
   savedPath?: any;
   loading: boolean;
@@ -46,7 +46,7 @@ interface UserState {
   lastLoaded: number;
 }
 
-interface UserAction extends PromiseAction {
+export interface UserAction extends PromiseAction {
   type: USER_TYPES;
   result?: any;
   lastLoaded?: any;
@@ -251,9 +251,6 @@ const requireLogin: Thunk<Promise<UserRedirectAction>> = () => async dispatch =>
   dispatch(loadAuth()).then(r => dispatch(checkAuth()));
 
 export {
-  User,
-  UserState,
-  UserAction,
   user,
   login,
   logout,
@@ -263,5 +260,4 @@ export {
   isLoaded,
   checkAuth,
   requireLogin,
-  USER_TYPES,
 };

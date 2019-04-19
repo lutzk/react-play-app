@@ -9,7 +9,7 @@ const components = {
   [PATHS_TYPES.ROVER_VIEW]: 'RoverView',
 };
 
-interface PageAction {
+export interface PageAction {
   type: PATHS_TYPES;
 }
 
@@ -29,4 +29,4 @@ const goToPage = ({ type, payload }) => dispatch => {
   });
 };
 
-export { page, goToPage, PageAction };
+export { page, goToPage };

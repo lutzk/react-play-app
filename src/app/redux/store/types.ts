@@ -19,7 +19,9 @@ import { RoverViewAction } from '../modules/roverView';
 import { SolViewAction } from '../modules/solView';
 import { UserAction } from '../modules/user';
 
-type PromiseDispatch = <T extends Action>(promise: Promise<T>) => Promise<T>;
+export type PromiseDispatch = <T extends Action>(
+  promise: Promise<T>,
+) => Promise<T>;
 
 function promise() {
   const promiseMiddleware: Middleware<
@@ -62,9 +64,9 @@ function thunkMiddleware<S, DispatchExt>() {
 }
 
 type actionPromise = () => Promise<any>;
-type apiActionPromise = (client: ApiClient) => Promise<any>;
+export type apiActionPromise = (client: ApiClient) => Promise<any>;
 
-interface PromiseAction {
+export interface PromiseAction {
   type: ACTIONS['type'];
   // use just async types
   asyncTypes?: Array<ACTIONS['type']>;
@@ -82,7 +84,7 @@ type ACTIONS =
   | RedirectAction
   | SolViewAction;
 
-type APP_ACTIONS = ACTIONS | PromiseAction;
+export type APP_ACTIONS = ACTIONS | PromiseAction;
 
 type _MyPromiseDispatch = <T extends APP_ACTIONS>() => Promise<T>;
 
@@ -99,25 +101,36 @@ type APPThunkAction<R, S, E, A> = (
 
 // https://gist.github.com/milankorsos/ffb9d32755db0304545f92b11f0e4beb
 // https://gist.github.com/seansean11/196c436988c1fdf4b22cde308c492fe5
-type Thunk<R> = ActionCreator<
+export type Thunk<R> = ActionCreator<
   APPThunkAction<R, ApplicationState, void, APP_ACTIONS>
 >;
 
-type MyThunkDispatch = APPThunkDispatch<ApplicationState, void, APP_ACTIONS>;
-type ThunkResult<R> = APPThunkAction<R, ApplicationState, void, APP_ACTIONS> &
+export type MyThunkDispatch = APPThunkDispatch<
+  ApplicationState,
+  void,
+  APP_ACTIONS
+>;
+export type ThunkResult<R> = APPThunkAction<
+  R,
+  ApplicationState,
+  void,
+  APP_ACTIONS
+> &
   RouteThunk<ApplicationState>;
-type APP_STORE = Store<ApplicationState, APP_ACTIONS>;
-type myRedirect = (action: RedirectAction) => RedirectAction;
-const myRedirect = redirect as myRedirect;
+export type APP_STORE = Store<ApplicationState, APP_ACTIONS>;
+export type myRedirect = (action: RedirectAction) => RedirectAction;
+export const myRedirect = redirect as myRedirect;
 
 const isAsyncAction = (action: APP_ACTIONS): action is PromiseAction =>
   'apiPromise' in action || 'pouchPromise' in action;
 
-const isApiPromiseAction = (action: APP_ACTIONS): action is PromiseAction =>
-  'apiPromise' in action;
+const isApiPromiseAction = (
+  action: APP_ACTIONS,
+): action is PromiseAction => 'apiPromise' in action;
 
-const isPouchPromiseAction = (action: APP_ACTIONS): action is PouchAction =>
-  'pouchPromise' in action;
+const isPouchPromiseAction = (
+  action: APP_ACTIONS,
+): action is PouchAction => 'pouchPromise' in action;
 
 interface AThunk<R, S, DispatchExt = {}> {
   // tslint:disable-next-line:callable-types
@@ -143,18 +156,9 @@ const athunk = <S, DispatchExt>() => {
 };
 
 export {
-  APP_ACTIONS,
-  Thunk,
-  APP_STORE,
-  MyThunkDispatch,
-  ThunkResult,
-  PromiseAction,
   isAsyncAction,
-  apiActionPromise,
   isApiPromiseAction,
   isPouchPromiseAction,
-  myRedirect,
   thunkMiddleware,
   promise,
-  PromiseDispatch,
 };

@@ -8,12 +8,12 @@ const getSWorkerRegistration = () => navigator.serviceWorker.ready.then(r => r);
 //   navigator.serviceWorker.onmessage = event => event.data;
 // event.ports[0].postMessage(['msg ack from window', event.data.data]);
 // console.log('___GOT MSG FROM WORKER__', event);
-interface PouchWorkerAction {
+export interface PouchWorkerAction {
   type: POUCH_WORKER_TYPES;
   [key: string]: any;
 }
 type Reciever = Worker;
-interface SendMsgData {
+export interface SendMsgData {
   msg: PouchWorkerAction;
   reciever: Reciever;
 }
@@ -168,6 +168,4 @@ export {
   initCacheWorker,
   cachePageOnEnter,
   workersEnabled,
-  SendMsgData,
-  PouchWorkerAction,
 };

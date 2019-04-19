@@ -11,7 +11,7 @@ interface ApiError {
 }
 
 type ApiMethod = (path: any, reqData?: any) => Promise<any>;
-interface IApiClient {
+export interface IApiClient {
   get: ApiMethod;
   post: ApiMethod;
 }
@@ -91,4 +91,4 @@ class ApiClient {
   }
 }
 
-export { ApiClient, IApiClient };
+export { ApiClient };

@@ -8,7 +8,7 @@ import {
 import { POUCH_WORKER_TYPES } from '../../../workers/pouchWorkerTypes';
 import { PromiseAction, Thunk } from '../store/types';
 
-interface AppState {
+export interface AppState {
   data?: any;
   savedData?: any;
   pouchWorker?: Worker;
@@ -17,13 +17,13 @@ interface AppState {
   syncing?: boolean;
 }
 
-type AppActionTypes =
+export type AppActionTypes =
   | POUCH_ACTION_TYPES.INIT
   | POUCH_ACTION_TYPES.SYNC
   | POUCH_ACTION_TYPES.SYNC_SUCCESS
   | POUCH_ACTION_TYPES.REINIT_REDUCERS;
 
-interface AppAction extends PromiseAction {
+export interface AppAction extends PromiseAction {
   type: AppActionTypes;
   data?: any;
   savedData?: any;
@@ -108,9 +108,6 @@ const syncInitial: Thunk<Promise<PouchAction>> = () => async (
 
 export {
   app,
-  AppState,
-  AppAction,
   syncInitial,
-  AppActionTypes,
   reinitReducers,
 };

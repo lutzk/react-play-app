@@ -2,20 +2,20 @@ import produce from 'immer';
 import { Reducer } from 'redux';
 import { Thunk, ThunkResult } from '../store/types';
 
-enum PAGE_ACTIONS {
+export enum PAGE_ACTIONS {
   LOADING = 'pageLoadBar/LOADING',
   END_LOADING = 'pageLoadBar/END_LOADING',
   RESET_LOADING = 'pageLoadBar/RESET_LOADING',
   END_LOADING_FROM_ERROR = 'pageLoadBar/END_LOADING_FROM_ERROR',
 }
 
-interface PageLoadBarState {
+export interface PageLoadBarState {
   loading?: boolean;
   loadEnd?: boolean;
   error?: boolean;
 }
 
-interface PageLoadBarAction extends PageLoadBarState {
+export interface PageLoadBarAction extends PageLoadBarState {
   type: PAGE_ACTIONS;
 }
 
@@ -96,10 +96,10 @@ const endLoading: Thunk<PageLoadBarAction | void> = (
 };
 
 export {
-  PageLoadBarState,
-  PageLoadBarAction,
+  // PageLoadBarState,
+  // PageLoadBarAction,
   endLoading,
   pageLoadBar,
   startLoading,
-  PAGE_ACTIONS,
+  // PAGE_ACTIONS,
 };

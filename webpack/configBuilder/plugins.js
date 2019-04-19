@@ -113,6 +113,7 @@ const buildForkTsCheckerWebpackPlugin = (
   async: true,
   watch,
   workers: cpus,
+  memoryLimit: 4096,
   tsconfig,
   tslint: './tslint.json',
 });

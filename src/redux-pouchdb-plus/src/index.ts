@@ -28,7 +28,7 @@ import {
 // may lead to several race conditions).
 // see also http://stackoverflow.com/questions/28280276/changes-filter-only-changes-from-other-db-instances
 
-enum POUCH_ACTION_TYPES {
+export enum POUCH_ACTION_TYPES {
   INIT = '@@redux-pouchdb-plus/INIT',
   RESET = '@@redux-pouchdb-plus/RESET',
   REINIT = '@@redux-pouchdb-plus/REINIT',
@@ -52,7 +52,7 @@ type WRAPPED_REDUCER_ACTIONS =
   | POUCH_ACTION_TYPES.RESET
   | POUCH_ACTION_TYPES.SET_REDUCER;
 
-type SendMsgToWorker = ReturnType<typeof currySendMsg>;
+export type SendMsgToWorker = ReturnType<typeof currySendMsg>;
 type PartialAppState = DeepPartial<ApplicationState>;
 type MyStore = Store<PartialAppState, APP_ACTIONS>;
 
@@ -66,7 +66,7 @@ interface WrapedReducerAction<TReducerState> {
   type: WRAPPED_REDUCER_ACTIONS;
 }
 
-interface PouchAction extends PromiseAction {
+export interface PouchAction extends PromiseAction {
   type: POUCH_ACTION_TYPES;
   asyncTypes?: any[];
 }
@@ -293,9 +293,6 @@ const persistentReducer = <TReducerState>(
 
 export {
   reset,
-  PouchAction,
   persistentStore,
   persistentReducer,
-  POUCH_ACTION_TYPES,
-  SendMsgToWorker,
 };

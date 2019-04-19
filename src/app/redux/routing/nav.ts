@@ -1,6 +1,6 @@
 import { NavAction } from './navHelpers';
 
-enum PATHS_TYPES {
+export enum PATHS_TYPES {
   HOME = 'HOME',
   LOGIN = 'LOGIN',
   SOL_VIEW = 'SOL_VIEW',
@@ -16,8 +16,8 @@ const PATHS = {
   [PATHS_TYPES.ROVER_VIEW]: '/rover-view',
 };
 
-interface RedirectAction extends NavAction {
+export interface RedirectAction extends NavAction {
   nextPathname?: string;
 }
 
-export { PATHS, PATHS_TYPES, RedirectAction };
+export { PATHS };

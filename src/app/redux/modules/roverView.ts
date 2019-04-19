@@ -20,14 +20,14 @@ import { PromiseAction, Thunk } from '../store/types';
 
 const reducerName = 'RoverView';
 
-enum ROVERVIEW_ACTION_TYPES {
+export enum ROVERVIEW_ACTION_TYPES {
   SORT_SOLS = 'roverView/SORT_SOLS',
   GET_MANIFEST = 'roverView/GET_MANIFEST',
   GET_MANIFEST_SUCCESS = 'roverView/GET_MANIFEST_SUCCESS',
   GET_MANIFEST_FAIL = 'roverView/GET_MANIFEST_FAIL',
 }
 
-interface RoverViewState {
+export interface RoverViewState {
   rover: any;
   error: any;
   rovers: any;
@@ -57,7 +57,7 @@ interface RoverResult {
   photoManifest: any;
 }
 
-interface RoverViewAction extends PromiseAction {
+export interface RoverViewAction extends PromiseAction {
   reducerName?: string;
   range?: any;
   sorts?: any;
@@ -275,12 +275,9 @@ const roverViewReducer = persistentReducer<RoverViewState>(
 
 export {
   MarsRovers,
-  RoverViewState,
-  RoverViewAction,
   initPage,
   updateList,
   getManifest,
   roverMatcher,
   roverViewReducer,
-  ROVERVIEW_ACTION_TYPES,
 };

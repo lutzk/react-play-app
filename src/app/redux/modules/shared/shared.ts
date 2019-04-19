@@ -8,7 +8,7 @@ const spirit = { name: 'Spirit', label: 'spirit' };
 const curiosity = { name: 'Curiosity', label: 'curiosity' };
 const opportunity = { name: 'Opportunity', label: 'opportunity' };
 
-enum MarsRovers {
+export enum MarsRovers {
   spirit = 'spirit',
   curiosity = 'curiosity',
   opportunity = 'opportunity',
@@ -192,8 +192,8 @@ const sortListAction = (
     }),
   });
 
-type ay<T> = Thunk<Promise<T>>;
-type GenericIdentityFnA<T> = Thunk<Promise<T>>;
+export type ay<T> = Thunk<Promise<T>>;
+export type GenericIdentityFnA<T> = Thunk<Promise<T>>;
 interface GGenericIdentityFnA<T> {
   // tslint:disable-next-line:callable-types
   // (): T;
@@ -284,8 +284,5 @@ export {
   sortListAction,
   getManifestFor,
   filterByFieldValue,
-  GenericIdentityFnA,
   aaa,
-  ay,
-  MarsRovers,
 };

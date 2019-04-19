@@ -12,14 +12,14 @@ import {
 } from './shared/shared';
 import { PromiseAction } from '../store/types';
 
-enum SOLVIEW_ACTION_TYPES {
+export enum SOLVIEW_ACTION_TYPES {
   GET_SOL_MANIFEST = 'sol/GET_SOL_MANIFEST',
   GET_SOL_MANIFEST_SUCCESS = 'sol/GET_SOL_MANIFEST_SUCCESS',
   GET_SOL_MANIFEST_FAIL = 'sol/GET_SOL_MANIFEST_FAIL',
   SORT_SOL_PHOTOS = 'sol/SORT_SOL_PHOTOS',
 }
 
-interface SolViewState {
+export interface SolViewState {
   sol: any;
   error: any;
   loaded: boolean;
@@ -39,11 +39,11 @@ interface SolViewState {
   prefetched: boolean;
 }
 
-interface SolResult {
+export interface SolResult {
   photos: any[];
 }
 
-interface SolViewAction extends PromiseAction {
+export interface SolViewAction extends PromiseAction {
   reducerName?: string;
   range?: any;
   sorts?: any;
@@ -211,10 +211,6 @@ const updateList = ({ sorts, filter, range }: any = {}) => {
 const solViewReducer = persistentReducer(solView, reducerName);
 
 export {
-  SOLVIEW_ACTION_TYPES,
-  SolViewState,
-  SolResult,
-  SolViewAction,
   updateList,
   getSolManifest,
   solViewReducer,

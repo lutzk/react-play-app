@@ -8,7 +8,7 @@ import { solViewReducer as solView, SolViewState } from './solView';
 import { APP_ACTIONS } from '../store/types';
 import { user, UserState } from './user';
 
-interface ApplicationState {
+export interface ApplicationState {
   app: AppState;
   user: UserState;
   page: string;
@@ -109,4 +109,4 @@ const _combineReducers = (
   };
 };
 
-export { createRootReducer, ApplicationState };
+export { createRootReducer };
