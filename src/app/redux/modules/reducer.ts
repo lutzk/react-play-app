@@ -85,22 +85,38 @@ const _combineReducers = (
     let hasChanged = false;
     const nextState = {} as ApplicationState;
     // tslint:disable-next-line:prefer-for-of
+    /* for (let i = 0; i < finalReducerKeys.length; i++) {
+      const key = finalReducerKeys[i];
+      const reducer = finalReducers[key];
+      console.log('state', state);
+      const previousStateForKey = state ? state[key] : {};
+      let nextStateForKey;
+      // if (key === 'roverView' || key === 'solView') {
+      //   nextStateForKey = reducer(previousStateForKey, {
+      //     ...action,
+      //     user: (state as ApplicationState).user,
+      //   });
+      // } else {
+      nextStateForKey = reducer(previousStateForKey, action);
+      // }
+      if (typeof nextStateForKey === 'undefined') {
+        // const errorMessage = getUndefinedStateErrorMessage(key, action);
+        throw new Error('some key was undef');
+      }
+      nextState[key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
+    return hasChanged ? nextState : state; */
+    // let hasChanged = false;
+    // const nextState = {};
     for (let i = 0; i < finalReducerKeys.length; i++) {
       const key = finalReducerKeys[i];
       const reducer = finalReducers[key];
       const previousStateForKey = state[key];
-      let nextStateForKey;
-      if (key === 'roverView' || key === 'solView') {
-        nextStateForKey = reducer(previousStateForKey, {
-          ...action,
-          user: (state as ApplicationState).user,
-        });
-      } else {
-        nextStateForKey = reducer(previousStateForKey, action);
-      }
+      const nextStateForKey = reducer(previousStateForKey, action);
       if (typeof nextStateForKey === 'undefined') {
         // const errorMessage = getUndefinedStateErrorMessage(key, action);
-        throw new Error('some key was undef');
+        throw new Error('getUndefinedStateErrorMessage');
       }
       nextState[key] = nextStateForKey;
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
