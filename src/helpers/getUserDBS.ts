@@ -1,19 +1,19 @@
 import { UserState } from '../app/redux/modules/user';
 import { PouchDB } from './customPouch';
 
-interface DocModel {
+export interface DocModel {
   _id: string;
   _rev?: string;
   state?: any;
   localId?: string;
 }
 
-interface DBS {
+export interface DBS {
   local: PouchDB.Database<DocModel>;
   remote: PouchDB.Database<DocModel>;
 }
 
-type POUCH = PouchDB.Database<DocModel>;
+export type POUCH = PouchDB.Database<DocModel>;
 
 const getDBS = (user: UserState): Promise<DBS> =>
   Promise.resolve({
@@ -24,4 +24,4 @@ const getDBS = (user: UserState): Promise<DBS> =>
     remote: new PouchDB<DocModel>(user.user.userDB),
   });
 
-export { getDBS, DBS, DocModel, POUCH };
+export { getDBS };
