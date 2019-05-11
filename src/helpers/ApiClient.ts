@@ -1,6 +1,7 @@
 import { camelizeKeys } from 'humps';
 import superagent, { SuperAgentRequest } from 'superagent';
 import formatUrl from './formatUrl';
+import { Request } from 'express';
 
 interface ApiError {
   error: {
@@ -15,18 +16,19 @@ export interface IApiClient {
   get: ApiMethod;
   post: ApiMethod;
 }
-
+enum VERBS {
+  get = 'get',
+  post = 'post',
+}
 class ApiClient {
   public get: ApiMethod;
   public post: ApiMethod;
-  private incomingReq: any;
-  private verbs: string[] = ['get', 'post'];
-  constructor(incomingReq = false) {
-    this.incomingReq = incomingReq;
+  private verbs = [VERBS.get, VERBS.post];
+  constructor(private incomingReq?: Request) {
     this.verbs.map(verb => (this[verb] = this.client(verb)));
   }
 
-  private client(verb) {
+  private client(verb: VERBS) {
     return async (path: any, { params, data, headers }: any = {}) => {
       let request: SuperAgentRequest;
       let requestResult: superagent.Response;

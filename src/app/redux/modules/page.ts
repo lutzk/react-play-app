@@ -13,12 +13,12 @@ export interface PageAction {
   type: PATHS_TYPES;
 }
 
-const initialPageState = PATHS_TYPES.LOGIN;
+const initialPageState = components[PATHS_TYPES.LOGIN];
 
 // the primary reducer demonstrating Redux-First Router:
 const page: Reducer<string> = (
   state = initialPageState,
-  action: PageAction = { type: initialPageState },
+  action: PageAction = { type: PATHS_TYPES.LOGIN },
 ) => components[action.type] || state;
 
 const goToPage = ({ type, payload }) => dispatch => {

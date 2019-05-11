@@ -7,19 +7,20 @@ import { roverViewReducer as roverView, RoverViewState } from './roverView';
 import { solViewReducer as solView, SolViewState } from './solView';
 import { APP_ACTIONS } from '../store/types';
 import { user, UserState } from './user';
+import { LocationState } from 'redux-first-router';
 
 export interface ApplicationState {
   app: AppState;
   user: UserState;
   page: string;
   solView: SolViewState;
-  location: any;
+  location: LocationState;
   roverView: RoverViewState;
   pageLoadBar: PageLoadBarState;
 }
 
 const createRootReducer = location =>
-  _combineReducers({
+  myCombineReducers({
     app,
     user,
     page,
@@ -29,18 +30,28 @@ const createRootReducer = location =>
     pageLoadBar,
   });
 
-const _combineReducers = (
-  reducers: ReducersMapObject<ApplicationState, APP_ACTIONS>,
-): Reducer<ApplicationState, APP_ACTIONS> => {
+const getUndefinedStateErrorMessage = (key, action) => {
+  const actionType = action && action.type;
+  const actionDescription =
+    (actionType && `action "${String(actionType)}"`) || 'an action';
+
+  return (
+    `Given ${actionDescription}, reducer "${key}" returned undefined. ` +
+    `To ignore an action, you must explicitly return the previous state. ` +
+    `If you want this reducer to hold no value, you can return null instead of undefined.`
+  );
+};
+
+const myCombineReducers = reducers => {
   const reducerKeys = Object.keys(reducers);
   const finalReducers = {};
-  // tslint:disable-next-line:prefer-for-of
   for (let i = 0; i < reducerKeys.length; i++) {
     const key = reducerKeys[i];
 
     if (process.env.NODE_ENV !== 'production') {
       if (typeof reducers[key] === 'undefined') {
-        console.warn(`No reducer provided for key "${key}"`);
+        // warning(`No reducer provided for key "${key}"`);
+        console.error(Error(`No reducer provided for key "${key}"`));
       }
     }
 
@@ -62,10 +73,7 @@ const _combineReducers = (
   //   shapeAssertionError = e;
   // }
 
-  return function combination(
-    state: ApplicationState,
-    action: APP_ACTIONS,
-  ): ApplicationState {
+  return function combination(state = {}, action) {
     // if (shapeAssertionError) {
     //   throw shapeAssertionError;
     // }
@@ -78,45 +86,29 @@ const _combineReducers = (
     //     unexpectedKeyCache,
     //   );
     //   if (warningMessage) {
-    //     console.warn(warningMessage);
+    //     warning(warningMessage);
     //   }
     // }
 
     let hasChanged = false;
-    const nextState = {} as ApplicationState;
-    // tslint:disable-next-line:prefer-for-of
-    /* for (let i = 0; i < finalReducerKeys.length; i++) {
-      const key = finalReducerKeys[i];
-      const reducer = finalReducers[key];
-      console.log('state', state);
-      const previousStateForKey = state ? state[key] : {};
-      let nextStateForKey;
-      // if (key === 'roverView' || key === 'solView') {
-      //   nextStateForKey = reducer(previousStateForKey, {
-      //     ...action,
-      //     user: (state as ApplicationState).user,
-      //   });
-      // } else {
-      nextStateForKey = reducer(previousStateForKey, action);
-      // }
-      if (typeof nextStateForKey === 'undefined') {
-        // const errorMessage = getUndefinedStateErrorMessage(key, action);
-        throw new Error('some key was undef');
-      }
-      nextState[key] = nextStateForKey;
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-    }
-    return hasChanged ? nextState : state; */
-    // let hasChanged = false;
-    // const nextState = {};
+    const nextState = {};
     for (let i = 0; i < finalReducerKeys.length; i++) {
       const key = finalReducerKeys[i];
       const reducer = finalReducers[key];
       const previousStateForKey = state[key];
-      const nextStateForKey = reducer(previousStateForKey, action);
+      let nextStateForKey;
+      // const nextStateForKey = reducer(previousStateForKey, action);
+      if (key === 'roverView' || key === 'solView') {
+        nextStateForKey = reducer(previousStateForKey, {
+          ...action,
+          user: (state as ApplicationState).user,
+        });
+      } else {
+        nextStateForKey = reducer(previousStateForKey, action);
+      }
       if (typeof nextStateForKey === 'undefined') {
-        // const errorMessage = getUndefinedStateErrorMessage(key, action);
-        throw new Error('getUndefinedStateErrorMessage');
+        const errorMessage = getUndefinedStateErrorMessage(key, action);
+        throw new Error(errorMessage);
       }
       nextState[key] = nextStateForKey;
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
@@ -124,5 +116,101 @@ const _combineReducers = (
     return hasChanged ? nextState : state;
   };
 };
+
+// const _combineReducers = (
+//   reducers: ReducersMapObject<ApplicationState, APP_ACTIONS>,
+// ): Reducer<ApplicationState, APP_ACTIONS> => {
+//   const reducerKeys = Object.keys(reducers);
+//   const finalReducers = {};
+//   // tslint:disable-next-line:prefer-for-of
+//   for (let i = 0; i < reducerKeys.length; i++) {
+//     const key = reducerKeys[i];
+
+//     if (process.env.NODE_ENV !== 'production') {
+//       if (typeof reducers[key] === 'undefined') {
+//         console.warn(`No reducer provided for key "${key}"`);
+//       }
+//     }
+
+//     if (typeof reducers[key] === 'function') {
+//       finalReducers[key] = reducers[key];
+//     }
+//   }
+//   const finalReducerKeys = Object.keys(finalReducers);
+
+//   // let unexpectedKeyCache;
+//   // if (process.env.NODE_ENV !== 'production') {
+//   //   unexpectedKeyCache = {};
+//   // }
+
+//   // let shapeAssertionError;
+//   // try {
+//   //   assertReducerShape(finalReducers);
+//   // } catch (e) {
+//   //   shapeAssertionError = e;
+//   // }
+
+//   return function combination(
+//     state: ApplicationState,
+//     action: APP_ACTIONS,
+//   ): ApplicationState {
+//     // if (shapeAssertionError) {
+//     //   throw shapeAssertionError;
+//     // }
+
+//     // if (process.env.NODE_ENV !== 'production') {
+//     //   const warningMessage = getUnexpectedStateShapeWarningMessage(
+//     //     state,
+//     //     finalReducers,
+//     //     action,
+//     //     unexpectedKeyCache,
+//     //   );
+//     //   if (warningMessage) {
+//     //     console.warn(warningMessage);
+//     //   }
+//     // }
+
+//     let hasChanged = false;
+//     const nextState = {} as ApplicationState;
+//     // tslint:disable-next-line:prefer-for-of
+//     /* for (let i = 0; i < finalReducerKeys.length; i++) {
+//       const key = finalReducerKeys[i];
+//       const reducer = finalReducers[key];
+//       console.log('state', state);
+//       const previousStateForKey = state ? state[key] : {};
+//       let nextStateForKey;
+//       // if (key === 'roverView' || key === 'solView') {
+//       //   nextStateForKey = reducer(previousStateForKey, {
+//       //     ...action,
+//       //     user: (state as ApplicationState).user,
+//       //   });
+//       // } else {
+//       nextStateForKey = reducer(previousStateForKey, action);
+//       // }
+//       if (typeof nextStateForKey === 'undefined') {
+//         // const errorMessage = getUndefinedStateErrorMessage(key, action);
+//         throw new Error('some key was undef');
+//       }
+//       nextState[key] = nextStateForKey;
+//       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+//     }
+//     return hasChanged ? nextState : state; */
+//     // let hasChanged = false;
+//     // const nextState = {};
+//     for (let i = 0; i < finalReducerKeys.length; i++) {
+//       const key = finalReducerKeys[i];
+//       const reducer = finalReducers[key];
+//       const previousStateForKey = state[key];
+//       const nextStateForKey = reducer(previousStateForKey, action);
+//       if (typeof nextStateForKey === 'undefined') {
+//         // const errorMessage = getUndefinedStateErrorMessage(key, action);
+//         throw new Error('getUndefinedStateErrorMessage');
+//       }
+//       nextState[key] = nextStateForKey;
+//       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+//     }
+//     return hasChanged ? nextState : state;
+//   };
+// };
 
 export { createRootReducer };

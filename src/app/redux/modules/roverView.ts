@@ -17,6 +17,7 @@ import {
   spirit,
 } from './shared/shared';
 import { PromiseAction, Thunk } from '../store/types';
+import { LocationState } from 'redux-first-router';
 
 const reducerName = 'RoverView';
 
@@ -241,6 +242,7 @@ const initPage: Thunk<Promise<any>> = () => async (dispatch, getState) => {
   const roverViewState = getState().roverView;
   const getRover = () =>
     roverMatcher(rover.toLowerCase()) ? rover : roverViewState.defaultRover;
+
   if (roverViewState.loaded) {
     if (roverViewState.roverName !== getRover()) {
       return dispatch(getManifest(getRover(), false)).then(() => {

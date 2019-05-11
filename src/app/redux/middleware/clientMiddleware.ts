@@ -50,6 +50,7 @@ const clientMiddleware = (client: ApiClient): Middleware => ({
   if (isPouchPromiseAction(action)) {
     if (action.type === POUCH_ACTION_TYPES.REINIT_REDUCERS) {
       const pp = pouchPromise();
+      console.log('__MW__');
       next({ type: POUCH_ACTION_TYPES.REINIT });
       return pp
         .then()

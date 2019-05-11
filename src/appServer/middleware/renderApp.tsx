@@ -2,25 +2,34 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { flushChunkNames } from 'react-universal-component/server';
-import { NOT_FOUND } from 'redux-first-router';
+import { NOT_FOUND, LocationState } from 'redux-first-router';
 import flushChunks from 'webpack-flush-chunks';
 // import { END } from 'redux-saga';
 
-import { Handler } from 'express';
+import { Handler, Response, Request, NextFunction } from 'express';
 import App from '../../app/containers/App/App';
-import { MyThunkDispatch } from '../../app/redux/store/types';
+import { MyThunkDispatch, APP_STORE } from '../../app/redux/store/types';
 import { loadAuth } from '../../app/redux/modules/user';
 import { createReduxStore } from '../../app/redux/store/createReduxStore';
 import { ApiClient } from '../../helpers/ApiClient';
 import Html from '../../helpers/Html';
 import { asyncWrap as aw } from '../../helpers/utils';
+import { ApplicationState } from '../../app/redux/modules/reducer';
 
 const doctype = '<!doctype html>\n';
 
-// serverAssets => stats
+export interface ServerProps {
+  app: string;
+  store: APP_STORE;
+  assets: Partial<ReturnType<typeof flushChunks>>;
+}
+
+interface ResponseWithState extends Response {
+  preloadedState: Partial<ApplicationState>;
+}
+
 const renderApp = (): Handler =>
-  /* { serverAssets } = {} */ aw(async (req, res, next) => {
-    // let assets = serverAssets;
+  aw(async (req: Request, res: ResponseWithState, next: NextFunction) => {
     const client = new ApiClient(req);
     const preloadedState = res.preloadedState || {};
 
@@ -34,7 +43,7 @@ const renderApp = (): Handler =>
     // if (__DEVELOPMENT__ && res.locals.devAssets) {
     //   assets = res.locals.devAssets;
     // }
-    const renderHtml = ({ app, store, assets }) =>
+    const renderHtml = ({ app, store, assets }: ServerProps) =>
       `${doctype}${renderToString(
         <Html app={app} store={store} assets={assets} />,
       )}`;
@@ -46,7 +55,7 @@ const renderApp = (): Handler =>
         </Provider>,
       );
 
-    const doesRedirect = ({ kind, pathname }, res) => {
+    const doesRedirect = ({ kind, pathname }: LocationState, res: Response) => {
       if (kind === 'redirect') {
         res.redirect(302, pathname);
         return true;
@@ -73,13 +82,13 @@ const renderApp = (): Handler =>
 
     const app = createApp(App, store);
     const chunkNames = flushChunkNames();
-    const { Js, publicPath, stylesheets } = flushChunks(
+    const { publicPath, stylesheets, scripts } = flushChunks(
       res.locals.clientStats,
       { chunkNames },
     );
 
     const assets = {
-      Js,
+      scripts,
       publicPath,
       stylesheets,
     };

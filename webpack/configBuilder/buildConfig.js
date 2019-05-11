@@ -57,6 +57,7 @@ export default function buildConfig(env) {
     rawConfig.target = targetNode;
     rawConfig.name = 'server';
     rawConfig.mode = 'development';
+    rawConfig.output.futureEmitAssets = true;
     // rawConfig.recordsPath = `${context}/server-records.json;
   } else {
     rawConfig.name = 'client';
@@ -67,6 +68,7 @@ export default function buildConfig(env) {
     rawConfig.node = nodeFalse;
     rawConfig.output.crossOriginLoading = 'anonymous';
     rawConfig.target = { target: 'web' };
+    rawConfig.output.futureEmitAssets = true;
     // rawConfig.recordsPath = `${context}/records.json`;
     rawConfig.optimization = {
       // FOR PRODUCTION

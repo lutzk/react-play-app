@@ -212,38 +212,43 @@ async function reinitReducer(
   user: UserState,
   { reply, reinitReducersReply }: { reply: Reply; reinitReducersReply: Reply },
 ) {
+  let doc: DocModel | void;
+  const prefetched = state.prefetched || false;
+  LOCAL_DB_ID = state.localDbId || false;
+
+  console.log('__WORKER__', LOCAL_DB_ID, prefetched, reducerName);
+
   setReducerUninitialized(reducerName);
   if (changes) {
     changes.cancel();
   }
 
-  // if (!initialSynced) {
+  if (prefetched || !DB) {
+    DB = await getDBS(user);
+  }
+
+  // if (!initialSynced && !initialSyncing) {
   //   await syncInitial(user, reply);
   // }
 
-  let doc: DocModel | void;
   const localDB = DB.local;
   const remoteDB = DB.remote;
-  const prefetched = state.prefetched || false;
-
-  LOCAL_DB_ID = state.localDbId || false;
 
   // add doc.localId to state for prefetched case
   // saveReducer = save(localDB, CLIENT_HASH);
 
-  // if (prefetched) {
-  //   await saveReducer(reducerName, state);
-  // } else {
-
-  doc = await initDBState(localDB, remoteDB, reducerName);
-  if (doc && 'localId' in doc) {
-    LOCAL_DB_ID = doc.localId;
+  if (prefetched) {
+    // await saveReducer(reducerName, state);
   } else {
-    LOCAL_DB_ID = uuid.v1();
+    doc = await initDBState(localDB, remoteDB, reducerName);
+    if (doc && 'localId' in doc) {
+      LOCAL_DB_ID = doc.localId;
+    } else {
+      LOCAL_DB_ID = uuid.v1();
+    }
+    saveReducer = save(localDB, LOCAL_DB_ID);
+    await saveReducer(reducerName, state);
   }
-
-  saveReducer = save(localDB, LOCAL_DB_ID);
-  await saveReducer(reducerName, state);
 
   const initializedReducerKeys = Object.keys(initializedReducers);
   setReducerInitialized(reducerName);
@@ -257,7 +262,10 @@ async function reinitReducer(
       remoteDB,
     });
     // setReady();
-    reinitReducersReply('all ready');
+
+    if (reinitReducersReply) {
+      reinitReducersReply('all ready');
+    }
     // _syncInitialReply('dbs are set up and synced');
   }
   changes = initChanges(localDB, reducerName, saveReducer, currentState);

@@ -210,8 +210,4 @@ const updateList = ({ sorts, filter, range }: any = {}) => {
 
 const solViewReducer = persistentReducer(solView, reducerName);
 
-export {
-  updateList,
-  getSolManifest,
-  solViewReducer,
-};
+export { updateList, getSolManifest, solViewReducer };

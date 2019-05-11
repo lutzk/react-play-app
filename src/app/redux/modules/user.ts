@@ -54,7 +54,7 @@ export interface UserAction extends PromiseAction {
   asyncTypes?: USER_TYPES[];
 }
 
-type UserRedirectAction = UserAction | RedirectAction;
+export type UserRedirectAction = UserAction | RedirectAction;
 
 const initialState: UserState = {
   user: null,
@@ -229,13 +229,13 @@ const signup: Thunk<Promise<UserAction>> = (
 ) => async dispatch =>
   dispatch(signupAction(name, username, email, password, confirmPassword));
 
-const redirectAction = (nextPathname): UserRedirectAction =>
+const redirectAction = (nextPathname: string) =>
   myRedirect({
     nextPathname,
     ...linkToLogin,
   });
 
-const checkAuth: Thunk<Promise<UserRedirectAction>> = () => async (
+const checkAuth: Thunk<Promise<UserRedirectAction | null>> = () => async (
   dispatch,
   getState,
 ) => {
@@ -245,6 +245,7 @@ const checkAuth: Thunk<Promise<UserRedirectAction>> = () => async (
   if (!user) {
     return dispatch(redirectAction(getState().location.pathname));
   }
+  return null;
 };
 
 const requireLogin: Thunk<Promise<UserRedirectAction>> = () => async dispatch =>

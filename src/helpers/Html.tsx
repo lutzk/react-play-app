@@ -1,5 +1,6 @@
 import React from 'react';
 import serialize from 'serialize-javascript';
+import { ServerProps } from '../appServer/middleware/renderApp';
 
 /**
  * Wrapper component containing HTML metadata and boilerplate tags.
@@ -15,19 +16,8 @@ const setWindowData = (key, data) => ({
   __html: `window.${key} = ${serialize(data)};`,
 });
 
-const Html = args => {
-  /*
-   * args:
-   *   store: object
-   *   assets: object
-   *   component: node
-   */
-
-  const {
-    app,
-    store,
-    assets: { Js, publicPath, stylesheets },
-  } = args;
+const Html = ({ app, store, assets }: ServerProps) => {
+  const { scripts, publicPath, stylesheets } = assets;
   const windowData = setWindowData('__data', store.getState());
 
   const windowDataScript = (
@@ -37,6 +27,15 @@ const Html = args => {
   const htmlContent = (
     <div id="root" className="root" dangerouslySetInnerHTML={{ __html: app }} />
   );
+
+  const js = scripts.map((file, key) => (
+    <script
+      type="text/javascript"
+      src={`${publicPath}/${file}`}
+      key={key}
+      defer={true}
+    />
+  ));
 
   const css = stylesheets.map((file, key) => (
     <link rel="stylesheet" href={`${publicPath}/${file}`} key={key} />
@@ -51,7 +50,7 @@ const Html = args => {
       <body>
         {htmlContent}
         {windowDataScript}
-        <Js />
+        {js}
       </body>
     </html>
   );

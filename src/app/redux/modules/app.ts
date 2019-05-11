@@ -106,8 +106,4 @@ const syncInitial: Thunk<Promise<PouchAction>> = () => async (
   return dispatch(pouchAction({ type, asyncTypes, pouchPromise }));
 };
 
-export {
-  app,
-  syncInitial,
-  reinitReducers,
-};
+export { app, syncInitial, reinitReducers };

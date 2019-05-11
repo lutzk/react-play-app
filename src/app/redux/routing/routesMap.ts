@@ -4,13 +4,20 @@ import {
 } from 'redux-first-router';
 import { ApplicationState } from '../modules/reducer';
 import { initPage } from '../modules/roverView';
-import { requireLogin } from '../modules/user';
-import { PATHS, PATHS_TYPES } from './nav';
+import { requireLogin, UserRedirectAction } from '../modules/user';
+import { PATHS, PATHS_TYPES, RedirectAction } from './nav';
+import { ThunkResult, Thunk } from '../store/types';
 
-const rthunk: RouteThunk<ApplicationState> = dispatch => dispatch(initPage());
+const rthunk = async function(dispatch) {
+  const aa: RedirectAction = await dispatch(requireLogin());
+  if (!aa || !aa.nextPathname) {
+    return dispatch(initPage());
+  }
+};
 
-const thunk: RouteThunk<ApplicationState> = dispatch =>
-  dispatch(requireLogin());
+const thunk: RouteThunk<ApplicationState> = function(dispatch) {
+  return dispatch(requireLogin());
+};
 
 const routesMap: RoutesMap<{}, ApplicationState> = {
   // [LOGIN]: '/',

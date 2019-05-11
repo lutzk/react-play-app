@@ -247,8 +247,10 @@ const persistentReducer = <TReducerState>(
       //   return state;
 
       case POUCH_ACTION_TYPES.REINIT:
+        console.log('__REINIT__');
         if (isUserPresent(user)) {
           nextState = reducer(state, action);
+          console.log('__NEXTSTATE__', nextState);
           reinitReducerInWorker(reducerName, nextState, currentState, user);
           return (currentState = nextState);
         }
@@ -291,8 +293,4 @@ const persistentReducer = <TReducerState>(
   };
 };
 
-export {
-  reset,
-  persistentStore,
-  persistentReducer,
-};
+export { reset, persistentStore, persistentReducer };
