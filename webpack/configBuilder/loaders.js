@@ -59,9 +59,9 @@ const buildExtractCssChunksLoader = ({ kind = 'css', prod = false }) => {
   const sassLoaderUse = setUse(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions);
 
   if (kind === 'css') {
-    options.use = [ExtractCssChunks.loader, cssLoaderUse];
+    options.use = [/* ExtractCssChunks.loader, */ { loader: 'style-loader' }, cssLoaderUse];
   } else if (kind === 'sass') {
-    options.use = [ExtractCssChunks.loader, cssLoaderUse, sassLoaderUse];
+    options.use = [/* ExtractCssChunks.loader, */ { loader: 'style-loader' }, cssLoaderUse, sassLoaderUse];
   }
 
   return {
@@ -73,6 +73,7 @@ const buildExtractCssChunksLoader = ({ kind = 'css', prod = false }) => {
 const buildServerSassLoader = (prod = false) => ({
   test: fileTests.sass,
   use: [
+    // setUse('style-loader/url'),
     setUse(cssLoaderLocal, prod ? cssLoaderOptions : devCssLoaderOptions),
     setUse(sassLoader, prod ? sassLoaderOptions : devSassLoaderOptions),
   ],

@@ -112,7 +112,7 @@ const buildForkTsCheckerWebpackPlugin = (
 ) => new ForkTsCheckerWebpackPlugin({
   async: true,
   watch,
-  workers: cpus,
+  // workers: cpus,
   memoryLimit: 4096,
   tsconfig,
   tslint: './tslint.json',
@@ -125,7 +125,7 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
     ...(prod ? [] : [hmrPlugin]),
     // analyzerPlugin,
     limitChunkCountPlugin,
-    caseSensitivePathsPlugin,
+    // caseSensitivePathsPlugin,
     buildEnvPlugin({ server: true, prod }),
     createCleanPlugin(api ? relativeApiServerBuildPath : relativeAppServerBuildPath),
   ];
@@ -149,9 +149,9 @@ const buildServerPlugins = ({ prod = false, api = false }) => {
 const buildClientPlugins = ({ prod = false }) => {
   let plugins;
   const base = [
-    new ExtractCssChunks({ hot: true, reloadAll: true }),
+    // new ExtractCssChunks({ hot: true, reloadAll: true }),
     buildEnvPlugin({ prod }),
-    caseSensitivePathsPlugin,
+    // caseSensitivePathsPlugin,
     buildForkTsCheckerWebpackPlugin(),
     // analyzerPlugin,
     new webpack.ProgressPlugin(),
@@ -179,7 +179,7 @@ const buildWorkerPlugins = ({ prod = false, worker = false }) => {
   const base = [
     limitChunkCountPlugin,
     buildEnvPlugin({ prod }),
-    caseSensitivePathsPlugin,
+    // caseSensitivePathsPlugin,
     // buildForkTsCheckerWebpackPlugin(),
     new webpack.ProgressPlugin(),
   ];

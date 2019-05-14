@@ -11,6 +11,7 @@ import {
 } from '../../redux/routing/navHelpers';
 
 import '../Login/Login.sass';
+import style from '.Login.sass';
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(

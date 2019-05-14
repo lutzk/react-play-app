@@ -5,13 +5,15 @@ import {
   buildEntry as entry,
   buildOutput as output,
   buildResolve as resolve,
-  nodeFalse, targetNode, targetWebworker,
+  nodeFalse,
+  targetNode,
+  targetWebworker,
 } from './common';
 
 import { context } from '../settings';
+import { resolve as resolvePath } from 'path';
 
 export default function buildConfig(env) {
-
   const rawConfig = {};
   const servers = ['apiServer', 'appServer'];
   const [prod, target, kind] = env.split('.');
@@ -23,9 +25,29 @@ export default function buildConfig(env) {
   };
 
   const builders = { entry, rules, output, plugins, resolve };
-  Object.keys(builders).map(key =>
-    rawConfig[key] = builders[key](envConfig));
-
+  Object.keys(builders).map(key => (rawConfig[key] = builders[key](envConfig)));
+  rawConfig.cache = {
+    // type: 'filesystem',
+    // cacheDirectory: resolvePath(__dirname, '.cache'),
+    // loglevel: 'warning',
+    // // cacheLocation
+    // // hashAlgorithm
+    // // idleTimeout
+    // // idleTimeoutForInitialStore
+    // // name
+    // // store
+    // // type,
+    // version: 1,
+    // cacheLocation,
+    // hashAlgorithm,
+    // idleTimeout,
+    // idleTimeoutForInitialStore,
+    // loglevel,
+    // name,
+    // store,
+    type: 'filesystem',
+    version: '1.8',
+  };
   if (envConfig.worker) {
     rawConfig.target = targetWebworker;
     // to fix https://github.com/webpack/webpack/issues/4998
@@ -51,16 +73,16 @@ export default function buildConfig(env) {
       // END
       // NEEDED BOTH IN PROD AND DEV BUILDS
       runtimeChunk: false,
-    }
-
+    };
   } else if (envConfig.server) {
     rawConfig.target = targetNode;
     rawConfig.name = 'server';
     rawConfig.mode = 'development';
-    rawConfig.output.futureEmitAssets = true;
+    // rawConfig.output.futureEmitAssets = true;
     // rawConfig.recordsPath = `${context}/server-records.json;
   } else {
     rawConfig.name = 'client';
+    // rawConfig.resolve.alias = { "path": false }
     // setting all explictly false is ok
     // setting 'node = false' not
     // rawConfig.node = false;
@@ -68,7 +90,7 @@ export default function buildConfig(env) {
     rawConfig.node = nodeFalse;
     rawConfig.output.crossOriginLoading = 'anonymous';
     rawConfig.target = { target: 'web' };
-    rawConfig.output.futureEmitAssets = true;
+    // rawConfig.output.futureEmitAssets = true;
     // rawConfig.recordsPath = `${context}/records.json`;
     rawConfig.optimization = {
       // FOR PRODUCTION
@@ -99,6 +121,24 @@ export default function buildConfig(env) {
       //     },
       //   },
       // },
+
+      // new
+      // {
+      //   automaticNameDelimiter,
+      //   cacheGroups,
+      //   chunks,
+      //   fallbackCacheGroup,
+      //   filename,
+      //   hidePathInfo,
+      //   maxAsyncRequests,
+      //   maxAsyncSize,
+      //   maxInitialRequests,
+      //   maxInitialSize,
+      //   maxSize,
+      //   minChunks,
+      //   minSize,
+      //   name,
+      // },
       splitChunks: {
         chunks: 'all',
         minSize: 30000,
@@ -106,12 +146,12 @@ export default function buildConfig(env) {
         maxAsyncRequests: 8,
         maxInitialRequests: 8,
         automaticNameDelimiter: '~',
-        name: true,
+        // name: true,
         cacheGroups: {
           vendors: {
             test: /[\\/]node_modules[\\/]/,
-            priority: -10,
-            name: true,
+            // priority: -10,
+            name: () => 'vendor',
             chunks: 'all',
           },
           default: {

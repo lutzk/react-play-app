@@ -86,7 +86,7 @@ const renderApp = (): Handler =>
       res.locals.clientStats,
       { chunkNames },
     );
-
+    console.log(JSON.stringify(res.locals.clientStats, null, 2));
     const assets = {
       scripts,
       publicPath,

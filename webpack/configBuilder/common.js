@@ -81,13 +81,9 @@ const getClientOutput = prod => prod ?
   : { ...clientOutput, ...clientDevFilename };
 
 const nodeFalse = {
-  Buffer: false,
   __dirname: false,
   __filename: false,
-  console: false,
   global: false,
-  process: false,
-  path: 'empty',
 };
 
 const filteredNodeModules = fs.readdirSync(`${context}/node_modules`)
@@ -129,7 +125,9 @@ const assetsExtensions = ['.css', '.scss', '.sass'];
 
 const resolve = {
   alias: {
-    'react-dom': '@hot-loader/react-dom'
+    'react-dom': '@hot-loader/react-dom',
+    path: 'path-browserify',
+    vm: 'vm-browserify',
   },
   modules: [
     'src',
